@@ -55,6 +55,8 @@ class ForwardResult:
     hidden_states: np.ndarray   # (n_layers+1, seq, d_model) — [0] = embedding
     attentions: np.ndarray      # (n_layers, n_heads, seq, seq)
     mlp_acts: np.ndarray        # (n_layers, seq, d_mlp) — post-activation MLP
+    attn_deltas: np.ndarray     # (n_layers, seq, d_model) — per-block attn residual contribution
+    mlp_deltas: np.ndarray      # (n_layers, seq, d_model) — per-block mlp residual contribution
     logits: np.ndarray          # (seq, vocab)
     ln_f_out: np.ndarray        # (seq, d_model) — ln_f applied to last hidden
     topk_next: list[tuple[str, float]]
@@ -101,14 +103,34 @@ class ModelBackend:
 
         # Hook every block's MLP activation (post-GELU) so we can expose the
         # intermediate 3072-d neuron firings as a selectable view.
+        # Also hook block.attn and block.mlp themselves — their outputs are
+        # the deltas added to the residual stream, needed by the trajectory
+        # view to separate attention-write vs MLP-write arrows per block.
         captured: dict[int, torch.Tensor] = {}
+        cap_attn: dict[int, torch.Tensor] = {}
+        cap_mlp: dict[int, torch.Tensor] = {}
         handles = []
         for i, block in enumerate(self.model.transformer.h):
-            def make_hook(idx: int):
+            def make_act_hook(idx: int):
                 def _hook(_mod, _inp, out):
                     captured[idx] = out.detach()
                 return _hook
-            handles.append(block.mlp.act.register_forward_hook(make_hook(i)))
+
+            def make_attn_hook(idx: int):
+                def _hook(_mod, _inp, out):
+                    tensor = out[0] if isinstance(out, tuple) else out
+                    cap_attn[idx] = tensor.detach()
+                return _hook
+
+            def make_mlp_hook(idx: int):
+                def _hook(_mod, _inp, out):
+                    tensor = out[0] if isinstance(out, tuple) else out
+                    cap_mlp[idx] = tensor.detach()
+                return _hook
+
+            handles.append(block.mlp.act.register_forward_hook(make_act_hook(i)))
+            handles.append(block.attn.register_forward_hook(make_attn_hook(i)))
+            handles.append(block.mlp.register_forward_hook(make_mlp_hook(i)))
 
         try:
             with torch.no_grad():
@@ -125,6 +147,10 @@ class ModelBackend:
         attentions = np.stack([a[0].cpu().numpy() for a in out.attentions])
         mlp_acts = np.stack([captured[i][0].cpu().numpy()
                              for i in range(self.n_layers)])
+        attn_deltas = np.stack([cap_attn[i][0].cpu().numpy()
+                                for i in range(self.n_layers)])
+        mlp_deltas = np.stack([cap_mlp[i][0].cpu().numpy()
+                               for i in range(self.n_layers)])
         logits = out.logits[0].cpu().numpy()
         ln_f_out = ln_f.cpu().numpy()
 
@@ -140,6 +166,8 @@ class ModelBackend:
             hidden_states=hidden_states,
             attentions=attentions,
             mlp_acts=mlp_acts,
+            attn_deltas=attn_deltas,
+            mlp_deltas=mlp_deltas,
             logits=logits,
             ln_f_out=ln_f_out,
             topk_next=topk_next,
@@ -389,6 +417,92 @@ def render_pca(result: ForwardResult, tag: tuple, head_idx: int,
     ax.grid(True, alpha=0.3)
 
 
+def render_trajectory(result: ForwardResult, backend: ModelBackend, ax, *,
+                      token_idx: int = -1,
+                      pc_x: int = 0, pc_y: int = 1) -> None:
+    """Residual-stream trajectory for a single token position.
+
+    Plots 1 + 2·n_layers points: the embedding, then after each block's
+    attention-write and after each block's MLP-write. Arrows between
+    successive points are colored by whether the delta came from attention
+    (blue) or from the MLP (orange), making the "every block adds to the
+    running sum" idea visible at a glance.
+    """
+    seq_len = result.hidden_states.shape[1]
+    idx = seq_len - 1 if token_idx < 0 else min(token_idx, seq_len - 1)
+
+    h = result.hidden_states[:, idx, :]   # (n_layers+1, d_model)
+    a = result.attn_deltas[:, idx, :]     # (n_layers, d_model)
+    m = result.mlp_deltas[:, idx, :]      # (n_layers, d_model)
+    n_layers = a.shape[0]
+
+    points = [h[0]]
+    kinds = ["start"]
+    for i in range(n_layers):
+        points.append(h[i] + a[i])
+        kinds.append("attn")
+        points.append(h[i] + a[i] + m[i])  # == h[i+1]
+        kinds.append("mlp")
+    points = np.stack(points)
+
+    pca, ref_xy = backend.vocab_pca()
+    xy = pca.transform(points)
+
+    ax.scatter(ref_xy[:, pc_x], ref_xy[:, pc_y], s=6, alpha=0.18,
+               color="gray", zorder=1)
+
+    attn_color = COLOR_PALETTE[0]   # blue
+    mlp_color = COLOR_PALETTE[1]    # orange
+    for k in range(1, len(points)):
+        color = attn_color if kinds[k] == "attn" else mlp_color
+        ax.annotate("", xy=(xy[k, pc_x], xy[k, pc_y]),
+                    xytext=(xy[k - 1, pc_x], xy[k - 1, pc_y]),
+                    arrowprops=dict(arrowstyle="->", color=color,
+                                    lw=1.4, alpha=0.85),
+                    zorder=2)
+
+    # Mark layer boundaries (post-MLP points) with small white dots; label
+    # a handful so the path is readable without overcrowding it.
+    label_stride = max(1, n_layers // 4)
+    for i in range(n_layers):
+        pt = 2 + 2 * i
+        ax.scatter(xy[pt, pc_x], xy[pt, pc_y], s=34,
+                   color="white", edgecolor="#333", lw=0.7, zorder=4)
+        if i % label_stride == (label_stride - 1) and pt != len(points) - 1:
+            ax.annotate(f" L{i}", (xy[pt, pc_x], xy[pt, pc_y]),
+                        fontsize=8, color="#333", zorder=5)
+
+    # Emphasize endpoints.
+    ax.scatter(xy[0, pc_x], xy[0, pc_y], s=190, color="black",
+               marker="o", edgecolor="white", lw=1.4, zorder=6)
+    ax.annotate(" embed", (xy[0, pc_x], xy[0, pc_y]),
+                fontsize=9, fontweight="bold", color="#111", zorder=7)
+    ax.scatter(xy[-1, pc_x], xy[-1, pc_y], s=260, color=COLOR_PALETTE[3],
+               marker="*", edgecolor="black", lw=1.2, zorder=6)
+    ax.annotate(f" L{n_layers - 1} out", (xy[-1, pc_x], xy[-1, pc_y]),
+                fontsize=9, fontweight="bold", color="#111", zorder=7)
+
+    from matplotlib.lines import Line2D
+    legend_items = [
+        Line2D([0], [0], color=attn_color, lw=2.2, label="Δ attention"),
+        Line2D([0], [0], color=mlp_color, lw=2.2, label="Δ MLP"),
+        Line2D([0], [0], marker="o", color="black", linestyle="",
+               markersize=8, label="embedding"),
+        Line2D([0], [0], marker="*", color=COLOR_PALETTE[3], linestyle="",
+               markersize=11, label="final residual"),
+    ]
+    ax.legend(handles=legend_items, loc="best", fontsize=8)
+
+    var = pca.explained_variance_ratio_
+    ax.set_xlabel(f"PC{pc_x + 1} ({var[pc_x]:.1%} of vocab var)")
+    ax.set_ylabel(f"PC{pc_y + 1} ({var[pc_y]:.1%} of vocab var)")
+    ax.set_title(
+        f"Residual-stream trajectory — token {result.tokens[idx]!r} "
+        f"(position {idx})",
+        fontsize=11, fontweight="bold")
+    ax.grid(True, alpha=0.3)
+
+
 def render_cosine(result: ForwardResult, tag: tuple, head_idx: int,
                   ax, *, soften: bool = False) -> None:
     tensor = get_tensor(result, tag, head_idx)
@@ -554,18 +668,38 @@ class ArchitectureWindow(QMainWindow):
     EDGE_DEFAULT  = "#666666"
     EDGE_HIGHLIGHT = "#C44E52"  # palette red
     SENTINEL_LOGIT_LENS = "__logit_lens__"
+    SENTINEL_TRAJECTORY = "__trajectory__"
 
-    def __init__(self, n_layers: int, parent=None):
+    def __init__(self, n_layers: int, *,
+                 d_model: int = 768, d_mlp: int = 3072, n_heads: int = 12,
+                 vocab_size: int = 50257, n_positions: int = 1024,
+                 parent=None):
         super().__init__(parent)
         self.n_layers = n_layers
+        self.d_model = d_model
+        self.d_mlp = d_mlp
+        self.n_heads = n_heads
+        self.d_head = d_model // n_heads
+        self.vocab_size = vocab_size
+        self.n_positions = n_positions
+        # Per-cell parameter counts. GPT-2 ties lm_head to wte so the
+        # unembedding itself adds no new params beyond the embedding table.
+        self.p_attn = 4 * d_model * d_model + 4 * d_model        # QKV + out proj
+        self.p_mlp = 2 * d_model * d_mlp + d_model + d_mlp       # c_fc + c_proj
+        self.p_embed = vocab_size * d_model + n_positions * d_model
         self.setWindowTitle("Transformer architecture — GPT-2 small")
-        self.canvas = FigureCanvas(Figure(figsize=(4.2, 9.2)))
+        self.canvas = FigureCanvas(Figure(figsize=(4.6, 9.4)))
         self.setCentralWidget(self.canvas)
         self.patches: dict[str, Rectangle] = {}
         self._tearing_down = False
         self._build_figure()
         self.canvas.mpl_connect("pick_event", self._on_pick)
-        self.resize(420, 900)
+        self.resize(460, 920)
+
+    @staticmethod
+    def _fmt_m(n: int) -> str:
+        """Format a parameter count in megas, e.g. 2362368 -> '≈ 2.4M'."""
+        return f"≈ {n / 1e6:.1f}M"
 
     # -- figure construction ------------------------------------------------
 
@@ -587,8 +721,14 @@ class ArchitectureWindow(QMainWindow):
         row = 0
         self._add_cell(ax, "ln_f", x=0.4, y=row + 0.15, w=9.2, h=0.7,
                        label="ln_f + lm_head", facecolor=self.COL_LNF,
-                       label_size=10, label_weight="bold")
+                       label_size=10, label_weight="bold",
+                       sublabel=f"{self.d_model} → {self.vocab_size} logits  "
+                                f"(lm_head tied with wte)")
 
+        attn_sub = (f"QKV+O  ·  {self.n_heads}×{self.d_head}  "
+                    f"·  {self._fmt_m(self.p_attn)}")
+        mlp_sub = (f"{self.d_model}→{self.d_mlp}→{self.d_model}  "
+                   f"·  {self._fmt_m(self.p_mlp)}")
         # --- Blocks, top-down: block 11 just below ln_f ---
         for i in range(self.n_layers - 1, -1, -1):
             row += 1
@@ -603,35 +743,71 @@ class ArchitectureWindow(QMainWindow):
             # Three interactive sub-cells: Attn | MLP | Residual out
             self._add_cell(ax, f"block:{i}:attn",
                            x=0.8, y=row + 0.15, w=2.7, h=0.7,
-                           label="Attn", facecolor=self.COL_ATTN)
+                           label="Attn", facecolor=self.COL_ATTN,
+                           sublabel=attn_sub, sublabel_size=5.8)
             self._add_cell(ax, f"block:{i}:mlp",
                            x=3.7, y=row + 0.15, w=2.7, h=0.7,
-                           label="MLP", facecolor=self.COL_MLP)
+                           label="MLP", facecolor=self.COL_MLP,
+                           sublabel=mlp_sub, sublabel_size=5.8)
             self._add_cell(ax, f"block:{i}:residual",
                            x=6.6, y=row + 0.15, w=2.8, h=0.7,
-                           label="Res. out", facecolor=self.COL_RESIDUAL)
+                           label="Res. out", facecolor=self.COL_RESIDUAL,
+                           sublabel="sum (no params)", sublabel_size=5.8)
 
         # --- Bottom: embedding ---
         row += 1
         self._add_cell(ax, "embedding", x=0.4, y=row + 0.15, w=9.2, h=0.7,
                        label="Embedding  (wte + wpe)",
                        facecolor=self.COL_EMBEDDING,
-                       label_size=10, label_weight="bold")
+                       label_size=10, label_weight="bold",
+                       sublabel=f"wte {self.vocab_size}×{self.d_model}  +  "
+                                f"wpe {self.n_positions}×{self.d_model}  ·  "
+                                f"{self._fmt_m(self.p_embed)}")
 
-        fig.subplots_adjust(left=0.02, right=0.98, top=0.95, bottom=0.03)
+        # Footer: flow shapes — reinforces that the residual stream keeps
+        # a constant (T, d_model) shape all the way through; only the MLP
+        # and attention heads expand into wider spaces locally.
+        fig.text(
+            0.5, 0.028,
+            f"Residual stream: (T, {self.d_model}) "
+            f"— constant at every layer",
+            ha="center", va="bottom", fontsize=7.0, color="#333",
+            fontweight="bold",
+        )
+        fig.text(
+            0.5, 0.008,
+            f"Local widening  —  MLP: (T, {self.d_mlp})   ·   "
+            f"Attn: {self.n_heads} heads × {self.d_head}",
+            ha="center", va="bottom", fontsize=6.5, color="#555",
+            style="italic",
+        )
+
+        fig.subplots_adjust(left=0.02, right=0.98, top=0.95, bottom=0.06)
         self.canvas.draw_idle()
 
     def _add_cell(self, ax, tag: str, *, x: float, y: float, w: float, h: float,
                   label: str, facecolor: str,
-                  label_size: int = 9, label_weight: str = "normal") -> None:
+                  label_size: int = 9, label_weight: str = "normal",
+                  sublabel: Optional[str] = None,
+                  sublabel_size: float = 6.5) -> None:
         rect = Rectangle((x, y), w, h,
                          facecolor=facecolor, edgecolor=self.EDGE_DEFAULT,
                          lw=0.8, zorder=2, picker=True)
         ax.add_patch(rect)
-        ax.text(x + w / 2, y + h / 2, label,
-                ha="center", va="center",
-                fontsize=label_size, fontweight=label_weight,
-                color="#222", zorder=3)
+        if sublabel is None:
+            ax.text(x + w / 2, y + h / 2, label,
+                    ha="center", va="center",
+                    fontsize=label_size, fontweight=label_weight,
+                    color="#222", zorder=3)
+        else:
+            ax.text(x + w / 2, y + h / 2 - 0.13, label,
+                    ha="center", va="center",
+                    fontsize=label_size, fontweight=label_weight,
+                    color="#222", zorder=3)
+            ax.text(x + w / 2, y + h / 2 + 0.18, sublabel,
+                    ha="center", va="center",
+                    fontsize=sublabel_size, style="italic",
+                    color="#555", zorder=3)
         self.patches[tag] = rect
 
     # -- interaction --------------------------------------------------------
@@ -644,6 +820,7 @@ class ArchitectureWindow(QMainWindow):
 
     DEFAULT_TITLE = "Where is the current view?"
     LOGIT_LENS_TITLE = "Logit lens — cross-layer probe"
+    TRAJECTORY_TITLE = "Residual stream — cross-layer trajectory"
 
     def highlight(self, tag: Optional[str]) -> None:
         """Ring the cell matching *tag*. Clear otherwise.
@@ -674,6 +851,19 @@ class ArchitectureWindow(QMainWindow):
                 p.set_edgecolor(self.EDGE_HIGHLIGHT)
                 p.set_linewidth(2.8)
             ax.set_title(self.LOGIT_LENS_TITLE,
+                         fontsize=11, fontweight="bold", pad=8,
+                         color=self.EDGE_HIGHLIGHT)
+        elif tag == self.SENTINEL_TRAJECTORY:
+            p = self.patches.get("embedding")
+            if p is not None:
+                p.set_edgecolor(self.EDGE_HIGHLIGHT)
+                p.set_linewidth(2.4)
+            for i in range(self.n_layers):
+                p = self.patches.get(f"block:{i}:residual")
+                if p is not None:
+                    p.set_edgecolor(self.EDGE_HIGHLIGHT)
+                    p.set_linewidth(1.6)
+            ax.set_title(self.TRAJECTORY_TITLE,
                          fontsize=11, fontweight="bold", pad=8,
                          color=self.EDGE_HIGHLIGHT)
         elif tag in self.patches:
@@ -707,6 +897,7 @@ class MainWindow(QMainWindow):
     VIEW_PCA = 1
     VIEW_COSINE = 2
     VIEW_LOGIT_LENS = 3
+    VIEW_TRAJECTORY = 4
 
     DEBOUNCE_MS = 300
 
@@ -808,7 +999,8 @@ class MainWindow(QMainWindow):
         lay.addWidget(QLabel("View:"))
         self.view_group = QButtonGroup(self)
         for i, name in enumerate(
-            ["Heatmap", "PCA (vocab ref)", "Cosine", "Logit lens"]
+            ["Heatmap", "PCA (vocab ref)", "Cosine", "Logit lens",
+             "Trajectory"]
         ):
             rb = QRadioButton(name)
             if i == 0:
@@ -916,7 +1108,8 @@ class MainWindow(QMainWindow):
             combo.blockSignals(False)
 
     def _update_pca_axes_visibility(self) -> None:
-        shown = self.view_group.checkedId() == self.VIEW_PCA
+        shown = self.view_group.checkedId() in (
+            self.VIEW_PCA, self.VIEW_TRAJECTORY)
         self.pca_axes_label.setVisible(shown)
         self._pca_axes_widget.setVisible(shown)
 
@@ -925,8 +1118,11 @@ class MainWindow(QMainWindow):
     def _update_arch(self) -> None:
         if self.arch is None:
             return
-        if self.view_group.checkedId() == self.VIEW_LOGIT_LENS:
+        view_id = self.view_group.checkedId()
+        if view_id == self.VIEW_LOGIT_LENS:
             self.arch.highlight(ArchitectureWindow.SENTINEL_LOGIT_LENS)
+        elif view_id == self.VIEW_TRAJECTORY:
+            self.arch.highlight(ArchitectureWindow.SENTINEL_TRAJECTORY)
         else:
             self.arch.highlight(self.layer_combo.currentData())
 
@@ -986,6 +1182,12 @@ class MainWindow(QMainWindow):
             # cross-layer view by construction.
             axes = fig.subplots(1, 2, gridspec_kw={"width_ratios": [0.9, 1.1]})
             render_logit_lens(self.current, axes[0], axes[1])
+        elif view_id == self.VIEW_TRAJECTORY:
+            # Also a cross-layer view; layer/head/soften are irrelevant.
+            ax = fig.add_subplot(111)
+            render_trajectory(self.current, self.backend, ax,
+                              pc_x=self.pca_x_combo.currentData(),
+                              pc_y=self.pca_y_combo.currentData())
         else:
             soften = self.soften_cb.isChecked()
             ax = fig.add_subplot(111)
@@ -1030,7 +1232,15 @@ class MainWindow(QMainWindow):
 def main():
     backend = ModelBackend("gpt2")
     app = QApplication(sys.argv)
-    arch = ArchitectureWindow(backend.n_layers)
+    cfg = backend.model.config
+    arch = ArchitectureWindow(
+        backend.n_layers,
+        d_model=backend.d_model,
+        d_mlp=backend.d_mlp,
+        n_heads=backend.n_heads,
+        vocab_size=cfg.vocab_size,
+        n_positions=cfg.n_positions,
+    )
     win = MainWindow(backend, arch=arch)
     win.show()
     # Position the architecture window just to the right of the main one.
