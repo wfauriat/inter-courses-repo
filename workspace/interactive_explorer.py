@@ -4,8 +4,24 @@ interactive_explorer.py
 Qt app for reactive inspection of GPT-2 small internals.
 
 Type a prompt, pick a layer / head / view, watch the top-k next-token bar
-update. Three views for the selected tensor: heatmap, PCA projection onto
-a vocabulary reference cloud, cosine similarity matrix.
+update. Five views are available:
+
+  - Heatmap        — per-layer tensor as (seq, dim) or (seq, seq) image
+  - PCA            — selected hidden state projected onto a vocab reference
+                     cloud; PC axes selectable (up to PC6)
+  - Cosine         — pairwise cosine similarity (or raw attention) between
+                     token positions
+  - Logit lens     — cross-layer probe: top-1 token at each layer and the
+                     emergence curve for the final prediction
+  - Trajectory     — cross-layer residual-stream path for one token,
+                     attention vs. MLP deltas shown as colored arrows
+
+A companion ArchitectureWindow shows the transformer stack as clickable
+cells and highlights the layer bound to the current view (or rings the
+cross-layer cells for logit-lens / trajectory).
+
+Pos-0 "attention sink" artifact can be softened via a checkbox (drops
+row/col 0 and renormalizes) for the per-layer views.
 
 Usage:
     source ~/.venvDS/bin/activate
