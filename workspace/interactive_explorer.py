@@ -339,59 +339,97 @@ def _soften_suffix() -> str:
 
 def render_heatmap(result: ForwardResult, tag: tuple, head_idx: int,
                    ax, *, soften: bool = False) -> None:
+    if is_attention_tag(tag):
+        _draw_na(ax,
+                 "Heatmap is for hidden-state (seq, D) tensors.\n\n"
+                 "Use the Attention view for attention weights.")
+        return
+
     tensor = get_tensor(result, tag, head_idx)
     tokens = result.tokens
 
-    if is_attention_tag(tag):
-        # (seq, seq) attention — Blues + PowerNorm to compress the sink's
-        # dynamic range. When softened, drop pos-0 row/col and renormalize
-        # so each row's remaining mass sums to 1.
-        if soften:
-            data = _soften_attn(tensor)
-            row_tokens = tokens[1:] if tensor.shape[0] > 1 else tokens
-            col_tokens = tokens[1:] if tensor.shape[1] > 1 else tokens
-        else:
-            data = tensor
-            row_tokens = tokens
-            col_tokens = tokens
-        vmax = max(float(data.max()), 1e-6)
-        im = ax.imshow(data, cmap="Blues", aspect="auto",
-                       norm=PowerNorm(gamma=0.4, vmin=0, vmax=vmax))
-        ax.set_xticks(range(len(col_tokens)))
-        ax.set_yticks(range(len(row_tokens)))
-        ax.set_xticklabels([repr(t) for t in col_tokens],
-                           rotation=45, ha="right",
-                           fontsize=8, fontfamily="monospace")
-        ax.set_yticklabels([repr(t) for t in row_tokens],
-                           fontsize=8, fontfamily="monospace")
-        ax.set_xlabel("Attends to (key)")
-        ax.set_ylabel("Token (query)")
+    # (seq, D) — RdBu_r with a robust vmax:
+    #   • skip row 0 to avoid the position-0 residual outlier.
+    #   • p99 of the remaining magnitudes, so a handful of outlier MLP
+    #     neurons can't stretch the scale and wash the rest out.
+    if soften and tensor.shape[0] > 1:
+        data = tensor[1:]
+        y_labels = tokens[1:]
     else:
-        # (seq, D) — RdBu_r with a robust vmax:
-        #   • skip row 0 to avoid the position-0 residual outlier.
-        #   • p99 of the remaining magnitudes, so a handful of outlier MLP
-        #     neurons can't stretch the scale and wash the rest out.
-        if soften and tensor.shape[0] > 1:
-            data = tensor[1:]
-            y_labels = tokens[1:]
-        else:
-            data = tensor
-            y_labels = tokens
-        # When not softened we still exclude row 0 from the *statistics*.
-        stat_body = data if (soften or data.shape[0] <= 1) else data[1:]
-        abs_body = np.abs(stat_body)
-        vmax = float(np.percentile(abs_body, 99))
-        vmax = max(vmax, float(abs_body.max()) * 0.15, 1e-6)
-        im = ax.imshow(data, cmap="RdBu_r", aspect="auto",
-                       vmin=-vmax, vmax=vmax, interpolation="nearest")
-        ax.set_yticks(range(len(y_labels)))
-        ax.set_yticklabels([repr(t) for t in y_labels],
-                           fontsize=9, fontfamily="monospace")
-        ax.set_xlabel(f"Dimension (0 .. {data.shape[1] - 1})")
+        data = tensor
+        y_labels = tokens
+    # When not softened we still exclude row 0 from the *statistics*.
+    stat_body = data if (soften or data.shape[0] <= 1) else data[1:]
+    abs_body = np.abs(stat_body)
+    vmax = float(np.percentile(abs_body, 99))
+    vmax = max(vmax, float(abs_body.max()) * 0.15, 1e-6)
+    im = ax.imshow(data, cmap="RdBu_r", aspect="auto",
+                   vmin=-vmax, vmax=vmax, interpolation="nearest")
+    ax.set_yticks(range(len(y_labels)))
+    ax.set_yticklabels([repr(t) for t in y_labels],
+                       fontsize=9, fontfamily="monospace")
+    ax.set_xlabel(f"Dimension (0 .. {data.shape[1] - 1})")
 
     ax.figure.colorbar(im, ax=ax, fraction=0.035, pad=0.02)
     suffix = _soften_suffix() if soften else ""
     ax.set_title(f"Heatmap — {describe(tag, head_idx)}{suffix}",
+                 fontsize=11, fontweight="bold")
+
+
+def render_attention(result: ForwardResult, tag: tuple, head_idx: int,
+                     ax, *, soften: bool = False) -> None:
+    """Per-head (or head-averaged) attention matrix for an attention layer.
+
+    Rows are queries, columns are keys; each row sums to 1 (post-softmax).
+    PowerNorm(gamma=0.4) compresses the dynamic range so the off-sink
+    structure is visible. Cell values are annotated when the matrix is
+    small enough to read without overlapping.
+    """
+    if not is_attention_tag(tag):
+        _draw_na(ax, "Attention view requires an attention layer.")
+        return
+
+    tensor = get_tensor(result, tag, head_idx)
+    tokens = result.tokens
+
+    if soften:
+        data = _soften_attn(tensor)
+        row_tokens = tokens[1:] if tensor.shape[0] > 1 else tokens
+        col_tokens = tokens[1:] if tensor.shape[1] > 1 else tokens
+    else:
+        data = tensor
+        row_tokens = tokens
+        col_tokens = tokens
+
+    vmax = max(float(data.max()), 1e-6)
+    im = ax.imshow(data, cmap="Blues", aspect="auto",
+                   norm=PowerNorm(gamma=0.4, vmin=0, vmax=vmax))
+    ax.set_xticks(range(len(col_tokens)))
+    ax.set_yticks(range(len(row_tokens)))
+    ax.set_xticklabels([repr(t) for t in col_tokens],
+                       rotation=45, ha="right",
+                       fontsize=8, fontfamily="monospace")
+    ax.set_yticklabels([repr(t) for t in row_tokens],
+                       fontsize=8, fontfamily="monospace")
+    ax.set_xlabel("Attends to (key)")
+    ax.set_ylabel("Token (query)")
+
+    # Cell values when the matrix is small enough to read. Threshold uses
+    # the same gamma the colormap does, so the white/dark text switch
+    # matches the actual rendered shade.
+    if max(data.shape) <= 14:
+        for i in range(data.shape[0]):
+            for j in range(data.shape[1]):
+                v = float(data[i, j])
+                shade = (v / vmax) ** 0.4 if vmax > 0 else 0.0
+                color = "white" if shade > 0.55 else "#111"
+                ax.text(j, i, f"{v:.2f}", ha="center", va="center",
+                        color=color, fontsize=8)
+
+    ax.figure.colorbar(im, ax=ax, fraction=0.035, pad=0.02,
+                       label="attention weight")
+    suffix = _soften_suffix() if soften else ""
+    ax.set_title(f"Attention — {describe(tag, head_idx)}{suffix}",
                  fontsize=11, fontweight="bold")
 
 
@@ -521,20 +559,16 @@ def render_trajectory(result: ForwardResult, backend: ModelBackend, ax, *,
 
 def render_cosine(result: ForwardResult, tag: tuple, head_idx: int,
                   ax, *, soften: bool = False) -> None:
+    if is_attention_tag(tag):
+        _draw_na(ax,
+                 "Cosine is for hidden-state vectors.\n\n"
+                 "Use the Attention view for attention weights.")
+        return
+
     tensor = get_tensor(result, tag, head_idx)
     tokens = result.tokens
 
-    if is_attention_tag(tag):
-        # Attention is already a (seq, seq) pairwise score — just display it
-        if soften:
-            mat = _soften_attn(tensor)
-            display_tokens = tokens[1:] if tensor.shape[0] > 1 else tokens
-        else:
-            mat = tensor
-            display_tokens = tokens
-        vmin, vmax = 0.0, float(max(mat.max(), 1e-6))
-        cmap, label = "Blues", "attention weight"
-    elif tensor.ndim == 2 and tensor.shape[-1] > 1:
+    if tensor.ndim == 2 and tensor.shape[-1] > 1:
         norms = np.linalg.norm(tensor, axis=-1, keepdims=True)
         mat = (tensor @ tensor.T) / (norms @ norms.T + 1e-9)
         if soften and mat.shape[0] > 1:
@@ -912,8 +946,9 @@ class MainWindow(QMainWindow):
     VIEW_HEATMAP = 0
     VIEW_PCA = 1
     VIEW_COSINE = 2
-    VIEW_LOGIT_LENS = 3
-    VIEW_TRAJECTORY = 4
+    VIEW_ATTENTION = 3
+    VIEW_LOGIT_LENS = 4
+    VIEW_TRAJECTORY = 5
 
     DEBOUNCE_MS = 300
 
@@ -939,6 +974,7 @@ class MainWindow(QMainWindow):
 
         # Kick off with a sensible initial prompt
         self.prompt_edit.setText("The Eiffel Tower is in the city of")
+        self._update_view_availability()
         self._update_pca_axes_visibility()
         self._run_forward()
         self._update_arch()
@@ -1014,14 +1050,21 @@ class MainWindow(QMainWindow):
         lay.addSpacing(8)
         lay.addWidget(QLabel("View:"))
         self.view_group = QButtonGroup(self)
-        for i, name in enumerate(
-            ["Heatmap", "PCA (vocab ref)", "Cosine", "Logit lens",
-             "Trajectory"]
-        ):
+        self.view_buttons: dict[int, QRadioButton] = {}
+        view_specs = [
+            (self.VIEW_HEATMAP, "Heatmap"),
+            (self.VIEW_PCA, "PCA (vocab ref)"),
+            (self.VIEW_COSINE, "Cosine"),
+            (self.VIEW_ATTENTION, "Attention"),
+            (self.VIEW_LOGIT_LENS, "Logit lens"),
+            (self.VIEW_TRAJECTORY, "Trajectory"),
+        ]
+        for vid, name in view_specs:
             rb = QRadioButton(name)
-            if i == 0:
+            if vid == self.VIEW_HEATMAP:
                 rb.setChecked(True)
-            self.view_group.addButton(rb, i)
+            self.view_group.addButton(rb, vid)
+            self.view_buttons[vid] = rb
             lay.addWidget(rb)
         self.view_group.idClicked.connect(self._on_view_changed)
 
@@ -1109,6 +1152,8 @@ class MainWindow(QMainWindow):
         # the canonical PC1/PC2 so the user always starts from a consistent
         # view before exploring higher components.
         self._reset_pca_axes()
+        self._update_view_availability()
+        self._update_pca_axes_visibility()
         self._redraw_main()
         self._update_arch()
 
@@ -1116,6 +1161,30 @@ class MainWindow(QMainWindow):
         self._update_pca_axes_visibility()
         self._redraw_main()
         self._update_arch()
+
+    def _update_view_availability(self) -> None:
+        """Enable / disable view radios based on the current layer type.
+
+        Cosine / Heatmap / PCA need per-token (seq, D) hidden states, so
+        they are disabled when an attention layer is selected. The
+        Attention view is the converse — only meaningful for an attention
+        layer. Logit lens and Trajectory are cross-layer, always enabled.
+        If the current selection becomes disabled, fall back to the
+        natural default for the new layer type.
+        """
+        tag = self.layer_combo.currentData()
+        is_attn = bool(tag) and is_attention_tag(tag)
+
+        self.view_buttons[self.VIEW_HEATMAP].setEnabled(not is_attn)
+        self.view_buttons[self.VIEW_COSINE].setEnabled(not is_attn)
+        self.view_buttons[self.VIEW_PCA].setEnabled(not is_attn)
+        self.view_buttons[self.VIEW_ATTENTION].setEnabled(is_attn)
+
+        current = self.view_group.checkedId()
+        if current in self.view_buttons and \
+                not self.view_buttons[current].isEnabled():
+            target = self.VIEW_ATTENTION if is_attn else self.VIEW_HEATMAP
+            self.view_buttons[target].setChecked(True)
 
     def _reset_pca_axes(self) -> None:
         for combo, default in ((self.pca_x_combo, 0), (self.pca_y_combo, 1)):
@@ -1214,6 +1283,8 @@ class MainWindow(QMainWindow):
                            soften=soften,
                            pc_x=self.pca_x_combo.currentData(),
                            pc_y=self.pca_y_combo.currentData())
+            elif view_id == self.VIEW_ATTENTION:
+                render_attention(self.current, tag, head, ax, soften=soften)
             else:
                 render_cosine(self.current, tag, head, ax, soften=soften)
 
