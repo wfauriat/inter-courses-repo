@@ -146,6 +146,31 @@ ANALOGY_EXAMPLES = [
     ("paris", "france", "germany", "berlin"),
 ]
 
+# Mutually-exclusive presets that temporarily swap the word-groups table
+# for analogy-focused sets and overlay the chain arrow on the 2D scatter.
+# Checking one snapshots the user's current groups; unchecking restores
+# them. Groups are chosen to keep A, B, C, D all on-screen.
+ANALOGY_PRESETS = [
+    {
+        "key":     "king",
+        "label":   "king − man + woman",
+        "groups":  [
+            ("titles",  "king, queen, prince, princess"),
+            ("persona", "man, woman, dad, mom, son, girl"),
+        ],
+        "analogy": ANALOGY_EXAMPLES[0],   # king − man + woman ≈ queen
+    },
+    {
+        "key":     "paris",
+        "label":   "paris − france + germany",
+        "groups":  [
+            ("cities",    "paris, berlin"),
+            ("countries", "france, germany"),
+        ],
+        "analogy": ANALOGY_EXAMPLES[1],   # paris − france + germany ≈ berlin
+    },
+]
+
 
 # In-app reference shown when the user clicks the "Theory" button.
 # Static facts about the GloVe-6B-100d release the app loads.
@@ -362,7 +387,9 @@ class EmbeddingBackend:
 # ---------------------------------------------------------------------------
 
 def render_scatter(backend: EmbeddingBackend, groups: list[GroupSpec],
-                   method: str, fig: Figure) -> None:
+                   method: str, fig: Figure,
+                   analogy: tuple[str, str, str, str] | None = None,
+                   analogy_style: str = "colored") -> None:
     fig.clear()
     ax = fig.add_subplot(111)
     all_words = [w for g in groups for w in g.words]
@@ -395,11 +422,127 @@ def render_scatter(backend: EmbeddingBackend, groups: list[GroupSpec],
                             textcoords="offset points",
                             fontsize=10, fontweight="bold",
                             color=g.color)
+
+    if analogy is not None:
+        _draw_analogy_chain(ax, pos, analogy, method, style=analogy_style)
+
     ax.legend(loc="best", framealpha=0.9, fontsize=10)
     ax.set_title(f"2D projection of configured words  ({method})\n{subtitle}",
                  fontweight="bold", loc="left", fontsize=11)
     ax.grid(alpha=0.3)
     fig.tight_layout()
+
+
+def _draw_analogy_chain(ax, pos: dict[str, np.ndarray],
+                        analogy: tuple[str, str, str, str],
+                        method: str, style: str = "colored") -> None:
+    """Overlay A − B + C decomposed as three tail-to-head arrows
+    (origin → A, A → A−B, A−B → A−B+C). Only meaningful in PCA: the
+    projection is linear, so `proj(A) − proj(B) + proj(C)` equals
+    `proj(A − B + C)` up to centering, and the chain endpoint lands
+    near proj(D) exactly when the analogy holds. t-SNE is non-linear,
+    so the arithmetic would mislead — draw a faint A↔D pointer instead.
+
+    style:
+      "colored" — preset palette (grey / red / green) with a legend entry.
+      "mono"    — all-grey arrows, no legend entry. Used for the ad-hoc
+                  chain driven by the Compute button.
+    """
+    a, b, c, d = analogy
+    if any(w not in pos for w in (a, b, c, d)):
+        return
+    pA = np.asarray(pos[a], dtype=float)
+    pB = np.asarray(pos[b], dtype=float)
+    pC = np.asarray(pos[c], dtype=float)
+    pD = np.asarray(pos[d], dtype=float)
+
+    if method != "PCA":
+        ax.plot([pA[0], pD[0]], [pA[1], pD[1]],
+                linestyle=":", color="#888", lw=1.2, alpha=0.8, zorder=2)
+        return
+
+    p1 = pA - pB
+    p2 = pA - pB + pC
+    origin = np.zeros(2)
+
+    # Scatter-only autoscale doesn't see annotate() arrow endpoints, so
+    # chain points outside the current view get clipped. Expand limits
+    # to contain origin, both intermediate points, and the endpoint.
+    chain_pts = np.stack([origin, pA, p1, p2, pD])
+    xmin, xmax = ax.get_xlim()
+    ymin, ymax = ax.get_ylim()
+    xs, ys = chain_pts[:, 0], chain_pts[:, 1]
+    pad_x = 0.08 * max(xs.max() - xs.min(), 1e-6)
+    pad_y = 0.08 * max(ys.max() - ys.min(), 1e-6)
+    ax.set_xlim(min(xmin, xs.min() - pad_x), max(xmax, xs.max() + pad_x))
+    ax.set_ylim(min(ymin, ys.min() - pad_y), max(ymax, ys.max() + pad_y))
+
+    if style == "mono":
+        c_base = c_sub = c_add = "#888"
+        lw_base, lw_sub, lw_add = 1.4, 1.6, 1.6
+        alpha_base = 0.65
+        star_face, star_edge = "#bbb", "#666"
+        star_label: str | None = None
+        link_color = "#888"
+        label_color = "#444"
+    else:
+        c_base, c_sub, c_add = "#666", "#C44E52", "#55A868"
+        lw_base, lw_sub, lw_add = 1.4, 2.2, 2.2
+        alpha_base = 0.65
+        star_face, star_edge = "gold", "black"
+        star_label = f"{a} − {b} + {c}"
+        link_color = "#333"
+        label_color = "#333"
+
+    # Arrow 1: origin → A. Thinner so the +/− steps stand out.
+    ax.annotate("", xy=pA, xytext=origin,
+                arrowprops=dict(arrowstyle="-|>", color=c_base,
+                                lw=lw_base, alpha=alpha_base,
+                                mutation_scale=16),
+                zorder=4)
+    _chain_label(ax, origin, pA, f"+{a}", c_base,
+                 italic=True, fontweight="normal")
+
+    # Arrow 2: A → A−B (subtraction).
+    ax.annotate("", xy=p1, xytext=pA,
+                arrowprops=dict(arrowstyle="-|>", color=c_sub,
+                                lw=lw_sub, mutation_scale=20),
+                zorder=5)
+    _chain_label(ax, pA, p1, f"−{b}", c_sub)
+
+    # Arrow 3: A−B → A−B+C (addition).
+    ax.annotate("", xy=p2, xytext=p1,
+                arrowprops=dict(arrowstyle="-|>", color=c_add,
+                                lw=lw_add, mutation_scale=20),
+                zorder=5)
+    _chain_label(ax, p1, p2, f"+{c}", c_add)
+
+    star_kwargs = dict(marker="*", markersize=22,
+                       markerfacecolor=star_face, markeredgecolor=star_edge,
+                       markeredgewidth=1.3, zorder=10)
+    if star_label is not None:
+        star_kwargs["label"] = star_label
+    ax.plot(p2[0], p2[1], **star_kwargs)
+    # Residual: chain endpoint vs. the real D vector.
+    ax.plot([p2[0], pD[0]], [p2[1], pD[1]],
+            linestyle="--", color=link_color, lw=1.2, alpha=0.8, zorder=4)
+    ax.annotate(f"≈ {d}?", xy=pD, xytext=(10, -12),
+                textcoords="offset points", fontsize=10,
+                fontweight="bold", color=label_color,
+                bbox=dict(boxstyle="round,pad=0.25",
+                          facecolor="white", alpha=0.85,
+                          edgecolor="#888"),
+                zorder=11)
+
+
+def _chain_label(ax, p_from: np.ndarray, p_to: np.ndarray,
+                 text: str, color: str,
+                 italic: bool = False, fontweight: str = "bold") -> None:
+    mid = (np.asarray(p_from, float) + np.asarray(p_to, float)) / 2
+    ax.text(mid[0], mid[1], f" {text}", fontsize=10, color=color,
+            fontweight=fontweight,
+            fontstyle="italic" if italic else "normal",
+            ha="left", va="bottom", zorder=11)
 
 
 def render_similarity_matrix(backend: EmbeddingBackend,
@@ -505,6 +648,15 @@ class EmbeddingWorkshop(QMainWindow):
         self.backend = backend
         self.setWindowTitle("Embedding Workshop  —  GloVe 100d")
         self.resize(1500, 1000)
+        # Preset state: None while user-edited groups are shown; a preset
+        # key while one is active. The snapshot holds the user's table
+        # contents verbatim so unchecking restores them exactly.
+        self._active_preset: str | None = None
+        self._saved_groups: list[tuple[str, str]] | None = None
+        # Ad-hoc analogy chain driven by the Compute button: (a, b, c, d)
+        # with d = top-1 candidate. Click again with identical inputs to
+        # hide; different inputs refresh. Preset takes display priority.
+        self._compute_analogy: tuple[str, str, str, str] | None = None
         self._build_ui()
         self._on_update()
 
@@ -561,6 +713,25 @@ class EmbeddingWorkshop(QMainWindow):
         bb.addStretch(1)
         bb.addWidget(upd_btn)
         left_layout.addLayout(bb)
+
+        # Analogy presets — mutually exclusive checkboxes. Checking one
+        # snapshots the user's groups, loads the preset set, and enables
+        # the chain-arrow overlay on the scatter. Unchecking restores.
+        presets_row = QHBoxLayout()
+        presets_row.addWidget(QLabel("<b>Analogy preset:</b>"))
+        self.preset_checks: dict[str, QCheckBox] = {}
+        for preset in ANALOGY_PRESETS:
+            cb = QCheckBox(preset["label"])
+            cb.setToolTip(
+                f"Swap the table for the {preset['label']} groups and "
+                "draw the chain arrow on the 2D scatter. "
+                "Uncheck to restore the previous groups.")
+            cb.stateChanged.connect(
+                lambda _s, k=preset["key"]: self._on_preset_toggle(k))
+            presets_row.addWidget(cb)
+            self.preset_checks[preset["key"]] = cb
+        presets_row.addStretch(1)
+        left_layout.addLayout(presets_row)
 
         # Reduction method + cosine-vs-euclidean toggle
         meth = QHBoxLayout()
@@ -735,10 +906,89 @@ class EmbeddingWorkshop(QMainWindow):
             self.groups_table.removeRow(row)
             self._refresh_color_cells()
 
+    # -- analogy preset handlers -----------------------------------------
+
+    def _on_preset_toggle(self, key: str) -> None:
+        checked = self.preset_checks[key].isChecked()
+        if checked:
+            # Snapshot the user's groups on first activation only — if a
+            # different preset is already on, we want the ORIGINAL user
+            # table back when everything is unchecked, not the previous
+            # preset.
+            if self._active_preset is None:
+                self._saved_groups = self._snapshot_groups()
+            for k, cb in self.preset_checks.items():
+                if k != key and cb.isChecked():
+                    cb.blockSignals(True)
+                    cb.setChecked(False)
+                    cb.blockSignals(False)
+            self._load_preset_groups(key)
+            self._active_preset = key
+        else:
+            if self._active_preset == key:
+                self._restore_saved_groups()
+                self._active_preset = None
+        self._on_update()
+
+    def _snapshot_groups(self) -> list[tuple[str, str]]:
+        rows: list[tuple[str, str]] = []
+        for r in range(self.groups_table.rowCount()):
+            name_item = self.groups_table.item(r, 0)
+            words_item = self.groups_table.item(r, 1)
+            name = name_item.text() if name_item is not None else ""
+            words = words_item.text() if words_item is not None else ""
+            rows.append((name, words))
+        return rows
+
+    def _load_preset_groups(self, key: str) -> None:
+        preset = next(p for p in ANALOGY_PRESETS if p["key"] == key)
+        self.groups_table.setRowCount(0)
+        for name, words in preset["groups"]:
+            self._append_group_row(name, words)
+
+    def _restore_saved_groups(self) -> None:
+        self.groups_table.setRowCount(0)
+        for name, words in (self._saved_groups or []):
+            self._append_group_row(name, words)
+        self._saved_groups = None
+
+    def _active_analogy(self) -> tuple[tuple[str, str, str, str], str] | None:
+        """Return (analogy_tuple, style) for the scatter overlay, or None.
+
+        Preset takes display priority; otherwise a Compute-driven chain
+        renders in mono-grey without a legend entry.
+        """
+        if self._active_preset is not None:
+            preset = next(p for p in ANALOGY_PRESETS
+                          if p["key"] == self._active_preset)
+            return preset["analogy"], "colored"
+        if self._compute_analogy is not None:
+            return self._compute_analogy, "mono"
+        return None
+
+    # -- main refresh ----------------------------------------------------
+
     def _on_update(self) -> None:
         groups = self._read_groups()
         method = self.method_combo.currentText()
-        render_scatter(self.backend, groups, method, self.fig_scatter)
+        active = self._active_analogy()
+        analogy, style = (None, "colored") if active is None else active
+
+        # Auto-inject A, B, C, D into the scatter if they aren't already
+        # in a user group — otherwise the chain has no anchor points to
+        # draw to. Preset groups already include everything.
+        if analogy is not None:
+            present = {w for g in groups for w in g.words}
+            extra = [w for w in analogy
+                     if w not in present
+                     and self.backend.vector(w) is not None]
+            if extra:
+                color = COLOR_PALETTE[len(groups) % len(COLOR_PALETTE)]
+                groups.append(GroupSpec(name="analogy",
+                                        words=extra, color=color))
+
+        render_scatter(self.backend, groups, method, self.fig_scatter,
+                       analogy=analogy, analogy_style=style)
         render_similarity_matrix(self.backend, groups, self.fig_sim)
         self.canvas_scatter.draw_idle()
         self.canvas_sim.draw_idle()
@@ -774,6 +1024,19 @@ class EmbeddingWorkshop(QMainWindow):
         for w, s in top:
             lines.append(f"  {w:20s}  {s:.3f}")
         self.analogy_output.setPlainText("\n".join(lines))
+
+        # Toggle the ad-hoc chain overlay on the 2D scatter. Same (a, b, c)
+        # twice → hide; different inputs → refresh. Kept independent of
+        # the preset chain (preset wins when both are "active"), so
+        # playing with Compute doesn't silently clobber a preset choice.
+        current = (a, b, c)
+        if (self._compute_analogy is not None
+                and self._compute_analogy[:3] == current):
+            self._compute_analogy = None
+        else:
+            d = top[0][0] if top else ""
+            self._compute_analogy = (a, b, c, d)
+        self._on_update()
 
     def _on_cve_toggle(self) -> None:
         on = self.cve_check.isChecked()

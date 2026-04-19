@@ -1,13 +1,14 @@
 # LLM mental model — synthetic
 
-Two high-level, non-specialist summaries of what a GPT-style LLM is and
-does. The first is the author's original draft, kept verbatim. The second
-is a revised version that builds on it with light corrections and a few
-missing pieces, while staying synthetic and accessible.
+Three high-level summaries of what a GPT-style LLM is and does, at three
+different registers. The first is the author's original draft, kept
+verbatim. The second is a technically corrected version for a
+non-specialist but technically literate reader. The third is a layman
+version, written more narratively and with less jargon.
 
 ---
 
-## Version 1 — original
+## Version 1 — original (human writer input, error prone and mistake riden, but input ideas and flow to consider)
 
 GPT-style LLMs (decoders) are next token predictors. They are trained on
 huge corpus, for which they try to pick up statistical regularities : what
@@ -33,7 +34,7 @@ during training.
 
 ---
 
-## Version 2 — revised
+## Version 2 — technical non-specialist
 
 GPT-style LLMs (decoders) are next-token predictors. They are trained on
 huge corpora to pick up statistical regularities: given previous context,
@@ -72,3 +73,47 @@ projections, output projection — are learned parameters, progressively
 adjusted during training to produce the most efficient next-token
 predictors given the patterns and statistical regularities observed in
 the training data.
+
+---
+
+## Version 3 — layman
+
+At heart, a GPT-style model is a machine that guesses what word comes
+next. Show it a piece of text, and it produces a ranking of how likely
+each possible next word is, picks one (with a bit of randomness so the
+output isn't stiff), adds that word to the text, and guesses again. Let
+it feed its own output back in for long enough and you get a paragraph.
+
+Before any math can happen, the text has to become numbers. The model
+keeps a dictionary of about 50,000 fragments — common whole words like
+*the* or *cat*, but also smaller pieces like *-ing* or single letters
+for rare words. Any input gets split into those fragments and swapped
+for their ID numbers. That's **tokenization**.
+
+Each ID is then replaced by a long list of numbers — a kind of
+coordinate in a made-up space. This is **embedding**, and the point is
+that similar words end up close to each other, like books shelved by
+topic: *cat*, *dog*, *kitten* together; *tower*, *bridge*, *building*
+elsewhere. Position in the sentence gets added to these coordinates too,
+so that "the dog chased the cat" and "the cat chased the dog" don't look
+identical to the model.
+
+Then comes **attention**, the idea that makes the whole thing work. A
+word's meaning isn't fixed — it depends on its neighbors. *Bank* near
+*river* is a different thing from *bank* near *loan*. Attention lets
+each word "look around" at its context and pull in whatever is relevant,
+reshaping itself accordingly.
+
+The model doesn't do this just once. It stacks a dozen or more
+refinement rounds — each reading the previous round's output and
+sharpening it a little further, like successive drafts of a sentence.
+At the end, the final representation of the most recent word is turned
+back into that ranking of likely next words, and one is picked.
+
+Everything the model does — how it splits text, how it arranges words
+in its space, how it looks around with attention, how it refines at
+each stage — is controlled by a huge number of knobs (what the field
+calls *parameters*). None of them are set by hand. They're all adjusted
+automatically during training, which is really just: start from random
+settings, see how badly the model guesses, nudge the knobs toward a
+better guess, and repeat billions of times.
