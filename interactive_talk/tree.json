@@ -1,0 +1,53 @@
+{
+  "id": "s0",
+  "text": "What are LLMs and how do they work?",
+  "children": [
+    {
+      "id": "s1",
+      "text": "LLMs are essentially built to do one thing: predict the next word.",
+      "children": [
+        {
+          "id": "s2",
+          "text": "LLMs are essentially built to do one thing: predict the next word, just after any piece of text (or prompt) that is fed into them.",
+          "children": [
+            {
+              "id": "s3",
+              "text": "LLMs are complex machines, built through training on huge corpora of text.",
+              "children": [
+                {
+                  "id": "s4",
+                  "text": "LLMs are complex machines, built through training on huge corpora of text. Through training, they pick up statistical regularities, and become good at predicting which next words would be the most likely.",
+                  "children": [
+                    {
+                      "id": "s5",
+                      "text": "Decoder-style LLMs (such as GPT) are generative machines. They sample the next word out of a list of the most likely ones and then, the one-word-longer sequence is fed back so that the process may be repeated, progressively generating a piece of text of any desired length.",
+                      "children": [
+                        {
+                          "id": "s6",
+                          "text": "Decoder-style LLMs (such as GPT) are generative machines. They sample the next token out of a list of the most likely ones and then, the one-token-longer sequence is fed back so that the process may be repeated, progressively generating a piece of text of any desired length.",
+                          "figure": null,
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s7",
+      "text": "Decoder-style LLMs (such as GPT) are essentially sequential next-token producers.",
+      "children": [
+        {
+          "id": "s8",
+          "text": "Their efficiency at producing seemingly natural text rest on a few central mechanism and concepts, notably: embedding and attention.",
+          "children": []
+        }
+      ]
+    }
+  ]
+}
