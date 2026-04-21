@@ -1,10 +1,11 @@
 // Interactive refinement viewer.
 // Tunable timings (ms). Edit freely; changes take effect on reload.
 const CONFIG = {
-  typeMs:         10,   // per-char typing delay
-  deleteMs:       1,   // per-char forward-delete delay
-  keepPauseMs:    0,    // pause after a kept segment (0 = instant skip)
-  segmentPauseMs: 10,   // pause between diff ops
+  typeMs:          20,  // per-char typing delay (diff insert + rewrite type)
+  deleteMs:      0.02,  // per-char forward-delete delay
+  keepPauseMs:      0,  // pause after a kept segment (0 = instant skip)
+  segmentPauseMs:  10,  // pause between diff ops
+  rewritePauseMs: 100,  // gap between erase phase and type phase in rewrite mode
 };
 
 const beforeEl     = document.getElementById('before');
@@ -20,6 +21,8 @@ let preorderIds  = [];    // flat list of ids in DFS preorder, for direction che
 let lastFromText = null;  // for space-to-replay
 let lastToText   = null;
 let lastForward  = true;
+let lastMode     = 'diff'; // 'diff' | 'rewrite' — for replay
+let lastRanges   = [];     // highlight ranges for last rewrite replay
 let skipRequested = false; // set by onKey during animation; collapses remaining ops
 let queuedKey     = null;  // key to re-dispatch once current animation settles
 
@@ -35,8 +38,9 @@ async function init() {
   currentId = tree.id;
   pathIds   = [tree.id];
   computePreorder();
-  beforeEl.textContent = tree.text;
-  afterEl.textContent  = '';
+  const rootParsed = parseHighlights(tree.text);
+  renderWithHighlights(beforeEl, rootParsed.clean, rootParsed.ranges);
+  afterEl.textContent = '';
   updateFigure(tree);
   updateBreadcrumb();
   document.addEventListener('keydown', onKey);
@@ -164,6 +168,48 @@ function diffTokens(a, b) {
   return ops;
 }
 
+// ----- highlight markers -----
+// Author syntax: wrap words/phrases in [[...]] inside a node's text field to
+// force them into the .fresh class. Brackets are stripped for rendering; the
+// spans they mark are used in rewrite mode (ignored in diff mode).
+function parseHighlights(text) {
+  const ranges = [];
+  let clean = '';
+  let i = 0;
+  while (i < text.length) {
+    if (text[i] === '[' && text[i + 1] === '[') {
+      const close = text.indexOf(']]', i + 2);
+      if (close === -1) { clean += text[i++]; continue; }
+      const inner = text.slice(i + 2, close);
+      const start = clean.length;
+      clean += inner;
+      ranges.push({ start, end: clean.length });
+      i = close + 2;
+    } else {
+      clean += text[i++];
+    }
+  }
+  return { clean, ranges };
+}
+
+// Render clean text into targetEl with hand-picked ranges wrapped in .fresh.
+// Used for the root on load (no transition has happened yet).
+function renderWithHighlights(targetEl, clean, ranges) {
+  targetEl.replaceChildren();
+  if (!ranges.length) { targetEl.textContent = clean; return; }
+  const sorted = [...ranges].sort((a, b) => a.start - b.start);
+  let cursor = 0;
+  for (const { start, end } of sorted) {
+    if (start > cursor) targetEl.appendChild(document.createTextNode(clean.slice(cursor, start)));
+    const span = document.createElement('span');
+    span.className = 'fresh';
+    span.textContent = clean.slice(start, end);
+    targetEl.appendChild(span);
+    cursor = end;
+  }
+  if (cursor < clean.length) targetEl.appendChild(document.createTextNode(clean.slice(cursor)));
+}
+
 // ----- animation -----
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -240,6 +286,63 @@ async function animateTransition(fromText, toText, { showFresh = true } = {}) {
   animating = false;
 }
 
+// Rewrite mode: fast-erase the current text, pause, then type out the new
+// text with author-specified ranges rendered in .fresh. No diff is computed;
+// this is for jumps where the LCS overlap between fromText and toText would
+// be too noisy to read.
+async function animateRewrite(fromText, toText, ranges) {
+  animating = true;
+  skipRequested = false;
+
+  // Phase 1: fast-erase everything currently on stage.
+  beforeEl.replaceChildren();
+  afterEl.textContent = fromText;
+  if (skipRequested) {
+    afterEl.textContent = '';
+  } else {
+    const n = fromText.length;
+    for (let k = 0; k < n; k++) {
+      if (skipRequested) { afterEl.textContent = ''; break; }
+      afterEl.textContent = afterEl.textContent.slice(1);
+      await sleep(CONFIG.deleteMs);
+    }
+  }
+
+  // Between-phase beat so the user registers "erased → now writing".
+  if (CONFIG.rewritePauseMs && !skipRequested) await sleep(CONFIG.rewritePauseMs);
+
+  // Phase 2: type toText char-by-char; chars inside a highlight range go into
+  // a .fresh span (reused while we're still inside the same range).
+  const chars = [...toText];
+  const hl = new Array(chars.length).fill(false);
+  for (const { start, end } of ranges) {
+    for (let k = start; k < end && k < hl.length; k++) hl[k] = true;
+  }
+  let openSpan = null;
+  const emit = (ch, isH) => {
+    if (isH) {
+      if (!openSpan) {
+        openSpan = document.createElement('span');
+        openSpan.className = 'fresh';
+        beforeEl.appendChild(openSpan);
+      }
+      openSpan.appendChild(document.createTextNode(ch));
+    } else {
+      openSpan = null;
+      beforeEl.appendChild(document.createTextNode(ch));
+    }
+  };
+  for (let idx = 0; idx < chars.length; idx++) {
+    if (skipRequested) {
+      for (let k = idx; k < chars.length; k++) emit(chars[k], hl[k]);
+      break;
+    }
+    emit(chars[idx], hl[idx]);
+    await sleep(CONFIG.typeMs);
+  }
+  animating = false;
+}
+
 function currentText() {
   return beforeEl.textContent + afterEl.textContent;
 }
@@ -248,11 +351,19 @@ async function goTo(node) {
   if (animating || !node) return;
   const fromText = currentText();
   const forward  = isForward(currentId, node.id);
+  const { clean, ranges } = parseHighlights(node.text);
+  const mode = node.mode === 'rewrite' ? 'rewrite' : 'diff';
   updateFigure(node);                       // shift layout first, then animate
-  await animateTransition(fromText, node.text, { showFresh: forward });
+  if (mode === 'rewrite') {
+    await animateRewrite(fromText, clean, ranges);
+  } else {
+    await animateTransition(fromText, clean, { showFresh: forward });
+  }
   lastFromText = fromText;
-  lastToText   = node.text;
+  lastToText   = clean;
   lastForward  = forward;
+  lastMode     = mode;
+  lastRanges   = ranges;
   currentId    = node.id;
   rebuildPath();
   updateBreadcrumb();
@@ -266,7 +377,11 @@ async function replayLast() {
   beforeEl.textContent = lastFromText;
   afterEl.textContent  = '';
   animating = false;
-  await animateTransition(lastFromText, lastToText, { showFresh: lastForward });
+  if (lastMode === 'rewrite') {
+    await animateRewrite(lastFromText, lastToText, lastRanges);
+  } else {
+    await animateTransition(lastFromText, lastToText, { showFresh: lastForward });
+  }
   flushQueued();
 }
 

@@ -1,10 +1,12 @@
 {
   "id": "s0",
-  "text": "What are LLMs and how do they work?",
+  "text": "What are [[LLMs]] and how do they [[work]]?",
+  "mode": "rewrite",
   "children": [
     {
       "id": "s1",
-      "text": "LLMs are essentially built to do one thing: predict the next word.",
+      "text": "LLMs are essentially built to [[do one thing]]: [[predict the next word]].",
+      "mode": "rewrite",
       "children": [
         {
           "id": "s2",
@@ -12,7 +14,8 @@
           "children": [
             {
               "id": "s3",
-              "text": "LLMs are complex machines, built through training on huge corpora of text.",
+              "text": "LLMs are [[complex machines]], built through [[training]] on [[huge corpora of text]].",
+              "mode": "rewrite",
               "children": [
                 {
                   "id": "s4",
@@ -20,12 +23,13 @@
                   "children": [
                     {
                       "id": "s5",
-                      "text": "Decoder-style LLMs (such as GPT) are generative machines. They sample the next word out of a list of the most likely ones and then, the one-word-longer sequence is fed back so that the process may be repeated, progressively generating a piece of text of any desired length.",
+                      "text": "[[Decoder-style]] LLMs (such as [[GPT]]) are [[generative]] machines. They [[sample the next word]] out of a list of [[the most likely ones]] and then, the one-word-longer sequence is [[fed back]] so that the process may be repeated, [[progressively generating a block of text]] of any desired length.",
+                      "mode": "rewrite",
                       "children": [
                         {
                           "id": "s6",
-                          "text": "Decoder-style LLMs (such as GPT) are generative machines. They sample the next token out of a list of the most likely ones and then, the one-token-longer sequence is fed back so that the process may be repeated, progressively generating a piece of text of any desired length.",
-                          "figure": null,
+                          "text": "Decoder-style LLMs (such as GPT) are generative machines. They sample the next token out of a list of the most likely ones and then, the one-token-longer sequence is fed back so that the process may be repeated, progressively generating a block of text of any desired length.",
+                          "figure": "02_embedding_clusters.png",
                           "children": []
                         }
                       ]
@@ -40,11 +44,13 @@
     },
     {
       "id": "s7",
-      "text": "Decoder-style LLMs (such as GPT) are essentially sequential next-token producers.",
+      "text": "Decoder-style LLMs (such as GPT) are essentially [[sequential next-token producers]].",
+      "mode": "rewrite",
       "children": [
         {
           "id": "s8",
-          "text": "Their efficiency at producing seemingly natural text rest on a few central mechanism and concepts, notably: embedding and attention.",
+          "text": "Their ability to produce seemingly natural text notably rest on a few concepts worth considering : [[tokenization]], [[embedding]], [[attention]], the [[transformer architecture]].",
+          "mode": "rewrite",
           "children": []
         }
       ]
