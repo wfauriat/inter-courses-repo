@@ -1,99 +1,59 @@
 {
-  "id": "s0",
-  "text": "What are [[LLMs]] and how do they [[work]]?",
-  "mode": "rewrite",
-  "children": [
-    {
-      "id": "s1",
-      "text": "LLMs are essentially built to do one thing: [[predict the next word]].",
-      "mode": "rewrite",
-      "children": [
-        {
-          "id": "s2",
-          "text": "LLMs are essentially built to do one thing: predict the next word, just after any piece of text -- or prompt -- that is fed into them.",
-          "children": [
-            {
-              "id": "s3",
-              "text": "LLMs are [[complex machines]], built through [[training]] on [[huge corpora of text]].",
-              "mode": "rewrite",
-              "children": [
-                {
-                  "id": "s4",
-                  "text": "LLMs are complex machines, built through training on huge corpora of text. Through training, they pick up statistical regularities, and become good at predicting which next words would be the most likely.",
-                  "children": [
-                    {
-                      "id": "s5",
-                      "text": "[[Decoder-style]] LLMs (such as [[GPT]]) are [[generative]] machines. They [[sample the next word]] out of a list of [[the most likely ones]] and then, the one-word-longer sequence is [[fed back]] so that the process may be repeated, [[progressively generating a block of text]] of any desired length.",
-                      "mode": "rewrite",
-                      "children": [
-                        {
-                          "id": "s6",
-                          "text": "Decoder-style LLMs (such as GPT) are generative machines. They sample the next token out of a list of the most likely ones and then, the one-token-longer sequence is fed back so that the process may be repeated, progressively generating a block of text of any desired length.",
-                          "figure": "02_embedding_clusters.png",
-                          "children": []
-                        }
-                      ]
+  "root": "s0",
+  "nodes": {
+    "s0":   { "text": "What are [[LLMs]] and how do they [[work]]?", "mode": "rewrite" },
+    "s1":   { "text": "LLMs are essentially built to do one thing: [[predict the next word]].", "mode": "rewrite" },
+    "s2":   { "text": "LLMs are essentially built to do one thing: predict the next word, after any piece of text -- or prompt -- that is fed into them.", "figure": { "svg": "resources/LLM_in_out.svg", "show": ["prompt", "llm"]}},
+    "s2b":  { "text": "LLMs are essentially built to do one thing: predict the next word, after any piece of text -- or prompt -- that is fed into them.", "figure": { "svg": "resources/LLM_in_out.svg", "show": ["prompt", "llm", "text"]} },
+    "s3":   { "text": "LLMs are built through intensive [[training on huge corpora of text]] (billions of words).", "mode": "rewrite" },
+    "s4":   { "text": "LLMs are built through intensive training on huge corpora of text (billions of words). During training, they pick up statistical regularities and learn what the next word might be." },
+    "s5":   { "text": "[[Decoder-style]] LLMs (such as GPT) are [[generative]] machines. They sample [[the next word]] from a [[computed list of the most likely ones]].", "mode": "rewrite" },
+    "s5b":  { "text": "Decoder-style LLMs (such as GPT) are generative machines. They sample the next word from a computed list of the most likely ones, then the one-word-longer sequence is fed back and the process is repeated." },
+    "s5c":  { "text": "Decoder-style LLMs (such as GPT) are generative machines. They sample the next word from a computed list of the most likely ones, then the one-word-longer sequence is fed back and the process is repeated, progressively generating a block of text." },
+    "s6":   { "text": "Decoder-style LLMs (such as GPT) are generative machines. They sample the next token from a computed list of the most likely ones, then the one-token-longer sequence is fed back and the process is repeated, progressively generating a block of text." },
+    "s7":   { "text": "Decoder-style LLMs (such as GPT) are essentially [[sequential next-token producers]].", "mode": "rewrite" },
+    "s8":   { "text": "Behind this apparent fluency sit a handful of ideas worth unpacking: [[tokenization]] and [[embedding]] (turning text into numbers), [[attention]] (weighing context), and the [[transformer architecture]] that ties them together.", "mode": "rewrite" },
+    "s9":   { "text": "Start with [[embedding]]: each token becomes a point in a high-dimensional space, where distance stands in for meaning.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": [] } },
+    "s10":  { "text": "Project the space down to 2D and clusters emerge. [[Animal words]] land near each other -- cat, dog, fish, bird.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals"] } },
+    "s11":  { "text": "[[Action verbs]] carve out their own region -- predict, simulate, compute, estimate.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs"] } },
+    "s12":  { "text": "[[Statistical terms]] cluster elsewhere -- probability, variance, posterior, distribution.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs", "stats-terms"] } },
+    "s13":  { "text": "Even [[abstract categories]] separate cleanly: king, queen, prince, princess.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs", "stats-terms", "royalty"] } },
+    "test": { "text": "test placeholded", "figure": "resources/02_embedding_clusters.png" }
+  },
+  "tree": {
+    "s0": {
+      "s1": {
+        "s2": {
+          "s2b": {
+            "s3": {
+              "s4": {
+                "s5": {
+                  "s5b": {
+                    "s5c": {
+                      "s6": {}
                     }
-                  ]
+                  }
                 }
-              ]
+              }
             }
-          ]
+          }
         }
-      ]
-    },
-    {
-      "id": "s7",
-      "text": "Decoder-style LLMs (such as GPT) are essentially [[sequential next-token producers]].",
-      "mode": "rewrite",
-      "children": [
-        {
-          "id": "s8",
-          "text": "Behind this apparent fluency sit a handful of ideas worth unpacking: [[tokenization]] and [[embedding]] (turning text into numbers), [[attention]] (weighing context), and the [[transformer architecture]] that ties them together.",
-          "mode": "rewrite",
-          "children": [
-            {
-              "id": "s9",
-              "text": "Start with [[embedding]]: each token becomes a point in a high-dimensional space, where distance stands in for meaning.",
-              "mode": "rewrite",
-              "figure": { "svg": "embedding.svg", "show": [] },
-              "children": [
-                {
-                  "id": "s10",
-                  "text": "Project the space down to 2D and clusters emerge. [[Animal words]] land near each other -- cat, dog, fish, bird.",
-                  "mode": "rewrite",
-                  "figure": { "svg": "embedding.svg", "show": ["animals"] },
-                  "children": [
-                    {
-                      "id": "s11",
-                      "text": "[[Action verbs]] carve out their own region -- predict, simulate, compute, estimate.",
-                      "mode": "rewrite",
-                      "figure": { "svg": "embedding.svg", "show": ["animals", "verbs"] },
-                      "children": [
-                        {
-                          "id": "s12",
-                          "text": "[[Statistical terms]] cluster elsewhere -- probability, variance, posterior, distribution.",
-                          "mode": "rewrite",
-                          "figure": { "svg": "embedding.svg", "show": ["animals", "verbs", "stats-terms"] },
-                          "children": [
-                            {
-                              "id": "s13",
-                              "text": "Even [[abstract categories]] separate cleanly: king, queen, prince, princess.",
-                              "mode": "rewrite",
-                              "figure": { "svg": "embedding.svg", "show": ["animals", "verbs", "stats-terms", "royalty"] },
-                              "children": []
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
+      },
+      "s7": {
+        "s8": {
+          "s9": {
+            "s10": {
+              "s11": {
+                "s12": {
+                  "s13": {
+                    "test": {}
+                  }
                 }
-              ]
+              }
             }
-          ]
+          }
         }
-      ]
+      }
     }
-  ]
+  }
 }

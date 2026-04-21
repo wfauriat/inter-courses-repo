@@ -1,12 +1,14 @@
 // Interactive refinement viewer.
 // Tunable timings (ms). Edit freely; changes take effect on reload.
 const CONFIG = {
-  typeMs:          20,  // per-char typing delay (diff insert + rewrite type)
-  deleteMs:      0.02,  // per-char forward-delete delay
-  keepPauseMs:      0,  // pause after a kept segment (0 = instant skip)
-  segmentPauseMs:  10,  // pause between diff ops
-  rewriteFadeMs:  200,  // fade-out duration for rewrite-mode phase 1 (0 = instant)
-  rewritePauseMs: 100,  // gap between fade-out and type phase in rewrite mode
+  typeMs:           12,  // per-char typing delay (diff insert + rewrite type)
+  deleteMs:       0.02,  // per-char forward-delete delay
+  keepPauseMs:       0,  // pause after a kept segment (0 = instant skip)
+  segmentPauseMs:    6,  // pause between diff ops
+  rewriteFadeMs:   100,  // text rewrite phase-1 fade-out + SVG layer fade
+  rewritePauseMs:   50,  // gap between fade-out and type phase in rewrite mode
+  figureFadeInMs: 1000,  // figure panel fade-in (first render + swap)
+  figureFadeOutMs: 150,  // figure panel fade-out (swap + going to no-figure)
 };
 
 const beforeEl     = document.getElementById('before');
@@ -33,21 +35,50 @@ let currentFigureSrc  = null;
 let currentFigureType = null; // 'static' | 'svg' | 'placeholder' | null
 let figureToken       = 0;
 
+// tree.json keeps authoring flat (separate `nodes` map + id-only `tree` outline);
+// reifyTree inflates that into the nested shape the rest of the code walks.
+function reifyTree(data) {
+  const nodes   = (data && data.nodes) || {};
+  const outline = (data && data.tree)  || {};
+  const rootId  = data && data.root;
+  if (!rootId) {
+    console.error('tree.json: missing "root" field');
+    return { id: '(missing root)', text: 'tree.json: missing "root" field', children: [] };
+  }
+  function build(id, subtree) {
+    const raw = nodes[id];
+    if (!raw) console.warn(`tree.json: node "${id}" referenced in tree but not in nodes map`);
+    const node = {
+      id,
+      text: (raw && raw.text) || '',
+      children: Object.keys(subtree || {}).map(cid => build(cid, subtree[cid])),
+    };
+    if (raw && raw.mode   !== undefined) node.mode   = raw.mode;
+    if (raw && raw.figure !== undefined) node.figure = raw.figure;
+    return node;
+  }
+  return build(rootId, outline[rootId] || {});
+}
+
 async function init() {
+  let data;
   try {
     const resp = await fetch('tree.json', { cache: 'no-store' });
-    tree = await resp.json();
+    data = await resp.json();
   } catch (e) {
     beforeEl.textContent =
       "Serve locally: run `python -m http.server` in this folder, then open http://localhost:8000";
     return;
   }
+  tree = reifyTree(data);
   currentId = tree.id;
   pathIds   = [tree.id];
   computePreorder();
   // Sync CSS fade durations with CONFIG so tuning in one place propagates.
-  figureEl.style.setProperty('--layer-fade-ms', CONFIG.rewriteFadeMs + 'ms');
-  figureEl.style.setProperty('--panel-fade-ms', CONFIG.rewriteFadeMs + 'ms');
+  // Panel fade-in drives the .figure.visible CSS animation; fade-out is set
+  // inline on the element's transitionDuration just before each opacity flip.
+  figureEl.style.setProperty('--layer-fade-ms',    CONFIG.rewriteFadeMs    + 'ms');
+  figureEl.style.setProperty('--panel-fade-in-ms', CONFIG.figureFadeInMs   + 'ms');
   const rootParsed = parseHighlights(tree.text);
   renderWithHighlights(beforeEl, rootParsed.clean, rootParsed.ranges);
   afterEl.textContent = '';
@@ -96,8 +127,9 @@ async function updateFigure(node) {
 
   if (!spec) {
     if (currentFigureType !== null) {
+      figureEl.style.transitionDuration = CONFIG.figureFadeOutMs + 'ms';
       figureEl.style.opacity = '0';
-      await sleep(CONFIG.rewriteFadeMs);
+      await sleep(CONFIG.figureFadeOutMs);
       if (token !== figureToken) return;
     }
     figureEl.classList.remove('visible');
@@ -116,11 +148,13 @@ async function updateFigure(node) {
     return;
   }
 
-  // Otherwise: swap. Fade out only if something was already on-stage.
+  // Fade out what's there. First-render (wasVisible=false) has nothing to fade
+  // — the CSS animation on .figure.visible handles the fade-in in that case.
   const wasVisible = currentFigureType !== null;
   if (wasVisible) {
+    figureEl.style.transitionDuration = CONFIG.figureFadeOutMs + 'ms';
     figureEl.style.opacity = '0';
-    await sleep(CONFIG.rewriteFadeMs);
+    await sleep(CONFIG.figureFadeOutMs);
     if (token !== figureToken) return;
   }
 
@@ -132,6 +166,7 @@ async function updateFigure(node) {
     } catch (e) {
       figureEl.innerHTML = `<div class="figure-placeholder">${escapeHtml(spec.src)}</div>`;
       figureEl.classList.add('visible');
+      figureEl.style.transitionDuration = CONFIG.figureFadeInMs + 'ms';
       figureEl.style.opacity = '1';
       currentFigureSrc  = spec.src;
       currentFigureType = 'placeholder';
@@ -147,6 +182,7 @@ async function updateFigure(node) {
   }
 
   figureEl.classList.add('visible');
+  figureEl.style.transitionDuration = CONFIG.figureFadeInMs + 'ms';
   figureEl.style.opacity = '1';
   currentFigureSrc  = spec.src || spec.text || null;
   currentFigureType = spec.type;

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="620"
+   height="400"
+   viewBox="0 0 164.04166 105.83333"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   sodipodi:docname="LLM_in_out.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#000000"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="false"
+     inkscape:deskcolor="#a9a9a9"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="1.3799441"
+     inkscape:cx="306.89648"
+     inkscape:cy="264.8658"
+     inkscape:window-width="1854"
+     inkscape:window-height="1131"
+     inkscape:window-x="66"
+     inkscape:window-y="32"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg5"
+     showborder="true" />
+  <defs
+     id="defs2">
+    <marker
+       style="overflow:visible"
+       id="TriangleStart"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="TriangleStart"
+       markerWidth="5.3244081"
+       markerHeight="6.155385"
+       viewBox="0 0 5.3244081 6.1553851"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path135" />
+    </marker>
+    <rect
+       x="79.594398"
+       y="229.76855"
+       width="308.69308"
+       height="99.632278"
+       id="rect540" />
+    <rect
+       x="89.328827"
+       y="243.49854"
+       width="113.05623"
+       height="65.063553"
+       id="rect482" />
+    <rect
+       x="79.594398"
+       y="229.76855"
+       width="308.69308"
+       height="99.632278"
+       id="rect598" />
+    <rect
+       x="79.594398"
+       y="229.76855"
+       width="308.69308"
+       height="99.632278"
+       id="rect604" />
+    <rect
+       x="79.594398"
+       y="229.76855"
+       width="308.69308"
+       height="99.632278"
+       id="rect3331" />
+    <rect
+       x="79.594398"
+       y="229.76855"
+       width="308.69308"
+       height="99.632278"
+       id="rect6529" />
+    <rect
+       x="79.594398"
+       y="229.76855"
+       width="308.69308"
+       height="99.632278"
+       id="rect323" />
+    <rect
+       x="79.594398"
+       y="229.76855"
+       width="308.69308"
+       height="99.632278"
+       id="rect610" />
+  </defs>
+  <g
+     inkscape:label="prompt"
+     id="prompt"
+     class="layer">
+    <rect
+       style="display:inline;fill:none;stroke:#ff0000;stroke-width:0.6;stroke-dasharray:none"
+       id="rect314"
+       width="45.73138"
+       height="22"
+       x="6.9736814"
+       y="41.916668"
+       ry="2"
+       rx="2"
+       inkscape:label="rect314" />
+    <text
+       xml:space="preserve"
+       transform="matrix(0.20166268,0,0,0.20166268,1.242977,1.8766705)"
+       id="text538"
+       style="white-space:pre;shape-inside:url(#rect540);display:inline;fill:#ffffff"
+       inkscape:label="text314"><tspan
+         x="79.59375"
+         y="261.3119"
+         id="tspan751"><tspan
+           style="font-size:34.6667px;-inkscape-font-specification:'sans-serif, Normal'"
+           id="tspan749">Prompt</tspan></tspan></text>
+  </g>
+  <g
+     id="llm"
+     inkscape:label="llm"
+     class="layer">
+    <rect
+       style="display:inline;fill:none;font-variation-settings:normal;fill-opacity:1;stroke:#008000;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
+       id="rect316"
+       width="45.73138"
+       height="40"
+       x="59.15514"
+       y="32.916668"
+       ry="2"
+       rx="2" />
+    <text
+       xml:space="preserve"
+       transform="matrix(0.20166268,0,0,0.20166268,59.136058,2.7155881)"
+       id="text596"
+       style="white-space:pre;shape-inside:url(#rect598);display:inline;fill:#ffffff"
+       inkscape:label="text715"><tspan
+         x="79.59375"
+         y="261.3119"
+         id="tspan755"><tspan
+           style="font-size:34.6667px;-inkscape-font-specification:'sans-serif, Normal'"
+           id="tspan753">LLM</tspan></tspan></text>
+    <path
+       style="display:inline;fill:none;font-variation-settings:normal;fill-opacity:1;stroke:#808080;stroke-width:0.76219;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#TriangleStart);stop-color:#000000"
+       d="m 52.354895,52.916667 h 4.503496"
+       id="path843"
+       sodipodi:nodetypes="cc" />
+  </g>
+  <g
+     id="text"
+     inkscape:label="text"
+     class="layer">
+    <rect
+       style="display:inline;fill:none;stroke:#ff6600;stroke-width:0.6;stroke-dasharray:none"
+       id="rect6521"
+       width="45.73138"
+       height="22"
+       x="6.9736814"
+       y="41.916668"
+       ry="2"
+       rx="2"
+       inkscape:label="rect314"
+       transform="translate(105.28695)" />
+    <path
+       style="display:inline;fill:#ffffff;font-variation-settings:normal;fill-opacity:1;stroke:#808080;stroke-width:0.76219;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#TriangleStart);stop-color:#000000"
+       d="M -0.01536076,52.916667 H 4.4881324"
+       id="path6643"
+       sodipodi:nodetypes="cc"
+       transform="translate(105.28695)" />
+    <text
+       xml:space="preserve"
+       transform="matrix(0.20166268,0,0,0.20166268,110.118,7.2807012)"
+       id="text321"
+       style="white-space:pre;shape-inside:url(#rect323);display:inline;fill:#ffffff"
+       inkscape:label="text315"><tspan
+         x="79.59375"
+         y="261.3119"
+         id="tspan759"><tspan
+           style="font-size:34.6667px;-inkscape-font-specification:'sans-serif, Normal'"
+           id="tspan757">Text</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       transform="matrix(0.20166268,0,0,0.20166268,100.21846,-1.9192988)"
+       id="text608"
+       style="white-space:pre;shape-inside:url(#rect610);display:inline;fill:#ffffff"
+       inkscape:label="text316"><tspan
+         x="79.59375"
+         y="261.3119"
+         id="tspan763"><tspan
+           style="font-size:34.6667px;-inkscape-font-specification:'sans-serif, Normal'"
+           id="tspan761">Generated</tspan></tspan></text>
+  </g>
+</svg>

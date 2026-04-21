@@ -32,13 +32,13 @@ body {
   justify-content: center;
   gap: 2rem;
   width: 100%;
-  max-width: 1520px;
+  max-width: 1600px;
 }
 
 .stage {
   flex: 1 1 0;
   min-width: 0;
-  max-width: 960px;
+  max-width: 720px;
   font-size: 1.55rem;
   line-height: 1.65;
   letter-spacing: 0.005em;
@@ -54,15 +54,32 @@ body {
 }
 
 .figure {
-  flex: 0 0 520px;
+  flex: 0 0 620px;
   min-height: 360px;
   display: none;
   align-items: center;
   justify-content: center;
-  transition: opacity var(--panel-fade-ms, 200ms) ease;
+  /* transition-duration is overridden inline by updateFigure per direction
+     (figureFadeInMs / figureFadeOutMs); the 200ms here is just a fallback. */
+  transition: opacity 200ms ease;
 }
 
-.figure.visible { display: flex; }
+/* display: flex makes the panel appear; the animation fades the opacity on
+   first render (or any time .visible is added fresh). Swaps between two
+   figures stay on .visible and are handled by the opacity transition above. */
+.figure.visible {
+  display: flex;
+  animation: figure-appear var(--panel-fade-in-ms, 200ms) ease;
+}
+
+@keyframes figure-appear {
+  from { opacity: 0; }
+}
+
+/* Inner breathing room between the two columns. Scoped to when a figure is
+   actually on stage so single-column nodes stay cleanly centered. */
+.stage-wrap:has(.figure.visible) .stage { padding-right: 1.5rem; }
+.figure.visible                         { padding-left:  1.5rem; }
 
 .figure-image {
   max-width: 100%;

@@ -20,17 +20,48 @@ A refinement viewer, not a slide deck: each node restates its parent with someth
 
 ## Authoring contract
 
-### Node schema
+### File shape
+
+`tree.json` has three top-level fields:
 
 ```jsonc
 {
-  "id":       "s3",              // unique, arbitrary
-  "text":     "...",             // displayed text; may contain [[...]] markers
-  "mode":     "rewrite",         // optional: "rewrite" | (default "diff")
-  "figure":   "foo.png",         // optional: image path, placeholder text, or null
-  "children": [ ... ]            // zero or more child nodes
+  "root":  "s0",    // id of the root node
+  "nodes": { ... }, // flat map of id → node content (text, mode, figure)
+  "tree":  { ... }  // nested id-only outline of parent → children
 }
 ```
+
+Content and structure are stored separately: editing a node's text never drags along indentation, and restructuring the talk never forces re-typing node content.
+
+### Node content
+
+Each entry in `nodes` is keyed by id and holds only per-node fields:
+
+```jsonc
+"s3": {
+  "text":   "...",        // displayed text; may contain [[...]] markers
+  "mode":   "rewrite",    // optional: "rewrite" | (default "diff")
+  "figure": "foo.png"     // optional: image path, placeholder text, SVG spec, or omitted
+}
+```
+
+The id lives in the outer key, not inside the object. There is no `children` field — connectivity lives in `tree`.
+
+### Tree outline
+
+`tree` is a nested object-of-objects over ids. Every key is a parent id; its value is that node's children map, same shape recursively. `{}` marks a leaf.
+
+```jsonc
+"tree": {
+  "s0": {
+    "s1": { "s2": { "s2b": {} } },
+    "s7": { "s8": {} }
+  }
+}
+```
+
+Sibling order = key insertion order in the JSON file. Reordering siblings = swapping keys; re-parenting a subtree = cut-and-paste of one entry, with node content untouched. Use non-numeric ids (`s0`, `intro`, …) — JSON parsers reorder integer-like keys ahead of strings, which would scramble sibling order. Nodes reachable from `root` via `tree` render in the viewer; entries in `nodes` without a `tree` parent are dead content.
 
 ### Highlight syntax
 
@@ -70,11 +101,11 @@ The breadcrumb bottom-left shows the DFS path from root to current node. The hel
 
 ## Rendering pipeline
 
-1. `init()` fetches `tree.json` (with `cache: 'no-store'` so local edits show up without hard-reload), renders the root via `renderWithHighlights` (honors `[[...]]`).
+1. `init()` fetches `tree.json` (with `cache: 'no-store'` so local edits show up without hard-reload), inflates the split `nodes` + `tree` form into the internal nested shape via `reifyTree`, and renders the root via `renderWithHighlights` (honors `[[...]]`).
 2. A keypress resolves to a target node and calls `goTo(node)`.
 3. `goTo` calls `parseHighlights(node.text) → {clean, ranges}`, then dispatches to `animateTransition` (diff) or `animateRewrite` based on `node.mode`. In parallel it fires `updateFigure(node)` — a CSS-only layer toggle when the target shares the previous node's SVG, or an opacity-based panel swap otherwise.
 4. Both animations reduce to sequential DOM mutations on two spans (`#before`, `#after`) with `await sleep(...)` between steps. A `skipRequested` flag collapses the current animation to its final state when a new key arrives; the triggering key is *not* queued — the user must press again to navigate further.
-5. `CONFIG` at the top of `app.js` holds all tunable timings — per-char type delay, delete delay, segment pause, rewrite between-phase pause.
+5. `CONFIG` at the top of `app.js` holds all tunable timings: `typeMs` / `deleteMs` (per-char), `keepPauseMs` / `segmentPauseMs` (between diff ops), `rewriteFadeMs` / `rewritePauseMs` (text rewrite phases, also drives SVG layer fade), and `figureFadeInMs` / `figureFadeOutMs` (figure panel, independent in/out durations).
 
 ---
 
@@ -90,7 +121,7 @@ The breadcrumb bottom-left shows the DFS path from root to current node. The hel
 
 ## SVG overlay figures
 
-**Status: implemented. First prototype lives in `embedding.svg`, exercised by the `s9…s13` branch of `tree.json`.**
+**Status: implemented. First prototype lives in `resources/embedding.svg`, exercised by the `s9…s13` branch of `tree.json`. A second figure, `resources/LLM_in_out.svg`, is attached to `s2b`.**
 
 A tree-driven Beamer-style overlay mechanism for figures. A figure has a fixed base and a pool of *layers*; navigating between nodes reveals, hides, or swaps layers, with a fade transition on appearance. Used when a diagram builds up — e.g. an embedding space that progressively populates with word clusters.
 
@@ -112,11 +143,24 @@ A tree-driven Beamer-style overlay mechanism for figures. A figure has a fixed b
 - A **layer** is any element with `class="layer"`, identified by its `id`. Layers are hidden by default; those whose `id` appears in `show` are made visible.
 - This convention lets authors draw in Inkscape/Illustrator, flag layer groups with the `layer` class, and give them semantic IDs. Non-layer elements (axes, labels, grid) need no annotation.
 
+### Marking layers in Inkscape
+
+Inkscape's main UI doesn't expose SVG `class` attributes — setting `class="layer"` requires the XML editor (`Edit → XML Editor`, or `Ctrl+Shift+X`). Workflow:
+
+1. Group the shapes that should toggle together (`Ctrl+G`).
+2. Select the group on the canvas; it highlights in the XML panel as a `<g>` node.
+3. In the attributes list, click `+`, type attribute name `class`, value `layer`, and commit.
+4. Rename the `id` to whatever your node's `show` list references (e.g. `animals`, `prompt`). Semantic ids are the whole point — they're what tree.json names.
+5. Save as Plain SVG or Inkscape SVG; both work. Inkscape-specific attributes (`inkscape:groupmode`, `inkscape:label`, `sodipodi:*`) are ignored by the viewer and safe to leave alone.
+
+A group without `class="layer"` is part of the base and always visible — useful for scaffolding (axes, always-on labels, a central figure) that shouldn't toggle.
+
 ### Transition semantics
 
 - **Text and figure animate in parallel.** Caption edits (diff or rewrite mode on `text`) run concurrently with layer changes; they don't serialize.
 - **Layers fade in/out via CSS opacity**, duration matching `rewriteFadeMs` (~200 ms) for visual consistency with the text fade. No per-layer reveal animation beyond opacity.
-- **Swapping SVGs** (a node whose `figure.svg` differs from the previous node's) fades the whole panel, loads the new SVG, fades back in — same as replacing a static image would.
+- **Panel fade is asymmetric.** `figureFadeInMs` and `figureFadeOutMs` are independent knobs — defaults favor a slower in / quicker out ("the arrival is worth looking at; the departure is just a beat"). First render of a figure — including the initial page load if the root node has one, or the first figure-bearing node along a branch — uses the same fade-in as a swap. Implementation: fade-in is driven by a CSS keyframe animation attached to `.figure.visible`; fade-out and swap-fades use a CSS transition with the duration set inline per direction.
+- **Swapping figures** (an SVG replaced by another SVG, a static image, a placeholder, or vice versa) fades the panel out, loads the new content, fades it back in. Same machinery covers all combinations.
 
 ### Scope notes
 
@@ -126,4 +170,4 @@ A tree-driven Beamer-style overlay mechanism for figures. A figure has a fixed b
 
 ### Prototype
 
-`embedding.svg` — base with title, axes, grid, and a neutral scatter of small grey dots; four layers (`animals`, `verbs`, `stats-terms`, `royalty`) that reveal one at a time down the `s9…s13` branch. Exercises layer reveal, panel swap (from the static PNG on `s6` back to the inline SVG), and parallel caption animation on content that already has a place in the talk.
+`resources/embedding.svg` — base with title, axes, grid, and a neutral scatter of small grey dots; four layers (`animals`, `verbs`, `stats-terms`, `royalty`) that reveal one at a time down the `s9…s13` branch. Exercises first-render fade-in (no figure on `s8` → SVG on `s9`), layer reveal, panel swap on `s13` → `test` (inline SVG → static PNG `02_embedding_clusters.png`), and parallel caption animation on content that already has a place in the talk.
