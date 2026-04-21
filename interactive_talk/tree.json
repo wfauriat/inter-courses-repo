@@ -3,21 +3,25 @@
   "nodes": {
     "s0":   { "text": "What are [[LLMs]] and how do they [[work]]?", "mode": "rewrite" },
     "s1":   { "text": "LLMs are essentially built to do one thing: [[predict the next word]].", "mode": "rewrite" },
-    "s2":   { "text": "LLMs are essentially built to do one thing: predict the next word, after any piece of text -- or prompt -- that is fed into them.", "figure": { "svg": "resources/LLM_in_out.svg", "show": ["prompt", "llm"]}},
-    "s2b":  { "text": "LLMs are essentially built to do one thing: predict the next word, after any piece of text -- or prompt -- that is fed into them.", "figure": { "svg": "resources/LLM_in_out.svg", "show": ["prompt", "llm", "text"]} },
+    "s2":   { "text": "LLMs are essentially built to do one thing: predict the next word. The word that follows any piece of text -- or prompt -- that is fed into them.", "figure": { "svg": "resources/LLM_in_out.svg", "show": ["prompt", "llm"]}},
+    "s2b":  { "text": "LLMs are essentially built to do one thing: predict the next word. The word that follows any piece of text -- or prompt -- that is fed into them.", "figure": { "svg": "resources/LLM_in_out.svg", "show": ["prompt", "llm", "text"]} },
     "s3":   { "text": "LLMs are built through intensive [[training on huge corpora of text]] (billions of words).", "mode": "rewrite" },
     "s4":   { "text": "LLMs are built through intensive training on huge corpora of text (billions of words). During training, they pick up statistical regularities and learn what the next word might be." },
-    "s5":   { "text": "[[Decoder-style]] LLMs (such as GPT) are [[generative]] machines. They sample [[the next word]] from a [[computed list of the most likely ones]].", "mode": "rewrite" },
-    "s5b":  { "text": "Decoder-style LLMs (such as GPT) are generative machines. They sample the next word from a computed list of the most likely ones, then the one-word-longer sequence is fed back and the process is repeated." },
-    "s5c":  { "text": "Decoder-style LLMs (such as GPT) are generative machines. They sample the next word from a computed list of the most likely ones, then the one-word-longer sequence is fed back and the process is repeated, progressively generating a block of text." },
-    "s6":   { "text": "Decoder-style LLMs (such as GPT) are generative machines. They sample the next token from a computed list of the most likely ones, then the one-token-longer sequence is fed back and the process is repeated, progressively generating a block of text." },
+    "s4b":   { "text": "LLMs are built through intensive training on huge corpora of text (billions of words). During training, they pick up statistical regularities and learn what the next word might be, given what they observed in the corpora." },
+    "s5":   { "text": "[[Decoder-style]] LLMs (such as GPT) are [[generative]] machines. They sample [[the next word]] out of a [[computed list of the most likely ones]].", "mode": "rewrite" },
+    "s5b":  { "text": "Decoder-style LLMs (such as GPT) are generative machines. They sample the next word out of a computed list of the most likely ones. Then the one-word-longer sequence is fed back and the process is repeated." },
+    "s5c":  { "text": "Decoder-style LLMs (such as GPT) are generative machines. They sample the next word out of a computed list of the most likely ones. Then the one-word-longer sequence is fed back and the process is repeated, progressively generating a block of text." },
+    "s6":   { "text": "Decoder-style LLMs (such as GPT) are generative machines. They sample the next token out of a computed list of the most likely ones. Then the one-token-longer sequence is fed back and the process is repeated, progressively generating a block of text. (modern LLMs mostly deal with tokens : fragments of words.)" },
     "s7":   { "text": "Decoder-style LLMs (such as GPT) are essentially [[sequential next-token producers]].", "mode": "rewrite" },
-    "s8":   { "text": "Behind this apparent fluency sit a handful of ideas worth unpacking: [[tokenization]] and [[embedding]] (turning text into numbers), [[attention]] (weighing context), and the [[transformer architecture]] that ties them together.", "mode": "rewrite" },
-    "s9":   { "text": "Start with [[embedding]]: each token becomes a point in a high-dimensional space, where distance stands in for meaning.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": [] } },
-    "s10":  { "text": "Project the space down to 2D and clusters emerge. [[Animal words]] land near each other -- cat, dog, fish, bird.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals"] } },
-    "s11":  { "text": "[[Action verbs]] carve out their own region -- predict, simulate, compute, estimate.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs"] } },
-    "s12":  { "text": "[[Statistical terms]] cluster elsewhere -- probability, variance, posterior, distribution.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs", "stats-terms"] } },
-    "s13":  { "text": "Even [[abstract categories]] separate cleanly: king, queen, prince, princess.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs", "stats-terms", "royalty"] } },
+
+    "s8":   { "text": "LLMs are rather ''mechanical'' machines -- complex, but moved by a precise purpose : [[produce tokens]].", "mode":"rewrite"},
+    "s9":   { "text": "So, how can they generate such [[fluent]] and arguably [[meaningful]] text, [[answer questions]], [[write code]], [[summarize]] documents ?", "mode": "rewrite"},
+    "s10":  { "text": "They do it through a handful of ideas worth unpacking: [[tokenization]] and [[embedding]] (turning text into numbers), [[attention]] (weighing context), and the [[transformer architecture]] that ties them together.", "mode": "rewrite" },
+    "s11":  { "text": "Start with [[embedding]]: each token becomes a point in a high-dimensional space, where distance stands in for meaning.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": [] } },
+    "s12":  { "text": "Project the space down to 2D and clusters emerge. [[Animal words]] land near each other -- cat, dog, fish, bird.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals"] } },
+    "s13":  { "text": "[[Action verbs]] carve out their own region -- predict, simulate, compute, estimate.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs"] } },
+    "s14":  { "text": "[[Statistical terms]] cluster elsewhere -- probability, variance, posterior, distribution.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs", "stats-terms"] } },
+    "s15":  { "text": "Even [[abstract categories]] separate cleanly: king, queen, prince, princess.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs", "stats-terms", "royalty"] } },
     "test": { "text": "test placeholded", "figure": "resources/02_embedding_clusters.png" }
   },
   "tree": {
@@ -27,10 +31,14 @@
           "s2b": {
             "s3": {
               "s4": {
-                "s5": {
-                  "s5b": {
-                    "s5c": {
-                      "s6": {}
+                "s4b":{
+                  "s5": {
+                    "s5b": {
+                      "s5c": {
+                        "s6": {
+                          "s7": {}
+                        }
+                      }
                     }
                   }
                 }
@@ -39,14 +47,16 @@
           }
         }
       },
-      "s7": {
-        "s8": {
-          "s9": {
-            "s10": {
-              "s11": {
-                "s12": {
-                  "s13": {
-                    "test": {}
+      "s8": {
+        "s9": {
+          "s10": {
+            "s11": {
+              "s12": {
+                "s13": {
+                  "s14": {
+                    "s15": {
+                      "test": {}
+                    }
                   }
                 }
               }
