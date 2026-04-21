@@ -5,7 +5,8 @@ const CONFIG = {
   deleteMs:      0.02,  // per-char forward-delete delay
   keepPauseMs:      0,  // pause after a kept segment (0 = instant skip)
   segmentPauseMs:  10,  // pause between diff ops
-  rewritePauseMs: 100,  // gap between erase phase and type phase in rewrite mode
+  rewriteFadeMs:  200,  // fade-out duration for rewrite-mode phase 1 (0 = instant)
+  rewritePauseMs: 100,  // gap between fade-out and type phase in rewrite mode
 };
 
 const beforeEl     = document.getElementById('before');
@@ -24,7 +25,13 @@ let lastForward  = true;
 let lastMode     = 'diff'; // 'diff' | 'rewrite' — for replay
 let lastRanges   = [];     // highlight ranges for last rewrite replay
 let skipRequested = false; // set by onKey during animation; collapses remaining ops
-let queuedKey     = null;  // key to re-dispatch once current animation settles
+
+// Figure state. The panel may hold one of: nothing, a static image, an
+// inline SVG (whose .layer groups get toggled), or a text placeholder.
+// `figureToken` guards against stale async swaps superseding a newer update.
+let currentFigureSrc  = null;
+let currentFigureType = null; // 'static' | 'svg' | 'placeholder' | null
+let figureToken       = 0;
 
 async function init() {
   try {
@@ -38,6 +45,9 @@ async function init() {
   currentId = tree.id;
   pathIds   = [tree.id];
   computePreorder();
+  // Sync CSS fade durations with CONFIG so tuning in one place propagates.
+  figureEl.style.setProperty('--layer-fade-ms', CONFIG.rewriteFadeMs + 'ms');
+  figureEl.style.setProperty('--panel-fade-ms', CONFIG.rewriteFadeMs + 'ms');
   const rootParsed = parseHighlights(tree.text);
   renderWithHighlights(beforeEl, rootParsed.clean, rootParsed.ranges);
   afterEl.textContent = '';
@@ -46,19 +56,100 @@ async function init() {
   document.addEventListener('keydown', onKey);
 }
 
-function updateFigure(node) {
-  if (node && node.figure) {
-    const safe = String(node.figure).replace(/[&<>"']/g,
-      c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g,
+    c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// Normalize a node's `figure` field (string | object | missing) into a spec
+// the updater can dispatch on. Keeps the dispatch logic below straightforward.
+function parseFigureSpec(node) {
+  if (!node || node.figure == null) return null;
+  if (typeof node.figure === 'string') {
     const isImage = /\.(png|jpe?g|gif|webp|svg)$/i.test(node.figure);
-    figureEl.innerHTML = isImage
-      ? `<img class="figure-image" src="${safe}" alt="">`
-      : `<div class="figure-placeholder">${safe}</div>`;
-    figureEl.classList.add('visible');
-  } else {
-    figureEl.innerHTML = '';
-    figureEl.classList.remove('visible');
+    return isImage
+      ? { type: 'static',      src: node.figure }
+      : { type: 'placeholder', text: node.figure };
   }
+  if (typeof node.figure === 'object' && node.figure.svg) {
+    return { type: 'svg', src: node.figure.svg, show: node.figure.show || [] };
+  }
+  return null;
+}
+
+// Toggle .layer-visible on each SVG .layer based on the show set. CSS handles
+// the opacity fade. Absolute, not cumulative — the set fully determines state.
+function applyShowList(show) {
+  const wanted = new Set(show);
+  figureEl.querySelectorAll('.layer').forEach(layer => {
+    layer.classList.toggle('layer-visible', wanted.has(layer.id));
+  });
+}
+
+// Fire-and-forget from goTo — runs in parallel with the text animation. When
+// the target is the same SVG, we only re-apply the show list (CSS transitions
+// handle per-layer fade). When it's a different figure (or swapping to/from
+// empty), we fade the whole panel, load the new content, fade back in.
+async function updateFigure(node) {
+  const spec  = parseFigureSpec(node);
+  const token = ++figureToken;
+
+  if (!spec) {
+    if (currentFigureType !== null) {
+      figureEl.style.opacity = '0';
+      await sleep(CONFIG.rewriteFadeMs);
+      if (token !== figureToken) return;
+    }
+    figureEl.classList.remove('visible');
+    figureEl.style.opacity = '';
+    figureEl.replaceChildren();
+    currentFigureSrc  = null;
+    currentFigureType = null;
+    return;
+  }
+
+  // Same inline SVG, just a different layer selection → CSS layer fade only.
+  if (spec.type === 'svg'
+      && currentFigureType === 'svg'
+      && spec.src === currentFigureSrc) {
+    applyShowList(spec.show);
+    return;
+  }
+
+  // Otherwise: swap. Fade out only if something was already on-stage.
+  const wasVisible = currentFigureType !== null;
+  if (wasVisible) {
+    figureEl.style.opacity = '0';
+    await sleep(CONFIG.rewriteFadeMs);
+    if (token !== figureToken) return;
+  }
+
+  if (spec.type === 'svg') {
+    let txt;
+    try {
+      const resp = await fetch(spec.src, { cache: 'no-store' });
+      txt = await resp.text();
+    } catch (e) {
+      figureEl.innerHTML = `<div class="figure-placeholder">${escapeHtml(spec.src)}</div>`;
+      figureEl.classList.add('visible');
+      figureEl.style.opacity = '1';
+      currentFigureSrc  = spec.src;
+      currentFigureType = 'placeholder';
+      return;
+    }
+    if (token !== figureToken) return;
+    figureEl.innerHTML = txt;
+    applyShowList(spec.show);
+  } else if (spec.type === 'static') {
+    figureEl.innerHTML = `<img class="figure-image" src="${escapeHtml(spec.src)}" alt="">`;
+  } else {
+    figureEl.innerHTML = `<div class="figure-placeholder">${escapeHtml(spec.text)}</div>`;
+  }
+
+  figureEl.classList.add('visible');
+  figureEl.style.opacity = '1';
+  currentFigureSrc  = spec.src || spec.text || null;
+  currentFigureType = spec.type;
 }
 
 function computePreorder() {
@@ -294,19 +385,18 @@ async function animateRewrite(fromText, toText, ranges) {
   animating = true;
   skipRequested = false;
 
-  // Phase 1: fast-erase everything currently on stage.
-  beforeEl.replaceChildren();
-  afterEl.textContent = fromText;
-  if (skipRequested) {
-    afterEl.textContent = '';
-  } else {
-    const n = fromText.length;
-    for (let k = 0; k < n; k++) {
-      if (skipRequested) { afterEl.textContent = ''; break; }
-      afterEl.textContent = afterEl.textContent.slice(1);
-      await sleep(CONFIG.deleteMs);
-    }
+  // Phase 1: fade the existing stage to 0, then clear it. Much calmer than
+  // char-by-char erasing on long text, and the erasure carries no meaning —
+  // only the arrival of the new text does.
+  if (CONFIG.rewriteFadeMs && !skipRequested) {
+    beforeEl.style.opacity = '0';
+    afterEl.style.opacity  = '0';
+    await sleep(CONFIG.rewriteFadeMs);
   }
+  beforeEl.replaceChildren();
+  afterEl.textContent = '';
+  beforeEl.style.opacity = '';
+  afterEl.style.opacity  = '';
 
   // Between-phase beat so the user registers "erased → now writing".
   if (CONFIG.rewritePauseMs && !skipRequested) await sleep(CONFIG.rewritePauseMs);
@@ -367,7 +457,6 @@ async function goTo(node) {
   currentId    = node.id;
   rebuildPath();
   updateBreadcrumb();
-  flushQueued();
 }
 
 async function replayLast() {
@@ -382,14 +471,6 @@ async function replayLast() {
   } else {
     await animateTransition(lastFromText, lastToText, { showFresh: lastForward });
   }
-  flushQueued();
-}
-
-function flushQueued() {
-  if (!queuedKey) return;
-  const k = queuedKey;
-  queuedKey = null;
-  performKey(k);
 }
 
 // ----- keyboard nav -----
@@ -400,10 +481,9 @@ function onKey(e) {
   if (e.key === ' ') e.preventDefault();
 
   if (animating) {
-    // Second-press behaviour: collapse current animation immediately and
-    // queue this key so it fires as soon as the animation settles.
+    // Second-press behaviour: collapse the current animation to its final
+    // state. The key is *not* queued — the user must press again to navigate.
     skipRequested = true;
-    queuedKey = e.key;
     return;
   }
   performKey(e.key);

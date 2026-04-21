@@ -5,12 +5,12 @@
   "children": [
     {
       "id": "s1",
-      "text": "LLMs are essentially built to [[do one thing]]: [[predict the next word]].",
+      "text": "LLMs are essentially built to do one thing: [[predict the next word]].",
       "mode": "rewrite",
       "children": [
         {
           "id": "s2",
-          "text": "LLMs are essentially built to do one thing: predict the next word, just after any piece of text (or prompt) that is fed into them.",
+          "text": "LLMs are essentially built to do one thing: predict the next word, just after any piece of text -- or prompt -- that is fed into them.",
           "children": [
             {
               "id": "s3",
@@ -49,9 +49,49 @@
       "children": [
         {
           "id": "s8",
-          "text": "Their ability to produce seemingly natural text notably rest on a few concepts worth considering : [[tokenization]], [[embedding]], [[attention]], the [[transformer architecture]].",
+          "text": "Behind this apparent fluency sit a handful of ideas worth unpacking: [[tokenization]] and [[embedding]] (turning text into numbers), [[attention]] (weighing context), and the [[transformer architecture]] that ties them together.",
           "mode": "rewrite",
-          "children": []
+          "children": [
+            {
+              "id": "s9",
+              "text": "Start with [[embedding]]: each token becomes a point in a high-dimensional space, where distance stands in for meaning.",
+              "mode": "rewrite",
+              "figure": { "svg": "embedding.svg", "show": [] },
+              "children": [
+                {
+                  "id": "s10",
+                  "text": "Project the space down to 2D and clusters emerge. [[Animal words]] land near each other -- cat, dog, fish, bird.",
+                  "mode": "rewrite",
+                  "figure": { "svg": "embedding.svg", "show": ["animals"] },
+                  "children": [
+                    {
+                      "id": "s11",
+                      "text": "[[Action verbs]] carve out their own region -- predict, simulate, compute, estimate.",
+                      "mode": "rewrite",
+                      "figure": { "svg": "embedding.svg", "show": ["animals", "verbs"] },
+                      "children": [
+                        {
+                          "id": "s12",
+                          "text": "[[Statistical terms]] cluster elsewhere -- probability, variance, posterior, distribution.",
+                          "mode": "rewrite",
+                          "figure": { "svg": "embedding.svg", "show": ["animals", "verbs", "stats-terms"] },
+                          "children": [
+                            {
+                              "id": "s13",
+                              "text": "Even [[abstract categories]] separate cleanly: king, queen, prince, princess.",
+                              "mode": "rewrite",
+                              "figure": { "svg": "embedding.svg", "show": ["animals", "verbs", "stats-terms", "royalty"] },
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         }
       ]
     }

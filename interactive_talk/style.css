@@ -46,12 +46,20 @@ body {
   text-align: center;
 }
 
+/* Only used by rewrite-mode phase 1 (fade-out). Inline opacity drives the
+   transition; everything else leaves opacity untouched so normal typing
+   animations are unaffected. */
+#before, #after {
+  transition: opacity 0.2s ease;
+}
+
 .figure {
   flex: 0 0 520px;
   min-height: 360px;
   display: none;
   align-items: center;
   justify-content: center;
+  transition: opacity var(--panel-fade-ms, 200ms) ease;
 }
 
 .figure.visible { display: flex; }
@@ -62,6 +70,28 @@ body {
   height: auto;
   width: auto;
   display: block;
+}
+
+/* Inline SVG figures fill the panel like static images do. */
+.figure svg {
+  max-width: 100%;
+  max-height: 500px;
+  height: auto;
+  width: auto;
+  display: block;
+}
+
+/* Overlay layers: hidden by default, revealed when their id is in the
+   current node's `figure.show` list (via the .layer-visible class added by
+   applyShowList). Duration matches CONFIG.rewriteFadeMs for visual parity
+   with the text rewrite fade. */
+.figure svg .layer {
+  opacity: 0;
+  transition: opacity var(--layer-fade-ms, 200ms) ease;
+}
+
+.figure svg .layer.layer-visible {
+  opacity: 1;
 }
 
 .figure-placeholder {

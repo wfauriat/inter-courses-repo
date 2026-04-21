@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 500" font-family="Iosevka, 'JetBrains Mono', monospace">
+  <!--
+    Layered embedding figure.
+    Base = everything without class="layer" (title, grid, axes, neutral scatter).
+    Layers = <g class="layer" id="..."> groups; hidden by default, shown when
+    a node's figure.show list contains their id.
+  -->
+
+  <text x="360" y="26" text-anchor="middle" fill="#b8b8b8" font-size="15" font-weight="500">
+    Token embedding space (2D projection)
+  </text>
+
+  <g stroke="#2a2a2a" stroke-width="1" fill="none">
+    <line x1="80"  y1="40"  x2="80"  y2="440"/>
+    <line x1="200" y1="40"  x2="200" y2="440"/>
+    <line x1="320" y1="40"  x2="320" y2="440"/>
+    <line x1="560" y1="40"  x2="560" y2="440"/>
+    <line x1="680" y1="40"  x2="680" y2="440"/>
+    <line x1="80"  y1="40"  x2="680" y2="40"/>
+    <line x1="80"  y1="140" x2="680" y2="140"/>
+    <line x1="80"  y1="340" x2="680" y2="340"/>
+    <line x1="80"  y1="440" x2="680" y2="440"/>
+  </g>
+
+  <g stroke="#777" stroke-width="1.2" fill="none">
+    <line x1="80"  y1="240" x2="680" y2="240"/>
+    <line x1="440" y1="40"  x2="440" y2="440"/>
+  </g>
+
+  <text x="670" y="258" text-anchor="end"   fill="#999" font-size="11">PC 1</text>
+  <text x="450" y="50"  text-anchor="start" fill="#999" font-size="11">PC 2</text>
+
+  <g fill="#555" opacity="0.55">
+    <circle cx="150" cy="110" r="2.5"/>
+    <circle cx="220" cy="180" r="2.5"/>
+    <circle cx="180" cy="240" r="2.5"/>
+    <circle cx="255" cy="95"  r="2.5"/>
+    <circle cx="290" cy="415" r="2.5"/>
+    <circle cx="370" cy="350" r="2.5"/>
+    <circle cx="400" cy="60"  r="2.5"/>
+    <circle cx="510" cy="180" r="2.5"/>
+    <circle cx="545" cy="410" r="2.5"/>
+    <circle cx="600" cy="110" r="2.5"/>
+    <circle cx="620" cy="230" r="2.5"/>
+    <circle cx="650" cy="280" r="2.5"/>
+    <circle cx="110" cy="200" r="2.5"/>
+    <circle cx="355" cy="130" r="2.5"/>
+    <circle cx="400" cy="300" r="2.5"/>
+    <circle cx="200" cy="360" r="2.5"/>
+    <circle cx="560" cy="60"  r="2.5"/>
+    <circle cx="270" cy="300" r="2.5"/>
+    <circle cx="420" cy="385" r="2.5"/>
+    <circle cx="130" cy="420" r="2.5"/>
+  </g>
+
+  <g class="layer" id="animals">
+    <g fill="#e6a56b">
+      <circle cx="518" cy="320" r="7"/>
+      <circle cx="632" cy="355" r="7"/>
+      <circle cx="578" cy="385" r="7"/>
+      <circle cx="632" cy="395" r="7"/>
+    </g>
+    <g fill="#e8e8e8" font-size="13" font-weight="600">
+      <text x="529" y="316">cat</text>
+      <text x="644" y="351">fish</text>
+      <text x="589" y="381">dog</text>
+      <text x="644" y="391">bird</text>
+    </g>
+  </g>
+
+  <g class="layer" id="verbs">
+    <g fill="#d66060">
+      <circle cx="488" cy="130" r="7"/>
+      <circle cx="452" cy="160" r="7"/>
+      <circle cx="434" cy="205" r="7"/>
+      <circle cx="332" cy="262" r="7"/>
+    </g>
+    <g fill="#e8e8e8" font-size="13" font-weight="600">
+      <text x="499" y="126">estimate</text>
+      <text x="463" y="156">simulate</text>
+      <text x="445" y="201">compute</text>
+      <text x="343" y="258">predict</text>
+    </g>
+  </g>
+
+  <g class="layer" id="stats-terms">
+    <g fill="#6ea3e0">
+      <circle cx="476" cy="86"  r="7"/>
+      <circle cx="476" cy="111" r="7"/>
+      <circle cx="476" cy="198" r="7"/>
+      <circle cx="350" cy="203" r="7"/>
+      <circle cx="494" cy="266" r="7"/>
+      <circle cx="332" cy="290" r="7"/>
+    </g>
+    <g fill="#e8e8e8" font-size="13" font-weight="600">
+      <text x="487" y="82">uncertainty</text>
+      <text x="487" y="107">variance</text>
+      <text x="487" y="194">distribution</text>
+      <text x="361" y="199">probability</text>
+      <text x="505" y="262">likelihood</text>
+      <text x="343" y="286">posterior</text>
+    </g>
+  </g>
+
+  <g class="layer" id="royalty">
+    <g fill="#78c079">
+      <circle cx="488" cy="73"  r="7"/>
+      <circle cx="452" cy="240" r="7"/>
+      <circle cx="140" cy="320" r="7"/>
+      <circle cx="155" cy="348" r="7"/>
+    </g>
+    <g fill="#e8e8e8" font-size="13" font-weight="600">
+      <text x="499" y="69">queen</text>
+      <text x="463" y="236">king</text>
+      <text x="151" y="316">prince</text>
+      <text x="166" y="344">princess</text>
+    </g>
+  </g>
+</svg>
