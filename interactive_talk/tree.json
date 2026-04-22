@@ -59,8 +59,14 @@
     "sAttnBank":   { "text": "Take one ambiguous word — [[bank]] — in two sentences. Same token, same embedding row; nothing in 'bank' alone tells you which meaning is in play.", "mode": "rewrite", "figure": { "svg": "resources/bank_attention.svg", "show": [] } },
     "sAttnBankR":  { "text": "In the first sentence, [[fishing]] pulls hardest on bank's meaning. Arc strength is attention — the model weighs which neighbors to look at. Bank becomes [[river-bank]].", "mode": "rewrite", "figure": { "svg": "resources/bank_attention.svg", "show": ["attention-river"] } },
     "sAttnBankM":  { "text": "In the second, [[deposit]] does the same work — bank becomes [[money-bank]]. Same word, same starting vector. Different neighbors → different meaning.", "mode": "rewrite", "figure": { "svg": "resources/bank_attention.svg", "show": ["attention-river", "attention-money"] } },
+    "sAttnBankH":  { "text": "[[Attention heads]] are [[learned screenings]] (subspace projections) in embedding space (768d -> 64d). \n\nThey [[learn]] to [[look for context]]: \n\n'bank' (a particular direction in embedding space) may be looking around for architectural details (in another particular direction), \na noun may be looking for a qualifying adjective, \n a premise, for a conclusion.", "mode":"rewrite", "figure": { "svg": "resources/bank_attention.svg", "show": ["attention-river", "attention-money"] }},
+    "sAttnWrap": {"text":"Using multiple [[attention heads]] : screenings with different focus (syntax, semantics, logic, ...), and computing [[successive]] refinements of attention, \ntoken vectors [[look around]] each other and progressively [[steer]] direction in embedding space, so that the [[next-token prediction]] has extracted [['meaning']].", "mode":"rewrite"},
     "sTrans": { "text": "The [[transformer]]: many attention layers stacked into a single machine that reads a next-token probability distribution off the top of the stack.", "mode": "rewrite" },
-    "sTrain": { "text": "[[Pre-training]]: the weights are fixed by running the machine across trillions of tokens of raw text, each time nudging it to predict the next token a little better.", "mode": "rewrite" }
+    "sTrain": { "text": "[[Pre-training]]: the weights are fixed by running the machine across trillions of tokens of raw text, each time nudging it to predict the next token a little better.", "mode": "rewrite" },
+    "sTrainData": { "text": "'Trillions of tokens' means roughly [[a sweep of the public internet]] — web pages, books, forums, code repositories, scientific papers. The raw text humanity has written.", "mode": "rewrite" },
+    "sTrainStep": { "text": "At each step: show the machine a chunk of text, hide the next token, let it guess, [[measure how wrong]] it was, then [[nudge]] every one of the [[billions of numbers]] inside the matrices a tiny bit — in the direction that would have made it less wrong. \n\nRepeat trillions of times.", "mode": "rewrite" },
+    "sTrainEmerge": { "text": "[[Nobody designed]] the embedding clusters, the attention patterns, the steering directions. They [[emerged]] because they turned out to be useful for predicting. \n\nGrammar, word meaning, world knowledge — whatever helps predict the next token ends up [[encoded somewhere in the weights]].", "mode": "rewrite" },
+    "sTrainEff": { "text": "What may [[appear quite mystical]]: projecting tokens in embedding space and steering them based on their neighbors \n('Doing computation on obscure vectors'),\n\n ends up working because such manipulations are [[tweaked until the model becomes an efficient next-token guesser]].", "mode": "rewrite" }
   },
   "tree": {
     "sRoot": {
@@ -137,12 +143,24 @@
           "sAttn": {
             "sAttnBank": {
               "sAttnBankR": {
-                "sAttnBankM": {}
+                "sAttnBankM": {
+                  "sAttnBankH": {
+                    "sAttnWrap": {}
+                  }
+                }
               }
             }
           },
           "sTrans": {},
-          "sTrain": {}
+          "sTrain": {
+            "sTrainData": {
+              "sTrainStep": {
+                "sTrainEmerge": {
+                  "sTrainEff": {}
+                }
+              }
+            }
+          }
         }
       }
     }

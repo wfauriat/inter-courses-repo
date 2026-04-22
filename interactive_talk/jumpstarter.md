@@ -61,7 +61,7 @@ meaning as the tree gets reshuffled — semantic names stay stable and
 read cleanly in diffs. Pure integer keys (`"0"`, `"42"`) are the one
 thing to avoid: JSON parsers reorder them ahead of strings.
 
-**Current tree shape** (as of 2026-04-22):
+**Current tree shape** (as of 2026-04-23):
 ```
 sRoot
 ├── sUse / sUseb / sUsec → sUE1..sUE4 (each with a b-variant) + sUTrans
@@ -81,9 +81,11 @@ sRoot
     │   │   (technical sibling: vector arithmetic analogies)
     │   └── sPos → sPosb
     │       (technical sibling: positional embedding, text-only placeholder)
-    ├── sAttn
+    ├── sAttn → sAttnBank → sAttnBankR → sAttnBankM → sAttnBankH → sAttnWrap
+    │   (schematic "bank" example → heads as subspace filters → synthesis)
     ├── sTrans
-    └── sTrain
+    └── sTrain → sTrainData → sTrainStep → sTrainEmerge → sTrainEff
+        (what training does + why the weird machinery works; text-only)
 ```
 
 The `sSpace → sMatrix → sMatrixb` spine is the layman trunk: single
@@ -93,9 +95,8 @@ branches are the technical siblings (vector arithmetic and
 positional embedding); both are intentionally skippable for a layman
 audience.
 
-The `sAttn` / `sTrans` / `sTrain` branches are placeholders — they have
-intro nodes but no downstream content or figures yet. Much of the
-talk's remaining work sits there.
+`sTrans` is the remaining placeholder — intro node with no downstream
+content or figure yet.
 
 ---
 
@@ -187,8 +188,9 @@ with data; hand-edited SVGs drift.
   `build_interactive_embedding_svg.py` (2D PCA scatter) and
   `build_interactive_analogy_svg.py` (per-chain PCA for vector
   arithmetic).
-- `attention_workshop.py` — GPT-2 attention probing. Will back the
-  `sAttn` figures when those get built.
+- `attention_workshop.py` — GPT-2 attention probing. Not used by the
+  current schematic `sAttn` figure (which is hand-picked, no backend);
+  available if a data-backed attention figure lands later (e.g. `sTrans`).
 - `GPT_arch_workshop.py` — GPT-2 architecture internals. Also the
   source model (tokenizer + `wte`) for
   `build_interactive_embedding_matrix_svg.py` — that generator
@@ -216,6 +218,12 @@ with two arbitrary mock vectors, no embedding lookup.
 | `build_interactive_analogy_svg.py` | `embedding_analogy_capital.svg`, `embedding_analogy_vehicle.svg` | `capital-words`, `capital-sub`, `capital-add`, `capital-resolve`; same pattern with `vehicle-*` |
 | `build_interactive_token_vector_svg.py` | `token_vector.svg` | `id1`, `id2` |
 | `build_interactive_embedding_matrix_svg.py` | `embedding_matrix.svg` | `token-ids`, `matrix-numbers` (prompt text is base) |
+| `build_interactive_bank_attention_svg.py` | `bank_attention.svg` | `attention-river`, `attention-money` (schematic, no backend — hand-picked weights) |
+
+**Unwired (deferred) figure:** `build_interactive_bank_disambig_svg.py` →
+`bank_disambig.svg` exists but isn't referenced in `tree.json`. It's the
+logit-lens sibling of the attention figure — technical, assumes layers,
+earmarked for reuse in `sTrans` once transformer internals are introduced.
 
 **Typical workflow to add a new figure:**
 1. Pick the workshop that has the data/math (or decide it's mock).
