@@ -26,7 +26,7 @@ A refinement viewer, not a slide deck: each node restates its parent with someth
 
 ```jsonc
 {
-  "root":  "s0",    // id of the root node
+  "root":  "sRoot", // id of the root node
   "nodes": { ... }, // flat map of id → node content (text, mode, figure)
   "tree":  { ... }  // nested id-only outline of parent → children
 }
@@ -39,7 +39,7 @@ Content and structure are stored separately: editing a node's text never drags a
 Each entry in `nodes` is keyed by id and holds only per-node fields:
 
 ```jsonc
-"s3": {
+"sTok": {
   "text":   "...",        // displayed text; may contain [[...]] markers and \n newlines
   "mode":   "rewrite",    // optional: "rewrite" | (default "diff")
   "figure": "foo.png"     // optional: image path, placeholder text, SVG spec, or omitted
@@ -54,14 +54,14 @@ The id lives in the outer key, not inside the object. There is no `children` fie
 
 ```jsonc
 "tree": {
-  "s0": {
-    "s1": { "s2": { "s2b": {} } },
-    "s7": { "s8": {} }
+  "sRoot": {
+    "sIntro": { "sDetail": { "sDetailb": {} } },
+    "sAlt":   { "sAltLeaf": {} }
   }
 }
 ```
 
-Sibling order = key insertion order in the JSON file. Reordering siblings = swapping keys; re-parenting a subtree = cut-and-paste of one entry, with node content untouched. Use non-numeric ids (`s0`, `intro`, …) — JSON parsers reorder integer-like keys ahead of strings, which would scramble sibling order. Nodes reachable from `root` via `tree` render in the viewer; entries in `nodes` without a `tree` parent are dead content.
+Sibling order = key insertion order in the JSON file. Reordering siblings = swapping keys; re-parenting a subtree = cut-and-paste of one entry, with node content untouched. Use short semantic ids tied to the node's meaning (`sRoot`, `sNextWord`, `sTok`, …); sequential refinements of the same idea take `b`, `c`, `d` suffixes (`sNextWord → sNextWordb → sNextWordc`). Avoid pure integer keys (`"0"`, `"42"`) — JSON parsers reorder those ahead of strings and scramble sibling order. Any non-integer id is technically safe, but positional names (`s0`, `s1`) lose meaning once the tree is reshuffled — semantic names stay stable through edits and read cleanly in diffs. Nodes reachable from `root` via `tree` render in the viewer; entries in `nodes` without a `tree` parent are dead content.
 
 ### Highlight syntax
 
