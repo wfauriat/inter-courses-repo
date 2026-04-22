@@ -29,13 +29,19 @@
     "s4":   { "text": "So in a nutshell, decoder-style LLMs (such as GPT) are [[sequential next-token producers]], with [['statistical fluency']].", "mode": "rewrite" },
 
     "sB":   { "text": "How can a [[mechanical machine]], [[single-mindedly]] predicting the next token, generate [[fluent]] and arguably [[meaningful text]], [[answer questions]], [[write code]], [[summarize]] documents ?", "mode": "rewrite"},
-    "s6":   { "text": "They do it through a handful of ideas worth unpacking: [[tokenization]] and [[embedding]] (turning text into numbers), [[attention]] (weighing context), and the [[transformer architecture]] that ties them together.", "mode": "rewrite" },
+    "s6":   { "text": "They do it through a handful of ideas worth unpacking: [[tokenization]] and [[embedding]] (turning text into numbers), [[attention]] (weighing context), the [[transformer architecture]] that ties them together, and [[pre-training]] — how those weights got their values in the first place.", "mode": "rewrite" },
+
+    "sTok":   { "text": "[[Tokenization]]: before anything else, text is sliced into tokens — subword fragments drawn from a fixed vocabulary (on the order of 50k entries for GPT-2).", "mode": "rewrite" },
+    "sEmb":   { "text": "[[Embedding]]: each token is then turned into a vector — a list of numbers the model can actually do arithmetic on.", "mode": "rewrite" },
     "s7":   { "text": "Start with [[embedding]]: each token becomes a point in a high-dimensional space, where distance stands in for meaning.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": [] } },
     "s8":   { "text": "Project the space down to 2D and clusters emerge. [[Animal words]] land near each other -- cat, dog, fish, bird.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals"] } },
     "s9":   { "text": "[[Action verbs]] carve out their own region -- predict, simulate, compute, estimate.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs"] } },
     "s10":  { "text": "[[Statistical terms]] cluster elsewhere -- probability, variance, posterior, distribution.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs", "stats-terms"] } },
     "s11":  { "text": "Even [[abstract categories]] separate cleanly: king, queen, prince, princess.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs", "stats-terms", "royalty"] } },
-    "test": { "text": "test placeholded", "figure": "resources/02_embedding_clusters.png" }
+
+    "sAttn":  { "text": "[[Attention]]: at each layer, every token gets to look at the others and reweight them by relevance — this is the mechanism by which context shapes meaning.", "mode": "rewrite" },
+    "sTrans": { "text": "The [[transformer]]: many attention layers stacked into a single machine that reads a next-token probability distribution off the top of the stack.", "mode": "rewrite" },
+    "sTrain": { "text": "[[Pre-training]]: the weights are fixed by running the machine across trillions of tokens of raw text, each time nudging it to predict the next token a little better.", "mode": "rewrite" }
   },
   "tree": {
     "s0": {
@@ -73,17 +79,21 @@
       },
       "sB": {
         "s6": {
-          "s7": {
-            "s8": {
-              "s9": {
-                "s10": {
-                  "s11": {
-                    "test": {}
+          "sTok": {},
+          "sEmb": {
+            "s7": {
+              "s8": {
+                "s9": {
+                  "s10": {
+                    "s11": {}
                   }
                 }
               }
             }
-          }
+          },
+          "sAttn": {},
+          "sTrans": {},
+          "sTrain": {}
         }
       }
     }

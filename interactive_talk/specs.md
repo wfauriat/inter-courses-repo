@@ -40,7 +40,7 @@ Each entry in `nodes` is keyed by id and holds only per-node fields:
 
 ```jsonc
 "s3": {
-  "text":   "...",        // displayed text; may contain [[...]] markers
+  "text":   "...",        // displayed text; may contain [[...]] markers and \n newlines
   "mode":   "rewrite",    // optional: "rewrite" | (default "diff")
   "figure": "foo.png"     // optional: image path, placeholder text, SVG spec, or omitted
 }
@@ -121,7 +121,7 @@ The breadcrumb bottom-left shows the DFS path from root to current node. The hel
 
 ## SVG overlay figures
 
-**Status: implemented. First prototype lives in `resources/embedding.svg`, exercised by the `s9…s13` branch of `tree.json`. A second figure, `resources/LLM_in_out.svg`, is attached to `s2b`.**
+**Status: implemented. Several SVGs in `resources/` are exercised across `tree.json`.**
 
 A tree-driven Beamer-style overlay mechanism for figures. A figure has a fixed base and a pool of *layers*; navigating between nodes reveals, hides, or swaps layers, with a fade transition on appearance. Used when a diagram builds up — e.g. an embedding space that progressively populates with word clusters.
 
@@ -168,6 +168,3 @@ A group without `class="layer"` is part of the base and always visible — usefu
 - The `show` list is order-independent — it's a set.
 - Back-navigation applies the target node's `show` just like forward. Symmetric with the text-side "backward ≠ inverse" rule.
 
-### Prototype
-
-`resources/embedding.svg` — base with title, axes, grid, and a neutral scatter of small grey dots; four layers (`animals`, `verbs`, `stats-terms`, `royalty`) that reveal one at a time down the `s9…s13` branch. Exercises first-render fade-in (no figure on `s8` → SVG on `s9`), layer reveal, panel swap on `s13` → `test` (inline SVG → static PNG `02_embedding_clusters.png`), and parallel caption animation on content that already has a place in the talk.
