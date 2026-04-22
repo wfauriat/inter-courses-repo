@@ -2,41 +2,65 @@
   "root": "s0",
   "nodes": {
     "s0":   { "text": "What are [[LLMs]] and how do they [[work]]?", "mode": "rewrite" },
-    "s1":   { "text": "LLMs are essentially built to do one thing: [[predict the next word]].", "mode": "rewrite" },
-    "s2":   { "text": "LLMs are essentially built to do one thing: predict the next word. The word that follows any piece of text -- or prompt -- that is fed into them.", "figure": { "svg": "resources/LLM_in_out.svg", "show": ["prompt", "llm"]}},
-    "s2b":  { "text": "LLMs are essentially built to do one thing: predict the next word. The word that follows any piece of text -- or prompt -- that is fed into them.", "figure": { "svg": "resources/LLM_in_out.svg", "show": ["prompt", "llm", "text"]} },
-    "s3":   { "text": "LLMs are built through intensive [[training on huge corpora of text]] (billions of words).", "mode": "rewrite" },
-    "s4":   { "text": "LLMs are built through intensive training on huge corpora of text (billions of words). During training, they pick up statistical regularities and learn what the next word might be." },
-    "s4b":   { "text": "LLMs are built through intensive training on huge corpora of text (billions of words). During training, they pick up statistical regularities and learn what the next word might be, given what they observed in the corpora." },
-    "s5":   { "text": "[[Decoder-style]] LLMs (such as GPT) are [[generative]] machines. They sample [[the next word]] out of a [[computed list of the most likely ones]].", "mode": "rewrite" },
-    "s5b":  { "text": "Decoder-style LLMs (such as GPT) are generative machines. They sample the next word out of a computed list of the most likely ones. Then the one-word-longer sequence is fed back and the process is repeated." },
-    "s5c":  { "text": "Decoder-style LLMs (such as GPT) are generative machines. They sample the next word out of a computed list of the most likely ones. Then the one-word-longer sequence is fed back and the process is repeated, progressively generating a block of text." },
-    "s6":   { "text": "Decoder-style LLMs (such as GPT) are generative machines. They sample the next token out of a computed list of the most likely ones. Then the one-token-longer sequence is fed back and the process is repeated, progressively generating a block of text. (modern LLMs mostly deal with tokens : fragments of words.)" },
-    "s7":   { "text": "Decoder-style LLMs (such as GPT) are essentially [[sequential next-token producers]].", "mode": "rewrite" },
 
-    "s8":   { "text": "LLMs are rather ''mechanical'' machines -- complex, but moved by a precise purpose : [[produce tokens]].", "mode":"rewrite"},
-    "s9":   { "text": "So, how can they generate such [[fluent]] and arguably [[meaningful]] text, [[answer questions]], [[write code]], [[summarize]] documents ?", "mode": "rewrite"},
-    "s10":  { "text": "They do it through a handful of ideas worth unpacking: [[tokenization]] and [[embedding]] (turning text into numbers), [[attention]] (weighing context), and the [[transformer architecture]] that ties them together.", "mode": "rewrite" },
-    "s11":  { "text": "Start with [[embedding]]: each token becomes a point in a high-dimensional space, where distance stands in for meaning.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": [] } },
-    "s12":  { "text": "Project the space down to 2D and clusters emerge. [[Animal words]] land near each other -- cat, dog, fish, bird.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals"] } },
-    "s13":  { "text": "[[Action verbs]] carve out their own region -- predict, simulate, compute, estimate.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs"] } },
-    "s14":  { "text": "[[Statistical terms]] cluster elsewhere -- probability, variance, posterior, distribution.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs", "stats-terms"] } },
-    "s15":  { "text": "Even [[abstract categories]] separate cleanly: king, queen, prince, princess.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs", "stats-terms", "royalty"] } },
+    "sI":   {"text" : "You have probably 'played' before with so called [[AI chatbots]].\n (OpenAI's ChatGPT, Google's Gemini, Anthropic's Claude, Mistral's Le Chat,...)" , "mode": "rewrite" },
+    "sIb":  {"text" : "You have probably 'played' before with so called [[AI chatbots]].\n (OpenAI's ChatGPT, Google's Gemini, Anthropic's Claude, Mistral's Le Chat,...).\n\nThey are powered by LLMs\n(Large Language Models)"},
+    "sII":  {"text" : "You have probably 'played' before with so called AI chatbots.\n (OpenAI's ChatGPT, Google's Gemini, Anthropic's Claude, Mistral's Le Chat,...).\n\nThey are powered by LLMs\n(Large Language Models)\n\nHere is a taste of it."},
+    "sEx1":  { "text": "> How to make [[pancakes]]?", "mode": "rewrite" },
+    "sEx1a": { "text": "> How to make pancakes?\n\nWhisk 250g flour, 2 eggs, 500ml milk, a tablespoon of sugar, and a pinch of salt until smooth. Let the batter rest 15 minutes, then cook small ladles in a hot buttered pan — flip when bubbles form, 30 seconds more. Serve warm." },
+    "sEx2":  { "text": "> How long should I wait [[between two coats of paint]]?", "mode": "rewrite" },
+    "sEx2a": { "text": "> How long should I wait between two coats of paint?\n\nFor water-based paints (acrylic, latex), 2 to 4 hours. For oil-based, plan on 16 to 24 hours. Check the can for the exact recoat window — humid or cold conditions can stretch these times." },
+    "sEx3":  { "text": "> How to list and sort [[subdirectories by size]] on Unix?", "mode": "rewrite" },
+    "sEx3a": { "text": "> How to list and sort subdirectories by size on Unix?\n\nCombine du and sort:\n\n  du -sh */ | sort -h\n\n'du -sh */' : reports the total size of each immediate subdirectory in human-readable form; 'sort -h' : orders those sizes naturally." },
+    "sEx4":  { "text": "> Give me [[pseudo-code to solve a simple ODE]].", "mode": "rewrite" },
+    "sEx4a": { "text": "> Give me pseudo-code to solve a simple ODE.\n\nSimplest approach is Euler's method. \n\nFor dy/dt = f(y, t):\n  t, y = t0, y0\n  while t < t_end:\n      y += h * f(y, t)\n      t += h\n\nPick a small enough step h for stability; swap in RK4 for better accuracy." },
+    "sIe":  {"text": "[[LLM-driven artifacts]] can do impressive things and yet ...", "mode":"rewrite"},
+
+    "sA":   { "text": "LLMs are essentially built to do one thing: [[predict the next word]].", "mode": "rewrite" },
+    "sAb":  { "text": "LLMs are essentially built to do one thing: predict the next word. The word that follows any piece of text -- or prompt -- that is fed into them.", "figure": { "svg": "resources/LLM_in_out.svg", "show": ["prompt", "llm"]}},
+    "sAc":  { "text": "LLMs are essentially built to do one thing: predict the next word. The word that follows any piece of text -- or prompt -- that is fed into them.", "figure": { "svg": "resources/LLM_in_out.svg", "show": ["prompt", "llm", "text"]} },
+    "s2":   { "text": "[[Decoder-style]] LLMs (such as GPT) are [[generative]] machines. They pick [[the next word]] out of a [[computed list of the most likely ones]].", "mode": "rewrite" , "figure": { "svg": "resources/seq_feed.svg", "show": ["the", "dog", "chases", "promptR", "prompt", "next", "after", "geneL1", "geneT1"]}},
+    "s2b":  { "text": "Decoder-style LLMs (such as GPT) are generative machines. They pick the next word out of a computed list of the most likely ones. Then the one-word-longer sequence is fed back and the process is repeated.", "figure": { "svg": "resources/seq_feed.svg", "show": ["the", "dog", "chases", "promptR2", "prompt2", "after2", "next2", "the2", "geneL2", "geneT2"]}},
+    "s2c":  { "text": "Decoder-style LLMs (such as GPT) are generative machines. They pick the next word out of a computed list of the most likely ones. Then the one-word-longer sequence is fed back and the process is repeated, progressively generating a block of text.",  "figure": { "svg": "resources/seq_feed.svg", "show": ["the", "dog", "chases", "promptR3", "prompt3", "after2", "next3", "the3", "cat", "geneL3", "geneT3"]} },
+    "s2d":  { "text": "Decoder-style LLMs (such as GPT) are generative machines. They pick the next token out of a computed list of the most likely ones. Then the one-token-longer sequence is fed back and the process is repeated, progressively generating a block of text.\n\n(modern LLMs mostly deal with tokens : fragments of words, rather than words directly.)", "figure": { "svg": "resources/token1.svg"} },
+    "s3":   { "text": "LLMs are built through intensive [[training on huge corpora of text]] (billions of words).", "mode": "rewrite" },
+    "s3b":  { "text": "LLMs are built through intensive training on huge corpora of text (billions of words). During training, they pick up statistical regularities and learn what the next word might be." },
+    "s3c":  { "text": "LLMs are built through intensive training on huge corpora of text (billions of words). During training, they pick up statistical regularities and learn what the next word might be, given what they observed in the corpora." },    
+    "s4":   { "text": "So in a nutshell, decoder-style LLMs (such as GPT) are [[sequential next-token producers]], with [['statistical fluency']].", "mode": "rewrite" },
+
+    "sB":   { "text": "How can a [[mechanical machine]], [[single-mindedly]] predicting the next token, generate [[fluent]] and arguably [[meaningful text]], [[answer questions]], [[write code]], [[summarize]] documents ?", "mode": "rewrite"},
+    "s6":   { "text": "They do it through a handful of ideas worth unpacking: [[tokenization]] and [[embedding]] (turning text into numbers), [[attention]] (weighing context), and the [[transformer architecture]] that ties them together.", "mode": "rewrite" },
+    "s7":   { "text": "Start with [[embedding]]: each token becomes a point in a high-dimensional space, where distance stands in for meaning.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": [] } },
+    "s8":   { "text": "Project the space down to 2D and clusters emerge. [[Animal words]] land near each other -- cat, dog, fish, bird.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals"] } },
+    "s9":   { "text": "[[Action verbs]] carve out their own region -- predict, simulate, compute, estimate.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs"] } },
+    "s10":  { "text": "[[Statistical terms]] cluster elsewhere -- probability, variance, posterior, distribution.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs", "stats-terms"] } },
+    "s11":  { "text": "Even [[abstract categories]] separate cleanly: king, queen, prince, princess.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs", "stats-terms", "royalty"] } },
     "test": { "text": "test placeholded", "figure": "resources/02_embedding_clusters.png" }
   },
   "tree": {
     "s0": {
-      "s1": {
-        "s2": {
-          "s2b": {
-            "s3": {
-              "s4": {
-                "s4b":{
-                  "s5": {
-                    "s5b": {
-                      "s5c": {
-                        "s6": {
-                          "s7": {}
+      "sI": {
+        "sIb": {
+          "sII": {
+            "sEx1": { "sEx1a": {} },
+            "sEx2": { "sEx2a": {} },
+            "sEx3": { "sEx3a": {} },
+            "sEx4": { "sEx4a": {} }            
+          }
+        },
+        "sIe": {}
+      },
+      "sA": {
+        "sAb": {
+          "sAc": {
+            "s2": {
+              "s2b": {
+                "s2c":{
+                  "s2d": {
+                    "s3": {
+                      "s3b": {
+                        "s3c": {
+                          "s4": {}
                         }
                       }
                     }
@@ -47,16 +71,14 @@
           }
         }
       },
-      "s8": {
-        "s9": {
-          "s10": {
-            "s11": {
-              "s12": {
-                "s13": {
-                  "s14": {
-                    "s15": {
-                      "test": {}
-                    }
+      "sB": {
+        "s6": {
+          "s7": {
+            "s8": {
+              "s9": {
+                "s10": {
+                  "s11": {
+                    "test": {}
                   }
                 }
               }

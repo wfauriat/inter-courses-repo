@@ -4,6 +4,7 @@
   --fg-dim: #666;
   --fresh: #fbbf24;
   --cursor: #e8e8e8;
+  --divider: #2a2a2a;
 }
 
 html, body {
@@ -44,6 +45,7 @@ body {
   letter-spacing: 0.005em;
   word-wrap: break-word;
   text-align: center;
+  white-space: pre-wrap;
 }
 
 /* Only used by rewrite-mode phase 1 (fade-out). Inline opacity drives the
@@ -70,6 +72,7 @@ body {
 .figure.visible {
   display: flex;
   animation: figure-appear var(--panel-fade-in-ms, 200ms) ease;
+  border-left: 1px solid var(--divider);
 }
 
 @keyframes figure-appear {
