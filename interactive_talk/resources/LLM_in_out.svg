@@ -25,7 +25,7 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="1.3799441"
-     inkscape:cx="306.89648"
+     inkscape:cx="298.56282"
      inkscape:cy="264.8658"
      inkscape:window-width="1854"
      inkscape:window-height="1131"
@@ -126,9 +126,9 @@
        inkscape:label="text314"><tspan
          x="79.59375"
          y="261.3119"
-         id="tspan751"><tspan
+         id="tspan1849"><tspan
            style="font-size:34.6667px;-inkscape-font-specification:'sans-serif, Normal'"
-           id="tspan749">Prompt</tspan></tspan></text>
+           id="tspan1847">Prompt</tspan></tspan></text>
   </g>
   <g
      id="llm"
@@ -151,9 +151,9 @@
        inkscape:label="text715"><tspan
          x="79.59375"
          y="261.3119"
-         id="tspan755"><tspan
+         id="tspan1853"><tspan
            style="font-size:34.6667px;-inkscape-font-specification:'sans-serif, Normal'"
-           id="tspan753">LLM</tspan></tspan></text>
+           id="tspan1851">LLM</tspan></tspan></text>
     <path
        style="display:inline;fill:none;font-variation-settings:normal;fill-opacity:1;stroke:#808080;stroke-width:0.76219;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#TriangleStart);stop-color:#000000"
        d="m 52.354895,52.916667 h 4.503496"
@@ -165,7 +165,7 @@
      inkscape:label="text"
      class="layer">
     <rect
-       style="display:inline;fill:none;stroke:#ff6600;stroke-width:0.6;stroke-dasharray:none"
+       style="display:inline;fill:none;stroke:#fbbf24;stroke-width:0.6;stroke-dasharray:none"
        id="rect6521"
        width="45.73138"
        height="22"
@@ -189,9 +189,9 @@
        inkscape:label="text315"><tspan
          x="79.59375"
          y="261.3119"
-         id="tspan759"><tspan
+         id="tspan1857"><tspan
            style="font-size:34.6667px;-inkscape-font-specification:'sans-serif, Normal'"
-           id="tspan757">Text</tspan></tspan></text>
+           id="tspan1855">Text</tspan></tspan></text>
     <text
        xml:space="preserve"
        transform="matrix(0.20166268,0,0,0.20166268,100.21846,-1.9192988)"
@@ -200,8 +200,8 @@
        inkscape:label="text316"><tspan
          x="79.59375"
          y="261.3119"
-         id="tspan763"><tspan
+         id="tspan1861"><tspan
            style="font-size:34.6667px;-inkscape-font-specification:'sans-serif, Normal'"
-           id="tspan761">Generated</tspan></tspan></text>
+           id="tspan1859">Generated</tspan></tspan></text>
   </g>
 </svg>

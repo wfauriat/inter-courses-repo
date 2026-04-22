@@ -1,0 +1,262 @@
+"""
+build_interactive_embedding_matrix_svg.py
+=========================================
+
+Generate interactive_talk/resources/embedding_matrix.svg — a layered
+figure showing a short prompt → token ids → (n × 768) embedding
+matrix. Pedagogical anchor for "this is literally what the model
+reads; the rest of the machine works on these numbers."
+
+Real GPT-2 (via transformers): the ids are GPT-2's ids, the matrix
+excerpts are actual rows of the wte weight. The prompt is chosen so
+each word tokenizes to exactly one BPE token (first word bare, the
+rest get GPT-2's leading-space prefix). If the choice drifts, main()
+prints the token count so you can pick another.
+
+Two layers keyed to tree.json `show` lists:
+    token-ids        arrows + boxed ids under each word
+    matrix-numbers   dashed connectors into a 5-column matrix where
+                     each column is one token's 768-dim vector,
+                     displayed as 3 top values | vertical ellipsis |
+                     3 bottom values. Bracket pair + size caption.
+
+Base (always visible): title and the prompt itself. The prompt is the
+subject being operated on — keeping it on-screen from the first frame
+avoids a sparse "just a title" state before the speaker starts
+revealing layers.
+
+Column-vector orientation (tokens as columns) matches the triad
+figure's right-side column vectors, so the transition
+sSpace → sMatrix → sMatrixb reads as "one vector → many stacked
+vectors" rather than a surprise transpose.
+"""
+
+from __future__ import annotations
+
+import os
+
+import numpy as np
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+REPO_ROOT  = os.path.dirname(SCRIPT_DIR)
+OUT_SVG    = os.path.join(REPO_ROOT, "interactive_talk", "resources",
+                          "embedding_matrix.svg")
+
+# Five common words, each a single BPE token in GPT-2. Stays pedagogical
+# (a short nursery-rhyme-ish phrase) while keeping the 1-word-1-token
+# invariant the figure depends on.
+PROMPT = "The cat sat on mat"
+
+WIDTH, HEIGHT = 720, 540
+
+# Colors — lifted from the broader talk palette.
+FG           = "#e8e8e8"
+TITLE_COLOR  = "#b8b8b8"
+DIM_COLOR    = "#888"
+ARROW_COLOR  = "#888"
+ID_COLOR     = "#d4a017"    # gold — token ids pop as "numbers not words"
+MATRIX_COLOR = "#fbbf24"    # amber — matches the "fresh" highlight
+LABEL_COLOR  = "#b8b8b8"
+
+# Layout anchors (y in SVG-down coordinates).
+WORD_Y   = 78
+ID_Y     = 170
+MAT_TOP  = 232
+ROW_H    = 28
+MAT_PAD  = 30           # horizontal inset from canvas edges to matrix bracket
+                        # — bracket sits outside the outermost token columns
+                        # (which at col_centers[0]=72 and [-1]=648 need
+                        # ~40px room for their ±0.XX values)
+N_SHOWN  = 7            # values displayed per column: 3 top + ⋮ + 3 bottom
+ELLIPSIS_ROW = 3        # 0-indexed position of ⋮ among the 7 shown
+
+
+def load_gpt2_data(prompt: str):
+    """Real GPT-2 tokenization + wte lookup.
+
+    Returns (ids, pieces, rows) where pieces are the decoded strings
+    (leading spaces preserved — we strip them at render time) and rows
+    is a (n_tokens, 768) numpy array sliced from wte.
+    """
+    tok = AutoTokenizer.from_pretrained("gpt2")
+    model = AutoModelForCausalLM.from_pretrained("gpt2")
+    ids = tok.encode(prompt)
+    pieces = [tok.decode([i]) for i in ids]
+    wte = model.transformer.wte.weight.detach().cpu().numpy()
+    rows = wte[ids]
+    return ids, pieces, rows
+
+
+def fmt_value(v: float) -> str:
+    """Always-signed, 2 decimals. Keeps columns of mixed positive /
+    negative values visually aligned in the matrix."""
+    return f"{v:+.2f}"
+
+
+def marker_def(id_: str, color: str) -> str:
+    return (
+        f'    <marker id="{id_}" viewBox="0 0 10 10" refX="9" refY="5" '
+        f'markerWidth="7" markerHeight="7" orient="auto-start-reverse">\n'
+        f'      <path d="M 0 0 L 10 5 L 0 10 z" fill="{color}"/>\n'
+        '    </marker>'
+    )
+
+
+def build_svg(ids: list[int], pieces: list[str],
+              rows: np.ndarray) -> str:
+    n = len(ids)
+    d = rows.shape[1]
+
+    # Word / id columns evenly spread across the canvas.
+    col_centers = [WIDTH * (k + 0.5) / n for k in range(n)]
+
+    # Matrix geometry. Tokens live as COLUMNS (one per token), each
+    # column being its full 768-dim vector; the vertical ellipsis
+    # inside each column compresses the 768 entries into 3 top + ⋮ +
+    # 3 bottom visible values. This matches the right-side column-
+    # vector convention used in the triad figure.
+    bx_l = MAT_PAD
+    bx_r = WIDTH - MAT_PAD
+    mat_top = MAT_TOP
+    mat_bot = MAT_TOP + N_SHOWN * ROW_H
+
+    lines: list[str] = []
+    lines.append(
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {WIDTH} {HEIGHT}" '
+        f'font-family="Iosevka, \'JetBrains Mono\', monospace">')
+    lines.append('  <!--')
+    lines.append('    Generated by workspace/build_interactive_embedding_matrix_svg.py')
+    lines.append(f'    Real GPT-2 ids + wte rows for prompt: {PROMPT!r}')
+    lines.append('  -->')
+
+    lines.append('  <defs>')
+    lines.append(marker_def("arrow-tok", ARROW_COLOR))
+    lines.append('  </defs>')
+
+    # --- Base: title only ---
+    lines.append(
+        f'  <text x="{WIDTH // 2}" y="32" text-anchor="middle" '
+        f'fill="{TITLE_COLOR}" font-size="15" font-weight="500">'
+        f'A {n}-word prompt becomes a {n}×{d} matrix of numbers'
+        '</text>')
+
+    # --- Base: prompt words (always visible) ---
+    lines.append('  <g font-size="20" font-weight="500">')
+    for k, piece in enumerate(pieces):
+        display = piece.lstrip()     # drop GPT-2's leading-space marker
+        cx = col_centers[k]
+        lines.append(
+            f'    <text x="{cx:.1f}" y="{WORD_Y}" '
+            f'text-anchor="middle" fill="{FG}">{display}</text>')
+    lines.append('  </g>')
+
+    # --- Layer: token-ids ---
+    lines.append('  <g class="layer" id="token-ids">')
+    # Down-arrows from each word to its id box.
+    for cx in col_centers:
+        lines.append(
+            f'    <line x1="{cx:.1f}" y1="{WORD_Y + 12}" '
+            f'x2="{cx:.1f}" y2="{ID_Y - 22}" '
+            f'stroke="{ARROW_COLOR}" stroke-width="1.2" '
+            f'marker-end="url(#arrow-tok)"/>')
+    # Id boxes.
+    box_w, box_h = 70, 30
+    for cx, tid in zip(col_centers, ids):
+        rx = cx - box_w / 2
+        ry = ID_Y - box_h / 2
+        lines.append(
+            f'    <rect x="{rx:.1f}" y="{ry:.1f}" '
+            f'width="{box_w}" height="{box_h}" '
+            f'fill="none" stroke="{ID_COLOR}" stroke-width="1.4" rx="3"/>')
+        lines.append(
+            f'    <text x="{cx:.1f}" y="{ID_Y + 5:.1f}" '
+            f'text-anchor="middle" fill="{ID_COLOR}" '
+            f'font-size="14" font-weight="600">{tid}</text>')
+    lines.append('  </g>')
+
+    # --- Layer: matrix-numbers ---
+    lines.append('  <g class="layer" id="matrix-numbers">')
+
+    # Dashed connectors id-box → matrix row. Straight vertical — they
+    # visually "stream down" into the matrix without the noise of
+    # crossing diagonals.
+    for cx in col_centers:
+        lines.append(
+            f'    <line x1="{cx:.1f}" y1="{ID_Y + 18}" '
+            f'x2="{cx:.1f}" y2="{mat_top - 6}" '
+            f'stroke="{ARROW_COLOR}" stroke-width="1.0" '
+            f'stroke-dasharray="3,3" opacity="0.55"/>')
+
+    # Bracket pair around the full matrix.
+    lines.append(
+        f'    <path d="M {bx_l + 12} {mat_top} L {bx_l} {mat_top} '
+        f'L {bx_l} {mat_bot} L {bx_l + 12} {mat_bot}" '
+        f'stroke="{DIM_COLOR}" stroke-width="1.8" fill="none"/>')
+    lines.append(
+        f'    <path d="M {bx_r - 12} {mat_top} L {bx_r} {mat_top} '
+        f'L {bx_r} {mat_bot} L {bx_r - 12} {mat_bot}" '
+        f'stroke="{DIM_COLOR}" stroke-width="1.8" fill="none"/>')
+
+    # Columns = tokens. Each column shows its first 3 and last 3 wte
+    # coordinates, joined by a vertical ellipsis ⋮. The first/last
+    # slice is an arbitrary pick — the point is that these are real
+    # GPT-2 numbers, not that a specific dimension matters.
+    for k in range(n):
+        vec = rows[k]
+        top_vals    = [fmt_value(v) for v in vec[:3]]
+        bottom_vals = [fmt_value(v) for v in vec[-3:]]
+        cx = col_centers[k]
+        for r in range(N_SHOWN):
+            if r == ELLIPSIS_ROW:
+                cell = "⋮"
+                color = DIM_COLOR
+                size = 18
+            elif r < ELLIPSIS_ROW:
+                cell = top_vals[r]
+                color = MATRIX_COLOR
+                size = 14
+            else:
+                cell = bottom_vals[r - ELLIPSIS_ROW - 1]
+                color = MATRIX_COLOR
+                size = 14
+            y = mat_top + (r + 0.5) * ROW_H + 5
+            lines.append(
+                f'    <text x="{cx:.1f}" y="{y:.1f}" '
+                f'text-anchor="middle" fill="{color}" '
+                f'font-size="{size}" font-weight="500" '
+                f'font-family="monospace">{cell}</text>')
+
+    # Size caption under the matrix.
+    lines.append(
+        f'    <text x="{WIDTH // 2}" y="{mat_bot + 32}" '
+        f'text-anchor="middle" fill="{LABEL_COLOR}" '
+        f'font-size="13" font-style="italic">'
+        f'{n} tokens × {d} dimensions — what the model actually reads'
+        '</text>')
+
+    lines.append('  </g>')
+
+    lines.append('</svg>')
+    return "\n".join(lines) + "\n"
+
+
+def main() -> None:
+    ids, pieces, rows = load_gpt2_data(PROMPT)
+    print(f"Prompt : {PROMPT!r}")
+    print(f"Tokens : {[repr(p) for p in pieces]}")
+    print(f"Ids    : {ids}")
+    if len(ids) != 5:
+        print(f"!! Expected 5 tokens, got {len(ids)}. "
+              f"The figure still renders (layout scales with n) but "
+              f"consider editing PROMPT if you want a clean 5-row matrix.")
+    svg = build_svg(ids, pieces, rows)
+    os.makedirs(os.path.dirname(OUT_SVG), exist_ok=True)
+    with open(OUT_SVG, "w") as f:
+        f.write(svg)
+    print(f"Wrote {OUT_SVG}")
+
+
+if __name__ == "__main__":
+    main()

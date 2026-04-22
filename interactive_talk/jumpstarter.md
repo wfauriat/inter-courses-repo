@@ -74,14 +74,24 @@ sRoot
 └── sMachin → sInWork
     ├── sTok
     ├── sEmb
-    │   ├── sSpace → sClust1 → sClust2 → sClust3 → sClust4
-    │   │   (token-as-vector + 2D cluster reveal)
-    │   └── sArithm → sCap1..sCap4 → sVeh1..sVeh4
-    │       (vector arithmetic analogies)
+    │   ├── sSpace → sMatrix → sMatrixb
+    │   │        → sClust1 → sClust2 → sClust3 → sClust4
+    │   │   (layman trunk: vector → matrix → 2D cluster reveal)
+    │   ├── sArithm → sCap1..sCap4 → sVeh1..sVeh4
+    │   │   (technical sibling: vector arithmetic analogies)
+    │   └── sPos → sPosb
+    │       (technical sibling: positional embedding, text-only placeholder)
     ├── sAttn
     ├── sTrans
     └── sTrain
 ```
+
+The `sSpace → sMatrix → sMatrixb` spine is the layman trunk: single
+vector → stacked vectors as the actual model input → 2D projection to
+semantic clusters. The `sArithm → sCap* → sVeh*` and `sPos → sPosb`
+branches are the technical siblings (vector arithmetic and
+positional embedding); both are intentionally skippable for a layman
+audience.
 
 The `sAttn` / `sTrans` / `sTrain` branches are placeholders — they have
 intro nodes but no downstream content or figures yet. Much of the
@@ -179,8 +189,12 @@ with data; hand-edited SVGs drift.
   arithmetic).
 - `attention_workshop.py` — GPT-2 attention probing. Will back the
   `sAttn` figures when those get built.
-- `GPT_arch_workshop.py` — GPT-2 architecture internals. Will back
-  the `sTrans` / `sTrain` figures.
+- `GPT_arch_workshop.py` — GPT-2 architecture internals. Also the
+  source model (tokenizer + `wte`) for
+  `build_interactive_embedding_matrix_svg.py` — that generator
+  skips the `ModelBackend` wrapper and talks to `transformers`
+  directly since it only needs `tok.encode` and one `wte[ids]`
+  slice (no forward pass).
 
 **Mock-geometry generators** are allowed too — no backend, hand-picked
 coordinates, for pedagogical anchors where real data isn't useful.
@@ -201,6 +215,7 @@ with two arbitrary mock vectors, no embedding lookup.
 | `build_interactive_embedding_svg.py` | `embedding.svg` | `animals`, `verbs`, `stats-terms`, `royalty` |
 | `build_interactive_analogy_svg.py` | `embedding_analogy_capital.svg`, `embedding_analogy_vehicle.svg` | `capital-words`, `capital-sub`, `capital-add`, `capital-resolve`; same pattern with `vehicle-*` |
 | `build_interactive_token_vector_svg.py` | `token_vector.svg` | `id1`, `id2` |
+| `build_interactive_embedding_matrix_svg.py` | `embedding_matrix.svg` | `token-ids`, `matrix-numbers` (prompt text is base) |
 
 **Typical workflow to add a new figure:**
 1. Pick the workshop that has the data/math (or decide it's mock).

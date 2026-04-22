@@ -34,6 +34,8 @@
     "sTok":   { "text": "[[Tokenization]]: before anything else, text is sliced into tokens — subword fragments drawn from a fixed vocabulary (on the order of 50k entries for GPT-2).", "mode": "rewrite" },
     "sEmb":   { "text": "[[Embedding]]: each token is then turned into a vector — a list of numbers the model can actually do arithmetic on.", "mode": "rewrite" },
     "sSpace":  { "text": "Each token becomes a [[vector]] — a list of numerical coordinates in a high-dimensional space. Distance in that space stands in for meaning.", "mode": "rewrite", "figure": { "svg": "resources/token_vector.svg", "show": ["id1", "id2"] } },
+    "sMatrix": { "text": "A whole prompt is just a [[sequence of such vectors]], stacked row-by-row. Tokenization first turns the text into a handful of [[integer token ids]].", "mode": "rewrite", "figure": { "svg": "resources/embedding_matrix.svg", "show": ["token-ids"] } },
+    "sMatrixb": { "text": "Then the embedding table swaps each id for a 768-dim column. The prompt is now a 768x5 matrix of real numbers — [[this is what the model actually reads]].", "mode": "rewrite", "figure": { "svg": "resources/embedding_matrix.svg", "show": ["token-ids", "matrix-numbers"] } },
     "sClust1": { "text": "Project the space down to 2D and clusters emerge. [[Animal words]] land near each other -- cat, dog, fish, bird.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals"] } },
     "sClust2": { "text": "[[Action verbs]] carve out their own region -- predict, simulate, compute, estimate.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs"] } },
     "sClust3": { "text": "[[Statistical terms]] cluster elsewhere -- probability, variance, posterior, distribution.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs", "stats-terms"] } },
@@ -45,12 +47,18 @@
     "sCap3": { "text": "Then add the [[germany]] vector — a different country.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_capital.svg", "show": ["capital-words", "capital-sub", "capital-add"] } },
     "sCap4": { "text": "You land right next to [[berlin]]. The relation 'capital-of-country' lives as a [[direction]] in the space.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_capital.svg", "show": ["capital-words", "capital-sub", "capital-add", "capital-resolve"] } },
 
-    "sVeh1": { "text": "The pattern is general. Try [[plane − air + sea]].", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_vehicle.svg", "show": ["vehicle-words"] } },
+    "sVeh1": { "text": "The pattern is general. Try [[plane - air + sea]].", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_vehicle.svg", "show": ["vehicle-words"] } },
     "sVeh2": { "text": "Subtract the [[air]] vector — peel off the medium.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_vehicle.svg", "show": ["vehicle-words", "vehicle-sub"] } },
     "sVeh3": { "text": "Add the [[sea]] vector — a different medium.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_vehicle.svg", "show": ["vehicle-words", "vehicle-sub", "vehicle-add"] } },
     "sVeh4": { "text": "Land right next to [[boat]]. Same geometry, different meaning.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_vehicle.svg", "show": ["vehicle-words", "vehicle-sub", "vehicle-add", "vehicle-resolve"] } },
 
-    "sAttn":  { "text": "[[Attention]]: at each layer, every token gets to look at the others and reweight them by relevance — this is the mechanism by which context shapes meaning.", "mode": "rewrite" },
+    "sPos":  { "text": "Word order matters. [[dog chases cat]] vs [[cat chases dog]] — same tokens, opposite meanings. But so far each token's vector stays the same wherever it sits in the prompt.", "mode": "rewrite" },
+    "sPosb": { "text": "Word order matters. dog chases cat vs cat chases dog — same tokens, opposite meanings. But so far each token's vector stays the same wherever it sits in the prompt.\n\nGPT-2 handles position with a second embedding — [[wpe]], one 768-dim vector per position — added element-wise to the wte row. The matrix stays [[5x768]], but identical tokens at different positions now carry different rows." },
+
+    "sAttn":       { "text": "[[Attention]]: at each layer, every token gets to look at the others and reweight them by relevance — this is the mechanism by which context shapes meaning.", "mode": "rewrite" },
+    "sAttnBank":   { "text": "Take one ambiguous word — [[bank]] — in two sentences. Same token, same embedding row; nothing in 'bank' alone tells you which meaning is in play.", "mode": "rewrite", "figure": { "svg": "resources/bank_attention.svg", "show": [] } },
+    "sAttnBankR":  { "text": "In the first sentence, [[fishing]] pulls hardest on bank's meaning. Arc strength is attention — the model weighs which neighbors to look at. Bank becomes [[river-bank]].", "mode": "rewrite", "figure": { "svg": "resources/bank_attention.svg", "show": ["attention-river"] } },
+    "sAttnBankM":  { "text": "In the second, [[deposit]] does the same work — bank becomes [[money-bank]]. Same word, same starting vector. Different neighbors → different meaning.", "mode": "rewrite", "figure": { "svg": "resources/bank_attention.svg", "show": ["attention-river", "attention-money"] } },
     "sTrans": { "text": "The [[transformer]]: many attention layers stacked into a single machine that reads a next-token probability distribution off the top of the stack.", "mode": "rewrite" },
     "sTrain": { "text": "[[Pre-training]]: the weights are fixed by running the machine across trillions of tokens of raw text, each time nudging it to predict the next token a little better.", "mode": "rewrite" }
   },
@@ -93,10 +101,14 @@
           "sTok": {},
           "sEmb": {
             "sSpace": {
-              "sClust1": {
-                "sClust2": {
-                  "sClust3": {
-                    "sClust4": {}
+              "sMatrix": {
+                "sMatrixb": {
+                  "sClust1": {
+                    "sClust2": {
+                      "sClust3": {
+                        "sClust4": {}
+                      }
+                    }
                   }
                 }
               }
@@ -117,9 +129,18 @@
                   }
                 }
               }
+            },
+            "sPos": {
+              "sPosb": {}
             }
           },
-          "sAttn": {},
+          "sAttn": {
+            "sAttnBank": {
+              "sAttnBankR": {
+                "sAttnBankM": {}
+              }
+            }
+          },
           "sTrans": {},
           "sTrain": {}
         }
