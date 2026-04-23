@@ -25,8 +25,8 @@
      inkscape:deskcolor="#d1d1d1"
      showgrid="false"
      inkscape:zoom="1.3350176"
-     inkscape:cx="405.2381"
-     inkscape:cy="239.32269"
+     inkscape:cx="396.99851"
+     inkscape:cy="240.07174"
      inkscape:window-width="1854"
      inkscape:window-height="1131"
      inkscape:window-x="66"
@@ -38,13 +38,14 @@
     Schematic figure — attention weights hand-chosen, not model output.
   -->
   <text
-     x="372"
+     x="378"
      y="58"
      text-anchor="middle"
      fill="#b8b8b8"
      font-size="17px"
      font-weight="500"
-     id="text450">Attention — a word takes on meaning from the neighbors it looks at</text>
+     id="text450"
+     style="font-size:17.3333px">Attention — a word takes on meaning from the neighbors it looks at</text>
   <text
      x="372"
      y="86"
@@ -52,15 +53,18 @@
      fill="#8a8a8a"
      font-size="14px"
      font-style="italic"
-     id="text452"><tspan
+     id="text452"
+     style="font-size:14.6667px"><tspan
        sodipodi:role="line"
        id="tspan1408"
        x="372"
-       y="86">same word: bank</tspan><tspan
+       y="86"
+       style="font-size:14.6667px">same word: bank</tspan><tspan
        sodipodi:role="line"
        id="tspan1410"
        x="372"
-       y="103.5">two sentences: different neighbors, different meaning</tspan></text>
+       y="104.33334"
+       style="font-size:14.6667px">two sentences: different neighbors, different meaning</tspan></text>
   <text
      x="280.5"
      y="228"
@@ -202,7 +206,8 @@
        fill="none"
        opacity="0.55"
        stroke-linecap="round"
-       id="path480" />
+       id="path480"
+       style="stroke-width:2;stroke-dasharray:none" />
     <path
        d="M 400.3,196 Q 514.1,22.9 628,196"
        stroke="#555555"
@@ -210,7 +215,8 @@
        fill="none"
        opacity="0.55"
        stroke-linecap="round"
-       id="path482" />
+       id="path482"
+       style="stroke-width:2.5;stroke-dasharray:none" />
     <path
        d="M 469.6,196 Q 548.8,75.6 628,196"
        stroke="#fbbf24"
@@ -237,7 +243,8 @@
        font-size="15px"
        font-style="italic"
        letter-spacing="0.5"
-       id="text488">↓ water · shore · fishing</text>
+       id="text488"
+       style="font-size:16px">↓ water · shore · fishing</text>
   </g>
   <g
      class="layer"
@@ -250,7 +257,8 @@
        fill="none"
        opacity="0.55"
        stroke-linecap="round"
-       id="path491" />
+       id="path491"
+       style="stroke-width:1.8;stroke-dasharray:none" />
     <path
        d="M 369.5,366 Q 498.7,176 628,366"
        stroke="#555555"
@@ -258,7 +266,8 @@
        fill="none"
        opacity="0.55"
        stroke-linecap="round"
-       id="path493" />
+       id="path493"
+       style="stroke-width:2.2;stroke-dasharray:none" />
     <path
        d="M 469.6,366 Q 548.8,245.6 628,366"
        stroke="#fbbf24"
@@ -285,6 +294,7 @@
        font-size="15px"
        font-style="italic"
        letter-spacing="0.5"
-       id="text499">↓ money · account · deposit</text>
+       id="text499"
+       style="font-size:16px">↓ money · account · deposit</text>
   </g>
 </svg>

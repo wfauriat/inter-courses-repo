@@ -23,7 +23,7 @@
      inkscape:deskcolor="#d1d1d1"
      showgrid="false"
      inkscape:zoom="1.0766271"
-     inkscape:cx="401.25314"
+     inkscape:cx="391.03604"
      inkscape:cy="296.76013"
      inkscape:window-width="1854"
      inkscape:window-height="1131"
@@ -69,35 +69,35 @@
   </defs>
   <text
      x="422"
-     y="24"
+     y="28"
      text-anchor="middle"
      fill="#b8b8b8"
      font-size="17"
      font-weight="500"
      id="text2634"
-     style="font-size:18.6667px">The MLP block — a bank of learned patterns</text>
+     style="font-size:20px">The MLP block — a bank of learned patterns</text>
   <text
      x="422"
-     y="48"
+     y="52"
      text-anchor="middle"
      fill="#8a8a8a"
      font-size="14px"
      font-style="italic"
      id="text2636"
-     style="font-size:14.6667px"><tspan
+     style="font-size:16px"><tspan
        sodipodi:role="line"
        id="tspan3778"
-       x="421.99997"
-       y="48"
-       style="font-size:14.6667px">after attention step, each layer applies ~768x4 pattern-detectors</tspan><tspan
+       x="422"
+       y="52"
+       style="font-size:16px">after attention step, each layer applies ~768x4 pattern-detectors</tspan><tspan
        sodipodi:role="line"
        id="tspan3780"
        x="422"
-       y="66.333374"
-       style="font-size:14.6667px">to the contextualized token</tspan></text>
+       y="72"
+       style="font-size:16px">to the contextualized token</tspan></text>
   <rect
      x="222"
-     y="112"
+     y="116"
      width="410"
      height="360"
      fill="none"
@@ -109,26 +109,27 @@
      id="rect2638" />
   <text
      x="427"
-     y="98"
+     y="102"
      text-anchor="middle"
      fill="#b8b8b8"
      font-size="15px"
      font-weight="600"
      font-style="italic"
-     id="text2640">MLP block (768 x 4 hidden neurons)</text>
+     id="text2640"
+     style="font-size:16px">MLP block (768 x 4 hidden neurons)</text>
   <text
      x="427"
-     y="494"
+     y="498"
      text-anchor="middle"
      fill="#777777"
      font-size="13"
      font-style="italic"
      id="text2642"
-     style="font-size:14.6667px">768 → 3072 hidden → 768</text>
+     style="font-size:16px">768 → 3072 hidden → 768</text>
   <g
      class="layer"
      id="mlp-input"
-     transform="translate(-54,-18)">
+     transform="translate(-54,-14)">
     <line
        x1="70"
        y1="310"
@@ -146,7 +147,7 @@
        font-size="14"
        font-weight="600"
        id="text2646"
-       style="font-size:14.6667px">contextualized ‘tower’</text>
+       style="font-size:16px">contextualized ‘tower’</text>
     <text
        x="165"
        y="332"
@@ -155,20 +156,22 @@
        font-size="12"
        font-style="italic"
        id="text2648"
-       style="font-size:14.6667px"><tspan
+       style="font-size:16px"><tspan
          sodipodi:role="line"
          id="tspan3836"
          x="165"
-         y="332">vector written</tspan><tspan
+         y="332"
+         style="font-size:16px">vector written</tspan><tspan
          sodipodi:role="line"
          id="tspan3838"
          x="165"
-         y="350.33337">by attention</tspan></text>
+         y="352"
+         style="font-size:16px">by attention</tspan></text>
   </g>
   <g
      class="layer"
      id="mlp-library"
-     transform="translate(-58,-18)">
+     transform="translate(-58,-14)">
     <circle
        cx="308"
        cy="170"
@@ -1577,12 +1580,12 @@
        font-size="12px"
        font-style="italic"
        id="text3051"
-       style="font-size:14.6667px">~3072 learned “pattern-detectors”</text>
+       style="font-size:16px">~3072 learned “pattern-detectors”</text>
   </g>
   <g
      class="layer"
      id="mlp-firing"
-     transform="translate(-58,-18)">
+     transform="translate(-58,-14)">
     <circle
        cx="401.20001"
        cy="170"
@@ -1752,12 +1755,12 @@
        font-size="13"
        font-style="italic"
        id="text3100"
-       style="font-size:14.6667px">only a handful fire strongly on this input</text>
+       style="font-size:16px">only a handful fire strongly on this input</text>
   </g>
   <g
      class="layer"
      id="mlp-labels"
-     transform="translate(-58,-18)">
+     transform="translate(-58,-14)">
     <line
        x1="345.29999"
        y1="201.10001"
@@ -1855,7 +1858,7 @@
   <g
      class="layer"
      id="mlp-output"
-     transform="translate(-46,-18)">
+     transform="translate(-46,-14)">
     <line
        x1="710"
        y1="310"
@@ -1866,14 +1869,14 @@
        marker-end="url(#arrow-out)"
        id="line3122" />
     <text
-       x="800"
+       x="802"
        y="296"
        text-anchor="middle"
        fill="#fbbf24"
        font-size="14"
        font-weight="600"
        id="text3124"
-       style="font-size:14.6667px">+ ‘landmark-like’ features</text>
+       style="font-size:16px">+‘landmark-like’ features</text>
     <text
        x="800"
        y="332"
@@ -1882,14 +1885,16 @@
        font-size="12"
        font-style="italic"
        id="text3126"
-       style="font-size:14.6667px"><tspan
+       style="font-size:16px"><tspan
          sodipodi:role="line"
          id="tspan3840"
          x="800"
-         y="332">written into</tspan><tspan
+         y="332"
+         style="font-size:16px">written into</tspan><tspan
          sodipodi:role="line"
          id="tspan3842"
          x="800"
-         y="350.33337">‘tower’ residual</tspan></text>
+         y="352"
+         style="font-size:16px">‘tower’ residual</tspan></text>
   </g>
 </svg>

@@ -34,7 +34,11 @@ speaker can branch live.
 **Viewer (don't touch unless you need to):**
 - `index.html` — minimal shell; loads `app.js` + `style.css`.
 - `app.js` (~550 lines) — all logic. Summary below.
-- `style.css` (~170 lines) — teletype aesthetic + figure panel. Summary below.
+- `style.css` (~200 lines) — teletype aesthetic + figure panel + minimap. Summary below.
+- `index_v2.html` + `app_v2.js` — **v2 variant** with a tips-only minimap
+  above the breadcrumb. Same shell, same content, extra nav widget.
+  `app.js` stays untouched so v1 is always a working fallback.
+  See § "Minimap (v2)" below.
 
 **Design:**
 - `specs.md` — **source of truth for viewer behavior and authoring
@@ -51,6 +55,9 @@ Node fields: `text` (required), `mode` (`"rewrite"` or default `"diff"`),
 `figure` (optional — `"foo.png"` for static, or
 `{ "svg": "foo.svg", "show": ["layer-id", ...] }` for layered).
 
+Top-level fields: `root` (id), `nodes` (map), `tree` (outline),
+`tips` (optional array — used by the v2 minimap; see § "Minimap (v2)").
+
 `[[word or phrase]]` marks highlights (rendered via `.fresh` class).
 Avoid pure integer keys (`"0"`, `"1"`) — JSON parsers reorder those.
 See the naming convention below.
@@ -64,49 +71,63 @@ meaning as the tree gets reshuffled — semantic names stay stable and
 read cleanly in diffs. Pure integer keys (`"0"`, `"42"`) are the one
 thing to avoid: JSON parsers reorder them ahead of strings.
 
-**Current tree shape** (as of 2026-04-23):
+**Current tree shape** (as of 2026-04-24; regenerate with
+`python3 -c "import json; d=json.load(open('tree.json'))" ...` or just
+walk the outline if unsure — it drifts often):
 ```
 sRoot
-├── sUse / sUseb / sUsec → sUE1..sUE4 (each with a b-variant) + sUTrans
+├── sUse → sUseb → sUsec → sUE1..sUE4 (each with b-variant) + sUTrans
 │   (chatbot intro + concrete examples + transition)
-├── sNextWord / sNextWordb / sNextWordc
-│       → sGen / sGenb / sGenc / sGend
-│       → sStats / sStatsb / sStatsc
+├── sNextWord → sNextWordb → sNextWordc
+│       → sGen → sGenb → sGenc → sGend
+│       → sStats → sStatsb → sStatsc
 │       → sNTP
 │   (next-token-prediction backbone)
-└── sMachin → sInWork
-    ├── sTok
+└── sMachin → sInWork → sInWorkb
+    ├── sTok → sTokb → sTokSol → sTokSolb
+    │   (tokenization chapter, text-only)
     ├── sEmb
-    │   ├── sSpace → sMatrix → sMatrixb
-    │   │        → sClust1 → sClust2 → sClust3 → sClust4
-    │   │   (layman trunk: vector → matrix → 2D cluster reveal)
-    │   ├── sArithm → sCap1..sCap4 → sVeh1..sVeh4
-    │   │   (technical sibling: vector arithmetic analogies)
+    │   ├── sSpace → sSpaceb → sMatrix → sMatrixb → sMatrixc
+    │   │   (vector coords + matrix-of-vectors intro)
+    │   ├── sEmbLogic → sClust → sClustb → sClust1..sClust4
+    │   │   (what embeddings encode → 2D projection, cluster reveal)
+    │   ├── sArithm → sCap1..sCap4
+    │   │   (analogy geometry — country/capital)
+    │   ├── sVeh1..sVeh4 → sEmbConcl → sEmbConclb → sEmbConclc
+    │   │   (vehicle analogy + embedding-chapter wrap-up)
     │   └── sPos → sPosb
-    │       (technical sibling: positional embedding, text-only placeholder)
-    ├── sAttn → sAttnBank → sAttnBankR → sAttnBankM → sAttnBankH → sAttnWrap
-    │   (schematic "bank" example → heads as subspace filters → synthesis)
+    │       (positional embedding, text-only)
+    ├── sAttn → sAttnb → sAttnc
+    │        → sAttnBank → sAttnBankR → sAttnBankM
+    │        → sAttnBankH → sAttnBankHb → sAttnBankHc → sAttnWrap
+    │   (attention setup → schematic "bank" example → heads as subspace
+    │    filters → synthesis)
     ├── sTrans → sTransEif → sTransEifArc → sTransEifDrift
     │          → sTransMLP → sTransMLPBank → sTransMLPFire → sTransMLPWrite
     │          → sTransWrap
     │          → sArch → sArchShapes → sArchParams → sArchZoom
-    │   (transformer intro → Eiffel attention example → MLP "bank of
-    │    learned patterns" companion figure → three-mechanic wrap-up →
-    │    architecture capstone: full GPT-2 data-flow pipeline with
-    │    shapes, parameter counts, and a block-zoom reveal; closes the
-    │    machinery section before pre-training. Data-driven where clean,
-    │    schematic-with-real-measurements where individual
-    │    interpretation breaks down)
+    │   (transformer intro → Eiffel attention → MLP "bank of
+    │    learned patterns" → three-mechanic wrap-up → architecture
+    │    capstone. Data-driven where clean, schematic-with-real-
+    │    measurements where individual interpretation breaks down)
     └── sTrain → sTrainData → sTrainStep → sTrainEmerge → sTrainEff
         (what training does + why the weird machinery works; text-only)
 ```
 
-The `sSpace → sMatrix → sMatrixb` spine is the layman trunk: single
-vector → stacked vectors as the actual model input → 2D projection to
-semantic clusters. The `sArithm → sCap* → sVeh*` and `sPos → sPosb`
-branches are the technical siblings (vector arithmetic and
-positional embedding); both are intentionally skippable for a layman
-audience.
+Embedding fans out into five sub-branches under `sEmb`:
+- `sSpace → … → sMatrixc` — vector-coords intro and the matrix of
+  stacked token vectors (what the model actually reads).
+- `sEmbLogic → sClust → sClustb → sClust1..sClust4` — what embeddings
+  encode, then 2D-projected cluster reveal.
+- `sArithm → sCap1..sCap4` — analogy geometry via country/capital.
+- `sVeh1..sVeh4 → sEmbConcl*` — vehicle analogy + chapter wrap-up.
+- `sPos → sPosb` — positional embedding (technical sibling).
+
+`sClust1` used to sit at the tail of the `sSpace → sMatrix` chain —
+it was split out into its own sub-branch so the minimap (and the talk
+flow) treats 2D clusters as a first-class stop rather than buried in
+the matrix chain. `sArithm`, `sVeh*`, and `sPos` are intentionally
+skippable for a layman audience.
 
 The `sTrans → sTransEif*` chain uses the Eiffel example sentence
 ("In Paris today, I climbed the 1000+ steps of the famous old iron
@@ -195,6 +216,79 @@ keyframe (fade 0→1). Asymmetric fade-in / fade-out via
 visible.
 
 **Cursor:** `#cursor` blinks via CSS animation (1.06s cycle).
+
+---
+
+## Minimap (v2 viewer)
+
+A compact navigation skeleton above the breadcrumb, opt-in via
+`index_v2.html` (which loads `app_v2.js`). `app.js` stays untouched —
+`app_v2.js` is `app.js` + a minimap module at the bottom (~200 lines).
+CSS lives in the shared `style.css` under a scoped `#minimap` block; it
+has no effect when the v1 shell is loaded (the element doesn't exist).
+
+**What it shows.** Only "tip" nodes as dots. Tips come from the
+`tips` field in `tree.json` (user-curated list of chapter markers):
+
+```json
+"tips": ["sRoot", "sUse", "sNextWord", "sMachin",
+         "sTok", "sEmb", "sClust1", "sArithm", "sPos",
+         "sAttn", "sTrans", "sTrain"]
+```
+
+Content nodes (refinements between tips) are **not rendered as dots**.
+They collapse into:
+- **Inter-tip edges** whose length ∝ count of countable content nodes
+  between parent tip and child tip. Typically short (0–1).
+- **Trailing lines** past leaf tips whose length ∝ countable content
+  in the tip's sub-tree. This is where the "big chapter = long branch"
+  visual comes from (e.g. `sTrans` has 12 trailing content nodes).
+
+A node is "countable" iff `node.mode === 'rewrite'` (see
+`countsAsContent` in `app_v2.js`). Diff-mode nodes are skipped. This
+includes rewrites that reuse an SVG via `show` changes (e.g. `sClust2-4`,
+`sCap*`, `sArchShapes/Params/Zoom`) — those *are* real content steps
+even though they share a figure.
+
+**Cursor.** Closest tip ancestor of `currentId` gets amber fill + glow.
+For leaf tips, a second amber line (progress overlay) extends along
+the trail to `tip.x + (preorderPos / (subtreeSize-1)) × trailLen`,
+giving a smooth slide as the user steps through the chapter's content.
+Non-leaf tips don't get a trail yet — their cursor sits on the tip dot.
+
+**Navigation feedback is eager.** `goTo` commits `currentId`, path,
+breadcrumb, and minimap *before* the text animation starts (edit in
+`app_v2.js:goTo`). The cursor jumps to target on keypress/click; the
+text types out behind it.
+
+**Click-to-jump.** Each tip dot is clickable → jumps directly to that
+tip. Same animation guard as keyboard.
+
+**Layout knobs** (top of `computeMinimapLayout` in `app_v2.js`):
+- `COLW` (viewBox units per content-step) — scales inter-tip edges
+  *and* trails. Bigger = stretched branches.
+- `laneH` — vertical spacing between sibling lanes.
+- `MIN_EDGE` — floor on inter-tip edge length so 0-content edges still
+  render as visible connectors.
+
+**Styling knobs** (`#minimap` in `style.css`):
+- `width: min(420px, 60vw)` caps display size; viewBox scales to fit.
+- `opacity: 0.35` default / `0.9` on hover — kept quiet so it doesn't
+  compete with the stage during presentation.
+- `.mm-trail` (dim base), `.mm-trail-progress` (amber overlay).
+- `.mm-node.mm-current { r: 3.4 }` — bump dot radius for the current.
+
+**Falling back to v1.** If something breaks in v2, open `index.html`
+instead. The two entry points share `tree.json`, `style.css`, and
+`resources/`, so content edits land in both.
+
+**Known not-done.** `sEmb` is a non-leaf tip (has child tips
+`sClust1`, `sArithm`, `sPos`) so it doesn't draw a trail. The `sSpace`
+and `sVeh1` chains under `sEmb` are orphan content — not on any
+child-tip path — and currently render as nothing. Two fixes: (a) add
+`sSpace` and/or `sVeh1` to `tips` to promote them to leaf tips with
+their own trails, or (b) extend the minimap to render orphan trails on
+non-leaf tips (short perpendicular ticks, say).
 
 ---
 

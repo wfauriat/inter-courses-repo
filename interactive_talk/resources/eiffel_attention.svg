@@ -25,8 +25,8 @@
      inkscape:deskcolor="#d1d1d1"
      showgrid="false"
      inkscape:zoom="0.85578051"
-     inkscape:cx="317.83851"
-     inkscape:cy="406.06206"
+     inkscape:cx="403.14075"
+     inkscape:cy="471.4994"
      inkscape:window-width="1854"
      inkscape:window-height="1131"
      inkscape:window-x="66"
@@ -57,10 +57,10 @@
      font-size="14px"
      font-style="italic"
      id="text877"
-     style="font-size:14.6667px">the model's representation of the 'tower' token drifts in meaning-space</text>
+     style="font-size:16px">the model's representation of the 'tower' token drifts in meaning-space</text>
   <text
      x="27.199997"
-     y="208"
+     y="214"
      text-anchor="middle"
      fill="#e8e8e8"
      font-size="17px"
@@ -69,7 +69,7 @@
      id="text879">In</text>
   <text
      x="76.5"
-     y="208"
+     y="214"
      text-anchor="middle"
      fill="#e8e8e8"
      font-size="17px"
@@ -78,7 +78,7 @@
      id="text881">Paris</text>
   <text
      x="141.60001"
-     y="208"
+     y="214"
      text-anchor="middle"
      fill="#e8e8e8"
      font-size="17px"
@@ -87,7 +87,7 @@
      id="text883">today</text>
   <text
      x="185.7"
-     y="208"
+     y="214"
      text-anchor="middle"
      fill="#e8e8e8"
      font-size="17px"
@@ -96,7 +96,7 @@
      id="text885">,</text>
   <text
      x="208.79999"
-     y="208"
+     y="214"
      text-anchor="middle"
      fill="#e8e8e8"
      font-size="17px"
@@ -105,7 +105,7 @@
      id="text887">I</text>
   <text
      x="263.39999"
-     y="208"
+     y="214"
      text-anchor="middle"
      fill="#e8e8e8"
      font-size="17px"
@@ -114,7 +114,7 @@
      id="text889">climbed</text>
   <text
      x="328.5"
-     y="208"
+     y="214"
      text-anchor="middle"
      fill="#e8e8e8"
      font-size="17px"
@@ -123,7 +123,7 @@
      id="text891">the</text>
   <text
      x="377.89999"
-     y="208"
+     y="214"
      text-anchor="middle"
      fill="#e8e8e8"
      font-size="17px"
@@ -132,7 +132,7 @@
      id="text893">1000</text>
   <text
      x="416.79999"
-     y="208"
+     y="214"
      text-anchor="middle"
      fill="#e8e8e8"
      font-size="17px"
@@ -141,7 +141,7 @@
      id="text895">+</text>
   <text
      x="460.90002"
-     y="208"
+     y="214"
      text-anchor="middle"
      fill="#e8e8e8"
      font-size="17px"
@@ -150,7 +150,7 @@
      id="text897">steps</text>
   <text
      x="510.20001"
-     y="208"
+     y="214"
      text-anchor="middle"
      fill="#e8e8e8"
      font-size="17px"
@@ -159,7 +159,7 @@
      id="text899">of</text>
   <text
      x="549.09998"
-     y="208"
+     y="214"
      text-anchor="middle"
      fill="#e8e8e8"
      font-size="17px"
@@ -168,7 +168,7 @@
      id="text901">the</text>
   <text
      x="608.90002"
-     y="208"
+     y="214"
      text-anchor="middle"
      fill="#e8e8e8"
      font-size="17px"
@@ -177,7 +177,7 @@
      id="text903">famous</text>
   <text
      x="668.79999"
-     y="208"
+     y="214"
      text-anchor="middle"
      fill="#e8e8e8"
      font-size="17px"
@@ -186,7 +186,7 @@
      id="text905">old</text>
   <text
      x="718.09998"
-     y="208"
+     y="214"
      text-anchor="middle"
      fill="#e8e8e8"
      font-size="17px"
@@ -195,7 +195,7 @@
      id="text907">iron</text>
   <text
      x="778"
-     y="208"
+     y="214"
      text-anchor="middle"
      fill="#e8e8e8"
      font-size="17px"
@@ -297,7 +297,7 @@
   <g
      class="layer"
      id="sentence-amber"
-     transform="translate(-58,-2)"
+     transform="translate(-58,4)"
      style="display:inline">
     <text
        x="836"
@@ -331,7 +331,8 @@
        font-size="12px"
        font-style="italic"
        opacity="0.85"
-       id="text944">α≈0.01</text>
+       id="text944"
+       style="font-size:13.3333px">α≈0.01</text>
     <path
        d="M 666.9,186 Q 751.4,77.8 836,186"
        stroke="#fbbf24"
@@ -348,7 +349,8 @@
        font-size="12px"
        font-style="italic"
        opacity="0.85"
-       id="text948">α≈0.08</text>
+       id="text948"
+       style="font-size:13.3333px">α≈0.08</text>
     <path
        d="m 726.8,186 q 54.6,-69.9 109.2,0"
        stroke="#fbbf24"
@@ -365,7 +367,8 @@
        font-size="12px"
        font-style="italic"
        opacity="0.85"
-       id="text952">α≈0.10</text>
+       id="text952"
+       style="font-size:13.3333px">α≈0.10</text>
     <path
        d="M 776.1,186 Q 806,147.7 836,186"
        stroke="#fbbf24"
@@ -375,17 +378,18 @@
        stroke-linecap="round"
        id="path954" />
     <text
-       x="753.65002"
-       y="187.30539"
+       x="749.65002"
+       y="197.30539"
        text-anchor="middle"
        fill="#fbbf24"
        font-size="12px"
        font-style="italic"
        opacity="0.85"
-       id="text956">α≈0.19</text>
+       id="text956"
+       style="font-size:13.3333px">α≈0.19</text>
     <text
        x="836"
-       y="210"
+       y="216"
        text-anchor="middle"
        fill="#fbbf24"
        font-size="17px"
@@ -394,7 +398,7 @@
        id="text958">tower</text>
     <text
        x="776.09998"
-       y="210"
+       y="216"
        text-anchor="middle"
        fill="#fbbf24"
        font-size="17px"
@@ -403,7 +407,7 @@
        id="text960">iron</text>
     <text
        x="726.79999"
-       y="210"
+       y="216"
        text-anchor="middle"
        fill="#fbbf24"
        font-size="17px"
@@ -412,7 +416,7 @@
        id="text962">old</text>
     <text
        x="666.90002"
-       y="210"
+       y="216"
        text-anchor="middle"
        fill="#fbbf24"
        font-size="17px"
@@ -421,7 +425,7 @@
        id="text964">famous</text>
     <text
        x="134.5"
-       y="210"
+       y="216"
        text-anchor="middle"
        fill="#fbbf24"
        font-size="17px"
@@ -649,7 +653,7 @@
       </marker>
     </defs>
     <path
-       d="m 357.2,359.8 c 213.5,-9.9 324.9,120.5 353.4,256.7"
+       d="m 357.2,359.8 c 213.5,-9.9 321.91541,110.20111 350.41541,246.40111"
        stroke="#e8b649"
        stroke-width="2.4"
        fill="none"
@@ -657,7 +661,8 @@
        stroke-linecap="round"
        stroke-linejoin="round"
        marker-end="url(#arrow-traj)"
-       id="path1024" />
+       id="path1024"
+       sodipodi:nodetypes="cc" />
     <circle
        cx="473.20001"
        cy="369.60001"
@@ -702,17 +707,17 @@
        font-weight="600"
        id="text1036">end (layer 12)</text>
     <text
-       x="685.20001"
+       x="687.20001"
        y="618.90002"
        text-anchor="end"
        fill="#8a8a8a"
        font-size="12px"
        font-style="italic"
        id="text1038"
-       style="font-size:13.3333px"><tspan
-         style="font-size:13.3333px;fill:#ffffff"
+       style="font-size:14.6667px"><tspan
+         style="font-size:14.6667px;fill:#ffffff"
          id="tspan1781">‘Eiffel’ rank (out of vocab 50,257): 41,899 (random) → <tspan
-   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Iosevka, 'JetBrains Mono', monospace;-inkscape-font-specification:'Iosevka, JetBrains Mono, monospace Bold'"
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14.6667px;font-family:Iosevka, 'JetBrains Mono', monospace;-inkscape-font-specification:'Iosevka, JetBrains Mono, monospace Bold'"
    id="tspan1885">146</tspan> (top 0.3%)</tspan></text>
     <line
        x1="688.20001"

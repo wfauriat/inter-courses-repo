@@ -1,5 +1,6 @@
 {
   "root": "sRoot",
+  "tips": ["sRoot", "sUse", "sNextWord", "sMachin", "sTok", "sEmb", "sEmbLogic", "sArithm", "sVeh1", "sEmbConcl", "sPos", "sAttn", "sTrans", "sTrain"],
   "nodes": {
     "sRoot":   { "text": "What are [[LLMs]] and how do they [[work]]?", "mode": "rewrite" },
 
@@ -28,40 +29,58 @@
     "sStatsc":  { "text": "LLMs are built through intensive training on huge corpora of text (billions of tokens). During training, they pick up statistical regularities and learn what the next token might be, given what they observed in the corpora." },    
     "sNTP":   { "text": "So in a nutshell, decoder-style LLMs (such as GPT) are [[sequential next-token producers]], with [['statistical fluency']].", "mode": "rewrite" },
 
-    "sMachin":   { "text": "How can a [[mechanical machine]], [[single-mindedly]] predicting the next token, generate [[fluent]] and arguably [[meaningful text]], [[answer questions]], [[write code]], [[summarize]] documents ?", "mode": "rewrite"},
-    "sInWork":        { "text": "They do it through a handful of ideas worth unpacking: [[tokenization]] and [[embedding]] (turning text into numbers), [[attention]] (weighing context), the [[transformer architecture]] that ties them together, and [[pre-training]] — how those weights got their values in the first place.", "mode": "rewrite" },
+    "sMachin":   { "text": "How can a [[mechanical machine]], single-mindedly predicting the next token, generate [[fluent]] and arguably [[meaningful text]], [[answer questions]], [[write code]], [[summarize]] documents ?", "mode": "rewrite"},
+    "sInWork":   { "text": "To answer this question, we have to [[peek inside]] this machine and look at a few of its [[core features]]:", "mode": "rewrite" },
+    "sInWorkb":   { "text": "To answer this question, we have to peek inside this machine and look at a few of its [[core features]]:\n\n-tokenization \n-embedding \n-attention \n-transformer architecture \n-self-supervised training objective"},
 
-    "sTok":   { "text": "[[Tokenization]]: before anything else, text is sliced into tokens — subword fragments drawn from a fixed vocabulary (on the order of 50k entries for GPT-2).", "mode": "rewrite" },
-    "sEmb":   { "text": "[[Embedding]]: each token is then turned into a vector — a list of numbers the model can actually do arithmetic on.", "mode": "rewrite" },
-    "sSpace":  { "text": "Each token becomes a [[vector]] — a list of numerical coordinates in a high-dimensional space. Distance in that space stands in for meaning.", "mode": "rewrite", "figure": { "svg": "resources/token_vector.svg", "show": ["id1", "id2"] } },
-    "sMatrix": { "text": "A whole prompt is just a [[sequence of such vectors]], stacked row-by-row. Tokenization first turns the text into a handful of [[integer token ids]].", "mode": "rewrite", "figure": { "svg": "resources/embedding_matrix.svg", "show": ["token-ids"] } },
-    "sMatrixb": { "text": "Then the embedding table swaps each id for a 768-dim column. The prompt is now a 768x5 matrix of real numbers — [[this is what the model actually reads]].", "mode": "rewrite", "figure": { "svg": "resources/embedding_matrix.svg", "show": ["token-ids", "matrix-numbers"] } },
-    "sClust1": { "text": "Project the space down to 2D and clusters emerge. [[Animal words]] land near each other -- cat, dog, fish, bird.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals"] } },
+    "sTok":   { "text": "[[Tokenization]]\n\n Working directly with [[words]] causes issues", "mode": "rewrite" },
+    "sTokb":   { "text": "[[Tokenization]]\n\n Working directly with [[words]] causes issues, \n poor robustness to mispelling and poor handling of long technical words (such as 'tokenization', \nmore natural as 'token-ization')."},
+    "sTokSol":   { "text": "Different [[tokenization]] solutions exist to [['split']] word into [[fragments]], and they have tradeoffs:", "mode": "rewrite" },
+    "sTokSolb":   { "text": "Different tokenization solutions exist to 'split' word into fragments, and they have tradeoffs :\n too long chuncks makes vocabulary size grow,\n too small makes robust extraction of meaning difficult."},
+
+    "sEmb":   { "text": "[[Embedding]]\n\n Each token is turned into a [[vector]] — a [[bunch of numbers]] the model can actually [[process]] \n('do some maths on').", "mode": "rewrite" },
+    "sSpace":  { "text": "To be explicit, a [[vector]] is a [[list of coordinates]] in a high-dimensional [[space]] (just as GPS coordinates on a map).", "mode": "rewrite", "figure": { "svg": "resources/token_vector.svg", "show": [] } },
+    "sSpaceb":  { "text": "To be explicit, a [[vector]] is a list of coordinates in a high-dimensional space (just as GPS coordinates on a map). \nDifferent tokens live in different 'regions' of this space.", "figure": { "svg": "resources/token_vector.svg", "show": ["id1", "id2"] } },
+    "sMatrix": { "text": "Transforming [[input text]] into tokens \n(here 5 tokens),\n with [[token indices]] read from a [[vocabulary]] (e.g. 50257 tokens with Byte-Pair Encoding for GPT-2)", "mode": "rewrite", "figure": { "svg": "resources/embedding_matrix.svg", "show": ["token-ids"] } },
+    "sMatrixb": { "text": "Transforming input text into tokens \n(here 5 tokens),\n with token indices read from a vocabulary (e.g. 50257 tokens with Byte-Pair Encoding for GPT-2),\n and then associating a vector to each token in a d-dimensionnal space \n(d=768 for GPT2-small)", "figure": { "svg": "resources/embedding_matrix.svg", "show": ["token-ids",  "matrix-numbers"] } },
+    "sMatrixc": { "text": "Transforming input text into tokens \n(here 5 tokens),\n with token indices read from a vocabulary (e.g. 50257 tokens with Byte-Pair Encoding for GPT-2),\n and then associating a vector to each token in a d-dimensionnal space \n(d=768 for GPT2-small),\n produces an 'input' matrix of size (5, 768).", "figure": { "svg": "resources/embedding_matrix.svg", "show": ["token-ids", "matrix-numbers"] } },
+
+    "sEmbLogic" : {"text": "Why this idea of [[arranging]] (projecting) tokens in [[different regions]] of a [[high-dimensional space]]?", "mode":"rewrite"},
+    "sClust": { "text": "Because those [[coordinates]] can be used to [[encode]] (in numbers) and [[process]] (do computation on) [[meaning]].", "mode": "rewrite"},
+    "sClustb": { "text": "Because those coordinates can be used to encode (in numbers) and process (do computation on) meaning. Let's take a slice of the \nd-dimensional space, and project tokens onto that slice. \n(we will project words rather than token for simplicity)", "figure": { "svg": "resources/embedding.svg", "show": [] } },
+    "sClust1": { "text": "[[Animal words]] land [[near each other]] -- cat, dog, fish, bird.", "mode":"rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals"] } },
     "sClust2": { "text": "[[Action verbs]] carve out their own region -- predict, simulate, compute, estimate.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs"] } },
     "sClust3": { "text": "[[Statistical terms]] cluster elsewhere -- probability, variance, posterior, distribution.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs", "stats-terms"] } },
-    "sClust4": { "text": "Even [[abstract categories]] separate cleanly: king, queen, prince, princess.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs", "stats-terms", "royalty"] } },
+    "sClust4": { "text": "[[Royalty figures]] in another region -- king, queen, prince, princess.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs", "stats-terms", "royalty"] } },
 
-    "sArithm": { "text": "Distance is only half the story: [[directions]] matter too. You can add and subtract vectors, and the results mean something.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_capital.svg", "show": [] } },
+    "sArithm": { "text": "Not only [[proximity]] matters: [[directions]] matter too. You can do [[arithmetics]] (add and subtract vectors) and the results [[mean]] something.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_capital.svg", "show": [] } },
     "sCap1": { "text": "Take paris, france, germany, berlin — [[two countries and their capitals]].", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_capital.svg", "show": ["capital-words"] } },
     "sCap2": { "text": "Start from paris. Subtract the [[france]] vector — peel off the 'country' part.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_capital.svg", "show": ["capital-words", "capital-sub"] } },
     "sCap3": { "text": "Then add the [[germany]] vector — a different country.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_capital.svg", "show": ["capital-words", "capital-sub", "capital-add"] } },
     "sCap4": { "text": "You land right next to [[berlin]]. The relation 'capital-of-country' lives as a [[direction]] in the space.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_capital.svg", "show": ["capital-words", "capital-sub", "capital-add", "capital-resolve"] } },
-
     "sVeh1": { "text": "The pattern is general. Try [[plane - air + sea]].", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_vehicle.svg", "show": ["vehicle-words"] } },
     "sVeh2": { "text": "Subtract the [[air]] vector — peel off the medium.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_vehicle.svg", "show": ["vehicle-words", "vehicle-sub"] } },
     "sVeh3": { "text": "Add the [[sea]] vector — a different medium.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_vehicle.svg", "show": ["vehicle-words", "vehicle-sub", "vehicle-add"] } },
-    "sVeh4": { "text": "Land right next to [[boat]]. Same geometry, different meaning.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_vehicle.svg", "show": ["vehicle-words", "vehicle-sub", "vehicle-add", "vehicle-resolve"] } },
+    "sVeh4": { "text": "Land right next to [[boat]]. Same geometry, different meaning.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_vehicle.svg", "show": ["vehicle-words", "vehicle-sub", "vehicle-add", "vehicle-resolve"] }},
+    "sEmbConcl": {"text": "These two examples illustrate two [[crucial remarks]]:", "mode":"rewrite"},
+    "sEmbConclb": {"text": "These two examples illustrate two crucial remarks: \n-Geometry in embedding space encodes meaning."},
+    "sEmbConclc": {"text": "These two examples illustrate two crucial remarks: \n-Geometry in embedding space encodes meaning, \n-Modern LLMs can reason and extract sense by processing numbers."},
 
-    "sPos":  { "text": "Word order matters. [[dog chases cat]] vs [[cat chases dog]] — same tokens, opposite meanings. But so far each token's vector stays the same wherever it sits in the prompt.", "mode": "rewrite" },
-    "sPosb": { "text": "Word order matters. dog chases cat vs cat chases dog — same tokens, opposite meanings. But so far each token's vector stays the same wherever it sits in the prompt.\n\nGPT-2 handles position with a second embedding — [[wpe]], one 768-dim vector per position — added element-wise to the wte row. The matrix stays [[5x768]], but identical tokens at different positions now carry different rows." },
+    "sPos":  { "text": "Clearly, word order matters. \n[[dog chases cat]] vs [[cat chases dog]] — same tokens, opposite meanings.", "mode": "rewrite" },
+    "sPosb": { "text": "Clearly, word order matters. \ndog chases cat vs cat chases dog — same tokens, opposite meanings. \n\n We encode not only tokens (wte) but also their positions, via positionnal embedding (wpe), which is generally added to token embedding (wte+wpe)." },
 
-    "sAttn":       { "text": "[[Attention]]: at each layer, every token gets to look at the others and reweight them by relevance — this is the mechanism by which context shapes meaning.", "mode": "rewrite" },
-    "sAttnBank":   { "text": "Take one ambiguous word — [[bank]] — in two sentences. Same token, same embedding row; nothing in 'bank' alone tells you which meaning is in play.", "mode": "rewrite", "figure": { "svg": "resources/bank_attention.svg", "show": [] } },
+    "sAttn":       { "text": "Raw token vectors -- [[embeddings]] -- even with positional embedding, cannot account for the following [[obvious mechanism]]:", "mode": "rewrite" },
+    "sAttnb":       { "text": "Raw token vectors -- embeddings -- even with positional embedding, cannot account for the following obvious mechanism:\n\n The meaning of a word in a sentence is often inextricably tied to the other words around it." },
+    "sAttnc":       { "text": "Raw token vectors -- embeddings -- even with positional embedding, cannot account for the following obvious mechanism:\n\n The meaning of a word in a sentence is often inextricably tied to the other words around it. \n\nThis is where the idea of 'attention' comes in." },
+    "sAttnBank":   { "text": "Take one ambiguous word — [[bank]] — in two sentences. [[Same token]], thus [[same embedding vector]]; nothing in 'bank' alone tells you which meaning is in play.", "mode": "rewrite", "figure": { "svg": "resources/bank_attention.svg", "show": [] } },
     "sAttnBankR":  { "text": "In the first sentence, [[fishing]] pulls hardest on bank's meaning. Arc strength is attention — the model weighs which neighbors to look at. Bank becomes [[river-bank]].", "mode": "rewrite", "figure": { "svg": "resources/bank_attention.svg", "show": ["attention-river"] } },
     "sAttnBankM":  { "text": "In the second, [[deposit]] does the same work — bank becomes [[money-bank]]. Same word, same starting vector. Different neighbors → different meaning.", "mode": "rewrite", "figure": { "svg": "resources/bank_attention.svg", "show": ["attention-river", "attention-money"] } },
-    "sAttnBankH":  { "text": "[[Attention heads]] are [[learned screenings]] (subspace projections) in embedding space (768d -> 64d). \n\nThey [[learn]] to [[look for context]]: \n\n'bank' (a particular direction in embedding space) may be looking around for architectural details (in another particular direction), \na noun may be looking for a qualifying adjective, \n a premise, for a conclusion.", "mode":"rewrite", "figure": { "svg": "resources/bank_attention.svg", "show": ["attention-river", "attention-money"] }},
-    "sAttnWrap": {"text":"Using multiple [[attention heads]] : screenings with different focus (syntax, semantics, logic, ...), and computing [[successive]] refinements of attention, \ntoken vectors [[look around]] each other and progressively [[steer]] direction in embedding space, so that the [[next-token prediction]] has extracted [['meaning']].", "mode":"rewrite"},
-    "sTrans": { "text": "The [[transformer]]: many attention layers stacked into a single machine that reads a next-token probability distribution off the top of the stack.", "mode": "rewrite" },
+    "sAttnBankH":  { "text": "[[Attention 'heads']] are [[learned 'screenings']] (subspace projections) in embedding space \n(768d -> 64d).", "mode":"rewrite", "figure": { "svg": "resources/bank_attention.svg", "show": ["attention-river", "attention-money"] }},
+    "sAttnBankHb":  { "text": "Attention 'heads' are learned 'screenings' (subspace projections) in embedding space \n(768d -> 64d). \n\nThey learn to look for context:", "figure": { "svg": "resources/bank_attention.svg", "show": ["attention-river", "attention-money"] }},
+    "sAttnBankHc":  { "text": "Attention 'heads' are learned 'screenings' (subspace projections) in embedding space \n(768d -> 64d). \n\nThey learn to look for context: \n\n'bank' (a particular direction in embedding space) \nmay be looking around for architectural details \n(in another particular direction), \na noun may be looking for a qualifying adjective, \n a premise, for a conclusion.", "figure": { "svg": "resources/bank_attention.svg", "show": ["attention-river", "attention-money"] }},
+    "sAttnWrap": {"text":"Using multiple [[attention heads]] with different focus (syntax, semantics, logic, ...), \ncomputing [[successive]] refinements of attention \n-- part of the [[transformer architecture]] -- \ntoken vectors [[look around]] each other and progressively [[shift]] direction in embedding space.", "mode":"rewrite"},
+    
+    "sTrans": { "text": "[[Transformer Architecture]]\n\n Many attention layers are stacked into a single machine that reads a next-token probability distribution off the top of the stack.", "mode": "rewrite" },
     "sTransEif": { "text": "To see the stack at work, trace one token. '[[tower]]' in this sentence starts [[generic]] — the model has no idea yet which tower.", "mode": "rewrite", "figure": { "svg": "resources/eiffel_attention.svg", "show": ["sentence-amber"] } },
     "sTransEifArc": { "text": "Early heads [[look back]] from '[[tower]]' at the distinctive attributes and [[pull them in]]. One head specializes in ' iron', another in ' old', another in ' famous'. Heads are [[narrow detectors]] — not generic searchers.", "mode": "rewrite", "figure": { "svg": "resources/eiffel_attention.svg", "show": ["sentence-amber", "attn-arcs"] } },
     "sTransEifDrift": { "text": "Stacked across 12 layers, this pulling-in [[steers]] the representation of '[[tower]]' — away from 'generic tower', toward the region where named landmarks live. The model hasn't [[named]] the tower; but its internal encoding of it has become [[specific]].", "mode": "rewrite", "figure": { "svg": "resources/eiffel_attention.svg", "show": ["sentence-amber", "attn-arcs", "landmarks", "drift-start", "drift-trajectory"] } },
@@ -116,30 +135,75 @@
       },
       "sMachin": {
         "sInWork": {
-          "sTok": {},
-          "sEmb": {
-            "sSpace": {
-              "sMatrix": {
-                "sMatrixb": {
-                  "sClust1": {
-                    "sClust2": {
-                      "sClust3": {
-                        "sClust4": {}
+          "sInWorkb": {
+
+            "sTok": {
+              "sTokb":{
+                "sTokSol": {
+                  "sTokSolb": {}
+                }
+              }
+            },
+            "sEmb": {
+              "sSpace": {
+                "sSpaceb":{
+                  "sMatrix": {
+                    "sMatrixb": {
+                      "sMatrixc": {}
+                    }
+                  }
+                }
+              },
+              "sEmbLogic" : {            
+                "sClust": { 
+                  "sClustb": {
+                    "sClust1": {
+                      "sClust2": {
+                        "sClust3": {
+                          "sClust4": {}
+                        }
+                      }
+                    }
+                  } 
+                }
+              },
+              "sArithm": {
+                "sCap1": {
+                  "sCap2": {
+                    "sCap3": {
+                      "sCap4": {}
+                      }
+                    }
+                  }
+                },
+              "sVeh1": {
+                "sVeh2": {
+                  "sVeh3": {
+                    "sVeh4": {
+                      "sEmbConcl": {
+                        "sEmbConclb": {
+                          "sEmbConclc": {}
+                        }
                       }
                     }
                   }
                 }
+              },
+              "sPos": {
+                "sPosb": {}
               }
             },
-            "sArithm": {
-              "sCap1": {
-                "sCap2": {
-                  "sCap3": {
-                    "sCap4": {
-                      "sVeh1": {
-                        "sVeh2": {
-                          "sVeh3": {
-                            "sVeh4": {}
+            "sAttn": {
+              "sAttnb":{
+                "sAttnc":{
+                  "sAttnBank": {
+                    "sAttnBankR": {
+                      "sAttnBankM": {
+                        "sAttnBankH": {
+                          "sAttnBankHb": {
+                            "sAttnBankHc": {
+                              "sAttnWrap": {}
+                            }
                           }
                         }
                       }
@@ -148,34 +212,20 @@
                 }
               }
             },
-            "sPos": {
-              "sPosb": {}
-            }
-          },
-          "sAttn": {
-            "sAttnBank": {
-              "sAttnBankR": {
-                "sAttnBankM": {
-                  "sAttnBankH": {
-                    "sAttnWrap": {}
-                  }
-                }
-              }
-            }
-          },
-          "sTrans": {
-            "sTransEif": {
-              "sTransEifArc": {
-                "sTransEifDrift": {
-                  "sTransMLP": {
-                    "sTransMLPBank": {
-                      "sTransMLPFire": {
-                        "sTransMLPWrite": {
-                          "sTransWrap": {
-                            "sArch": {
-                              "sArchShapes": {
-                                "sArchParams": {
-                                  "sArchZoom": {}
+            "sTrans": {
+              "sTransEif": {
+                "sTransEifArc": {
+                  "sTransEifDrift": {
+                    "sTransMLP": {
+                      "sTransMLPBank": {
+                        "sTransMLPFire": {
+                          "sTransMLPWrite": {
+                            "sTransWrap": {
+                              "sArch": {
+                                "sArchShapes": {
+                                  "sArchParams": {
+                                    "sArchZoom": {}
+                                  }
                                 }
                               }
                             }
@@ -186,18 +236,18 @@
                   }
                 }
               }
-            }
-          },
-          "sTrain": {
-            "sTrainData": {
-              "sTrainStep": {
-                "sTrainEmerge": {
-                  "sTrainEff": {}
+            },
+            "sTrain": {
+              "sTrainData": {
+                "sTrainStep": {
+                  "sTrainEmerge": {
+                    "sTrainEff": {}
+                  }
                 }
               }
             }
           }
-        }
+        } 
       }
     }
   }

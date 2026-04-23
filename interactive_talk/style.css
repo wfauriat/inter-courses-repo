@@ -40,7 +40,7 @@ body {
 .stage {
   flex: 1 1 0;
   min-width: 0;
-  max-width: 700px;
+  max-width: 740px;
   font-size: 1.55rem;
   line-height: 1.65;
   letter-spacing: 0.005em;
@@ -57,7 +57,7 @@ body {
 }
 
 .figure {
-  flex: 0 0 860px;
+  flex: 0 0 800px;
   min-height: 360px;
   display: none;
   align-items: center;
@@ -170,3 +170,59 @@ body {
 
 .breadcrumb { left: 1rem; }
 .help       { right: 1rem; }
+
+/* ============================================================
+   Minimap — stylized tree above the breadcrumb (app_v2.js only;
+   the <svg id="minimap"> is injected at runtime so v1 is unaffected).
+   ============================================================ */
+#minimap {
+  position: fixed;
+  bottom: 2.6rem;      /* sits just above the breadcrumb row */
+  left: 1rem;          /* aligned with breadcrumb */
+  width: min(420px, 60vw);   /* scales the viewBox up to this pixel size */
+  height: auto;              /* aspect-ratio from viewBox */
+  overflow: visible;
+  pointer-events: auto;
+  opacity: 0.35;             /* quiet by default — reveal on hover */
+  transition: opacity 200ms ease;
+}
+#minimap:hover { opacity: 0.9; }
+
+#minimap .mm-edge {
+  stroke: #333;
+  stroke-width: 0.5;
+  fill: none;
+  transition: stroke 180ms ease, stroke-width 180ms ease;
+}
+#minimap .mm-edge-path {
+  stroke: var(--fresh);
+  stroke-width: 0.9;
+}
+
+#minimap .mm-node {
+  fill: #555;
+  cursor: pointer;
+  transition: fill 180ms ease, r 180ms ease;
+}
+#minimap .mm-node.mm-struct { fill: #888; }
+#minimap .mm-node.mm-path    { fill: var(--fresh); }
+#minimap .mm-node.mm-current {
+  fill: var(--fresh);
+  r: 3.4;
+  filter: drop-shadow(0 0 1.6px var(--fresh));
+}
+
+/* Trailing chain on leaf tips — length ∝ downstream content count.
+   Base is dim; progress overlay grows amber as the user steps through
+   the chapter's content. */
+#minimap .mm-trail {
+  stroke: #3a3a3a;
+  stroke-width: 0.6;
+  stroke-linecap: round;
+}
+#minimap .mm-trail-progress {
+  stroke: var(--fresh);
+  stroke-width: 0.9;
+  stroke-linecap: round;
+  transition: all 220ms ease;
+}
