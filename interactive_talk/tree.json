@@ -1,6 +1,6 @@
 {
   "root": "sRoot",
-  "tips": ["sRoot", "sUse", "sNextWord", "sMachin", "sTok", "sEmb", "sEmbLogic", "sArithm", "sVeh1", "sEmbConcl", "sPos", "sAttn", "sTrans", "sTrain"],
+  "tips": ["sRoot", "sUse", "sNextWord", "sMachin", "sTok", "sEmb", "sEmbLogic", "sArithm", "sVeh1", "sEmbConcl", "sPos", "sAttn", "sAttnBankH", "sTrans", "sArch", "sTrain"],
   "nodes": {
     "sRoot":   { "text": "What are [[LLMs]] and how do they [[work]]?", "mode": "rewrite" },
 
@@ -15,7 +15,7 @@
     "sUE3b": { "text": "> How to list and sort subdirectories by size on Unix?\n\nCombine du and sort:\n\n  du -sh */ | sort -h\n\n'du -sh */' : reports the total size of each immediate subdirectory in human-readable form; 'sort -h' : orders those sizes naturally." },
     "sUE4":  { "text": "> Give me [[pseudo-code to solve a simple ODE]].", "mode": "rewrite" },
     "sUE4b": { "text": "> Give me pseudo-code to solve a simple ODE.\n\nSimplest approach is Euler's method. \n\nFor dy/dt = f(y, t):\n  t, y = t0, y0\n  while t < t_end:\n      y += h * f(y, t)\n      t += h\n\nPick a small enough step h for stability; swap in RK4 for better accuracy." },
-    "sUTrans":  {"text": "[[LLM-driven artifacts]] can do impressive things and yet ...", "mode":"rewrite"},
+    "sUTrans":  {"text": "[[LLM-driven tools]] can do impressive things and yet ...", "mode":"rewrite"},
 
     "sNextWord":   { "text": "LLMs are essentially built to do one thing: [[predict the next word]].", "mode": "rewrite" },
     "sNextWordb":  { "text": "LLMs are essentially built to do one thing: predict the next word. The word that follows any piece of text -- or prompt -- that is fed into them.", "figure": { "svg": "resources/LLM_in_out.svg", "show": ["prompt", "llm"]}},
@@ -34,16 +34,16 @@
     "sInWorkb":   { "text": "To answer this question, we have to peek inside this machine and look at a few of its [[core features]]:\n\n-tokenization \n-embedding \n-attention \n-transformer architecture \n-self-supervised training objective"},
 
     "sTok":   { "text": "[[Tokenization]]\n\n Working directly with [[words]] causes issues", "mode": "rewrite" },
-    "sTokb":   { "text": "[[Tokenization]]\n\n Working directly with [[words]] causes issues, \n poor robustness to mispelling and poor handling of long technical words (such as 'tokenization', \nmore natural as 'token-ization')."},
+    "sTokb":   { "text": "[[Tokenization]]\n\n Working directly with [[words]] causes issues, \n poor robustness to misspelling and poor handling of long technical words (such as 'tokenization', \nmore natural as 'token-ization')."},
     "sTokSol":   { "text": "Different [[tokenization]] solutions exist to [['split']] word into [[fragments]], and they have tradeoffs:", "mode": "rewrite" },
-    "sTokSolb":   { "text": "Different tokenization solutions exist to 'split' word into fragments, and they have tradeoffs :\n too long chuncks makes vocabulary size grow,\n too small makes robust extraction of meaning difficult."},
+    "sTokSolb":   { "text": "Different tokenization solutions exist to 'split' word into fragments, and they have tradeoffs :\n too long chunks makes vocabulary size grow,\n too small makes robust extraction of meaning difficult."},
 
     "sEmb":   { "text": "[[Embedding]]\n\n Each token is turned into a [[vector]] — a [[bunch of numbers]] the model can actually [[process]] \n('do some maths on').", "mode": "rewrite" },
     "sSpace":  { "text": "To be explicit, a [[vector]] is a [[list of coordinates]] in a high-dimensional [[space]] (just as GPS coordinates on a map).", "mode": "rewrite", "figure": { "svg": "resources/token_vector.svg", "show": [] } },
     "sSpaceb":  { "text": "To be explicit, a [[vector]] is a list of coordinates in a high-dimensional space (just as GPS coordinates on a map). \nDifferent tokens live in different 'regions' of this space.", "figure": { "svg": "resources/token_vector.svg", "show": ["id1", "id2"] } },
     "sMatrix": { "text": "Transforming [[input text]] into tokens \n(here 5 tokens),\n with [[token indices]] read from a [[vocabulary]] (e.g. 50257 tokens with Byte-Pair Encoding for GPT-2)", "mode": "rewrite", "figure": { "svg": "resources/embedding_matrix.svg", "show": ["token-ids"] } },
-    "sMatrixb": { "text": "Transforming input text into tokens \n(here 5 tokens),\n with token indices read from a vocabulary (e.g. 50257 tokens with Byte-Pair Encoding for GPT-2),\n and then associating a vector to each token in a d-dimensionnal space \n(d=768 for GPT2-small)", "figure": { "svg": "resources/embedding_matrix.svg", "show": ["token-ids",  "matrix-numbers"] } },
-    "sMatrixc": { "text": "Transforming input text into tokens \n(here 5 tokens),\n with token indices read from a vocabulary (e.g. 50257 tokens with Byte-Pair Encoding for GPT-2),\n and then associating a vector to each token in a d-dimensionnal space \n(d=768 for GPT2-small),\n produces an 'input' matrix of size (5, 768).", "figure": { "svg": "resources/embedding_matrix.svg", "show": ["token-ids", "matrix-numbers"] } },
+    "sMatrixb": { "text": "Transforming input text into tokens \n(here 5 tokens),\n with token indices read from a vocabulary (e.g. 50257 tokens with Byte-Pair Encoding for GPT-2),\n and then associating a vector to each token in a d-dimensional space \n(d=768 for GPT2-small)", "figure": { "svg": "resources/embedding_matrix.svg", "show": ["token-ids",  "matrix-numbers"] } },
+    "sMatrixc": { "text": "Transforming input text into tokens \n(here 5 tokens),\n with token indices read from a vocabulary (e.g. 50257 tokens with Byte-Pair Encoding for GPT-2),\n and then associating a vector to each token in a d-dimensional space \n(d=768 for GPT2-small),\n produces an 'input' matrix of size (5, 768).", "figure": { "svg": "resources/embedding_matrix.svg", "show": ["token-ids", "matrix-numbers"] } },
 
     "sEmbLogic" : {"text": "Why this idea of [[arranging]] (projecting) tokens in [[different regions]] of a [[high-dimensional space]]?", "mode":"rewrite"},
     "sClust": { "text": "Because those [[coordinates]] can be used to [[encode]] (in numbers) and [[process]] (do computation on) [[meaning]].", "mode": "rewrite"},
@@ -53,7 +53,7 @@
     "sClust3": { "text": "[[Statistical terms]] cluster elsewhere -- probability, variance, posterior, distribution.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs", "stats-terms"] } },
     "sClust4": { "text": "[[Royalty figures]] in another region -- king, queen, prince, princess.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs", "stats-terms", "royalty"] } },
 
-    "sArithm": { "text": "Not only [[proximity]] matters: [[directions]] matter too. You can do [[arithmetics]] (add and subtract vectors) and the results [[mean]] something.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_capital.svg", "show": [] } },
+    "sArithm": { "text": "Not only [[proximity]] matters: [[directions]] matter too. You can do [[arithmetic]] (add and subtract vectors) and the results [[mean]] something.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_capital.svg", "show": [] } },
     "sCap1": { "text": "Take paris, france, germany, berlin — [[two countries and their capitals]].", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_capital.svg", "show": ["capital-words"] } },
     "sCap2": { "text": "Start from paris. Subtract the [[france]] vector — peel off the 'country' part.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_capital.svg", "show": ["capital-words", "capital-sub"] } },
     "sCap3": { "text": "Then add the [[germany]] vector — a different country.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_capital.svg", "show": ["capital-words", "capital-sub", "capital-add"] } },
@@ -64,7 +64,7 @@
     "sVeh4": { "text": "Land right next to [[boat]]. Same geometry, different meaning.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_vehicle.svg", "show": ["vehicle-words", "vehicle-sub", "vehicle-add", "vehicle-resolve"] }},
     "sEmbConcl": {"text": "These two examples illustrate two [[crucial remarks]]:", "mode":"rewrite"},
     "sEmbConclb": {"text": "These two examples illustrate two crucial remarks: \n-Geometry in embedding space encodes meaning."},
-    "sEmbConclc": {"text": "These two examples illustrate two crucial remarks: \n-Geometry in embedding space encodes meaning, \n-Modern LLMs can reason and extract sense by processing numbers."},
+    "sEmbConclc": {"text": "These two examples illustrate two crucial remarks: \n-Geometry in embedding space encodes meaning, \n-Modern LLMs can extract meaning by processing numbers."},
 
     "sPos":  { "text": "Clearly, word order matters. \n[[dog chases cat]] vs [[cat chases dog]] — same tokens, opposite meanings.", "mode": "rewrite" },
     "sPosb": { "text": "Clearly, word order matters. \ndog chases cat vs cat chases dog — same tokens, opposite meanings. \n\n We encode not only tokens (wte) but also their positions, via positionnal embedding (wpe), which is generally added to token embedding (wte+wpe)." },
@@ -89,6 +89,7 @@
     "sTransMLPFire": { "text": "Given the contextualized '[[tower]]' vector arriving from attention, only a [[sparse handful]] of these 3072 patterns match strongly. Most stay near zero.", "mode": "rewrite", "figure": { "svg": "resources/eiffel_mlp.svg", "show": ["mlp-input", "mlp-library", "mlp-firing"] } },
     "sTransMLPWrite": { "text": "The firing patterns [[sum]] their outputs and [[write them back]] into the residual — adding features like '[[tall]]', '[[landmark-like]]', '[[located]]' onto '[[tower]]'. Real neurons mix many patterns; the labels here [[summarize]] what the layer's aggregate does.", "mode": "rewrite", "figure": { "svg": "resources/eiffel_mlp.svg", "show": ["mlp-input", "mlp-library", "mlp-firing", "mlp-labels", "mlp-output"] } },
     "sTransWrap": { "text": "One block: [[attention]] looks around, the [[MLP]] applies patterns, the [[residual]] carries both forward. [[12 blocks]] stacked. Every [[weight]] — in every attention head, in every pattern — was [[learned]] from training data.", "mode": "rewrite" },
+    
     "sArch":       { "text": "Here is the [[whole machine]] drawn as a pipeline. Token ids in at the left, a distribution over the next token out at the right — with [[embedding]], [[twelve stacked transformer blocks]], and [[unembedding]] in between.", "mode": "rewrite", "figure": { "svg": "resources/gpt2_architecture.svg", "show": [] } },
     "sArchShapes": { "text": "Sizes at each stage. Tokens come in as [[integer ids]]. Between boxes, each token is carried as a [[768-dim vector]] — that width stays constant through all 12 blocks. At the output, [[one score per vocab entry]].", "mode": "rewrite", "figure": { "svg": "resources/gpt2_architecture.svg", "show": ["shapes"] } },
     "sArchParams": { "text": "Now the [[weight count]]. [[~124M parameters]] total — [[~40M]] in the embedding table, [[~85M]] spread across the 12 stacked blocks. Unembedding reuses the embedding table ([[tied weights]]) — no extra cost there.", "mode": "rewrite", "figure": { "svg": "resources/gpt2_architecture.svg", "show": ["shapes", "params"] } },
@@ -198,14 +199,13 @@
                 "sAttnc":{
                   "sAttnBank": {
                     "sAttnBankR": {
-                      "sAttnBankM": {
-                        "sAttnBankH": {
-                          "sAttnBankHb": {
-                            "sAttnBankHc": {
-                              "sAttnWrap": {}
-                            }
-                          }
-                        }
+                      "sAttnBankM": {}
+                    }
+                  },
+                  "sAttnBankH": {
+                    "sAttnBankHb": {
+                      "sAttnBankHc": {
+                        "sAttnWrap": {}
                       }
                     }
                   }
@@ -220,20 +220,19 @@
                       "sTransMLPBank": {
                         "sTransMLPFire": {
                           "sTransMLPWrite": {
-                            "sTransWrap": {
-                              "sArch": {
-                                "sArchShapes": {
-                                  "sArchParams": {
-                                    "sArchZoom": {}
-                                  }
-                                }
-                              }
-                            }
+                            "sTransWrap": {}
                           }
                         }
                       }
                     }
                   }
+                }
+              }
+            },
+            "sArch": {
+              "sArchShapes": {
+                "sArchParams": {
+                  "sArchZoom": {}
                 }
               }
             },
