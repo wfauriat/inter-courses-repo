@@ -9,6 +9,7 @@ const CONFIG = {
   rewritePauseMs:   50,  // gap between fade-out and type phase in rewrite mode
   figureFadeInMs: 1000,  // figure panel fade-in (first render + swap)
   figureFadeOutMs: 150,  // figure panel fade-out (swap + going to no-figure)
+  autoAdvanceMs:  2000,  // delay between transitions in auto mode (press 'a')
 };
 
 const beforeEl     = document.getElementById('before');
@@ -518,12 +519,52 @@ async function replayLast() {
   }
 }
 
+// ----- auto-advance (press 'a') -----
+// Toggles a walker that presses ArrowRight for you every
+// CONFIG.autoAdvanceMs ms. For showcasing / development. Any other
+// handled key while auto is on cancels it.
+let autoOn = false;
+let autoTimer = null;
+
+function startAuto() {
+  if (autoOn) return;
+  autoOn = true;
+  scheduleAutoNext();
+}
+
+function stopAuto() {
+  autoOn = false;
+  if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+}
+
+function scheduleAutoNext() {
+  if (!autoOn) return;
+  autoTimer = setTimeout(async () => {
+    autoTimer = null;
+    if (!autoOn) return;
+    const node = findNode(currentId);
+    const next = preorderNext(node);
+    if (!next) { stopAuto(); return; }  // reached the end of preorder
+    await goTo(next);
+    if (autoOn) scheduleAutoNext();
+  }, CONFIG.autoAdvanceMs);
+}
+
 // ----- keyboard nav -----
-const HANDLED_KEYS = new Set(['ArrowRight','ArrowLeft','ArrowUp','ArrowDown',' ','r','R']);
+const HANDLED_KEYS = new Set(['ArrowRight','ArrowLeft','ArrowUp','ArrowDown',' ','r','R','a','A']);
 
 function onKey(e) {
   if (!HANDLED_KEYS.has(e.key)) return;
   if (e.key === ' ') e.preventDefault();
+
+  if (e.key === 'a' || e.key === 'A') {
+    if (autoOn) stopAuto(); else startAuto();
+    return;
+  }
+
+  // Any other handled keypress while auto is running cancels it,
+  // then falls through to normal behaviour.
+  if (autoOn) stopAuto();
 
   if (animating) {
     // Second-press behaviour: collapse the current animation to its final
