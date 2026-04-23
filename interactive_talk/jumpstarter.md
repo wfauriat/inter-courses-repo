@@ -83,7 +83,14 @@ sRoot
     │       (technical sibling: positional embedding, text-only placeholder)
     ├── sAttn → sAttnBank → sAttnBankR → sAttnBankM → sAttnBankH → sAttnWrap
     │   (schematic "bank" example → heads as subspace filters → synthesis)
-    ├── sTrans
+    ├── sTrans → sTransEif → sTransEifArc → sTransEifDrift
+    │          → sTransMLP → sTransMLPBank → sTransMLPFire → sTransMLPWrite
+    │          → sTransWrap
+    │   (transformer intro → Eiffel attention example → MLP "bank of
+    │    learned patterns" companion figure → three-mechanic wrap-up
+    │    bridging to pre-training; data-driven where clean,
+    │    schematic-with-real-measurements where individual
+    │    interpretation breaks down)
     └── sTrain → sTrainData → sTrainStep → sTrainEmerge → sTrainEff
         (what training does + why the weird machinery works; text-only)
 ```
@@ -95,8 +102,24 @@ branches are the technical siblings (vector arithmetic and
 positional embedding); both are intentionally skippable for a layman
 audience.
 
-`sTrans` is the remaining placeholder — intro node with no downstream
-content or figure yet.
+The `sTrans → sTransEif*` chain uses the Eiffel example sentence
+("In Paris today, I climbed the 400+ steps of the famous old iron
+tower.") to make attention concrete. See the generator for the
+honesty caveats — the drift trajectory is a pedagogical summary
+curve, not a literal 2D projection of residuals, because residual
+direction in cosine-space doesn't cleanly align with wte[' Eiffel']
+even though the logit-lens rank of ' Eiffel' at ' tower' drops from
+~42,000 to 142.
+
+The `sTransMLP*` chain continues the same example through the MLP
+block. Sparsity shown is real (3-5% of 3072 neurons fire strongly at
+' tower' per layer, per `probe_eiffel_mlp_v2.py`), and the
+aggregate layer-level themes (tower/structure at L0, situated/housed
+at L6, overlooking/known at L9) are real measurements. What's
+schematic: the per-neuron callout labels — individual GPT-2 small
+neurons are polysemantic and their top key/value tokens are
+noise-like BPE fragments, so we label *illustrative* patterns
+instead. The figure notes this honestly in its footer.
 
 ---
 
@@ -219,11 +242,23 @@ with two arbitrary mock vectors, no embedding lookup.
 | `build_interactive_token_vector_svg.py` | `token_vector.svg` | `id1`, `id2` |
 | `build_interactive_embedding_matrix_svg.py` | `embedding_matrix.svg` | `token-ids`, `matrix-numbers` (prompt text is base) |
 | `build_interactive_bank_attention_svg.py` | `bank_attention.svg` | `attention-river`, `attention-money` (schematic, no backend — hand-picked weights) |
+| `build_interactive_eiffel_attention_svg.py` | `eiffel_attention.svg` | `sentence-amber`, `attn-arcs`, `landmarks`, `drift-start`, `drift-trajectory` (GPT-2 small backend; attention arcs and Eiffel-rank annotation are real data; drift curve is pedagogical summary) |
+| `build_interactive_eiffel_mlp_svg.py` | `eiffel_mlp.svg` | `mlp-input`, `mlp-library`, `mlp-firing`, `mlp-labels`, `mlp-output` (schematic; sparsity ~4% and aggregate layer themes are measured, per-neuron callouts are illustrative — no model backend used, the script just draws from the probe findings) |
 
 **Unwired (deferred) figure:** `build_interactive_bank_disambig_svg.py` →
 `bank_disambig.svg` exists but isn't referenced in `tree.json`. It's the
 logit-lens sibling of the attention figure — technical, assumes layers,
-earmarked for reuse in `sTrans` once transformer internals are introduced.
+still available for reuse deeper in the `sTrans` chain if we want to
+show the "what token would this residual decode to" view.
+
+**Empirical-probe scripts** (not figure generators, but worth knowing):
+- `workspace/probe_eiffel_attention.py`, `_v3.py`, `_v4.py` —
+  attention weights, logit-lens ranks, contrastive sentence tests.
+  Validated the attention figure's claims before building.
+- `workspace/probe_eiffel_mlp.py`, `_v2.py` — MLP neuron
+  interpretations (key/value top tokens), sparsity counts, and
+  per-layer aggregate MLP output logit-lens. Showed that individual
+  neurons are polysemantic but layer-level aggregates are clean.
 
 **Typical workflow to add a new figure:**
 1. Pick the workshop that has the data/math (or decide it's mock).

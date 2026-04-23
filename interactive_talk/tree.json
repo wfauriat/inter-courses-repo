@@ -62,6 +62,14 @@
     "sAttnBankH":  { "text": "[[Attention heads]] are [[learned screenings]] (subspace projections) in embedding space (768d -> 64d). \n\nThey [[learn]] to [[look for context]]: \n\n'bank' (a particular direction in embedding space) may be looking around for architectural details (in another particular direction), \na noun may be looking for a qualifying adjective, \n a premise, for a conclusion.", "mode":"rewrite", "figure": { "svg": "resources/bank_attention.svg", "show": ["attention-river", "attention-money"] }},
     "sAttnWrap": {"text":"Using multiple [[attention heads]] : screenings with different focus (syntax, semantics, logic, ...), and computing [[successive]] refinements of attention, \ntoken vectors [[look around]] each other and progressively [[steer]] direction in embedding space, so that the [[next-token prediction]] has extracted [['meaning']].", "mode":"rewrite"},
     "sTrans": { "text": "The [[transformer]]: many attention layers stacked into a single machine that reads a next-token probability distribution off the top of the stack.", "mode": "rewrite" },
+    "sTransEif": { "text": "To see the stack at work, trace one token. '[[tower]]' in this sentence starts [[generic]] — the model has no idea yet which tower.", "mode": "rewrite", "figure": { "svg": "resources/eiffel_attention.svg", "show": ["sentence-amber"] } },
+    "sTransEifArc": { "text": "Early heads [[look back]] from '[[tower]]' at the distinctive attributes and [[pull them in]]. One head specializes in ' iron', another in ' old', another in ' famous'. Heads are [[narrow detectors]] — not generic searchers.", "mode": "rewrite", "figure": { "svg": "resources/eiffel_attention.svg", "show": ["sentence-amber", "attn-arcs"] } },
+    "sTransEifDrift": { "text": "Stacked across 12 layers, this pulling-in [[steers]] the representation of '[[tower]]' — away from 'generic tower', toward the region where named landmarks live. The model hasn't [[named]] the tower; but its internal encoding of it has become [[specific]].", "mode": "rewrite", "figure": { "svg": "resources/eiffel_attention.svg", "show": ["sentence-amber", "attn-arcs", "landmarks", "drift-start", "drift-trajectory"] } },
+    "sTransMLP": { "text": "But [[attention]] is only half the work. After each attention block, a [[second]] block fires on the same residual: the [[MLP]].", "mode": "rewrite", "figure": { "svg": "resources/eiffel_mlp.svg", "show": [] } },
+    "sTransMLPBank": { "text": "The MLP is a [[bank of learned patterns]] — roughly [[3072]] pattern-detectors, [[learned during training]]. Each one lights up for a particular kind of input.", "mode": "rewrite", "figure": { "svg": "resources/eiffel_mlp.svg", "show": ["mlp-input", "mlp-library"] } },
+    "sTransMLPFire": { "text": "Given the contextualized '[[tower]]' vector arriving from attention, only a [[sparse handful]] of these 3072 patterns match strongly. Most stay near zero.", "mode": "rewrite", "figure": { "svg": "resources/eiffel_mlp.svg", "show": ["mlp-input", "mlp-library", "mlp-firing"] } },
+    "sTransMLPWrite": { "text": "The firing patterns [[sum]] their outputs and [[write them back]] into the residual — adding features like '[[tall]]', '[[landmark-like]]', '[[located]]' onto '[[tower]]'. Real neurons mix many patterns; the labels here [[summarize]] what the layer's aggregate does.", "mode": "rewrite", "figure": { "svg": "resources/eiffel_mlp.svg", "show": ["mlp-input", "mlp-library", "mlp-firing", "mlp-labels", "mlp-output"] } },
+    "sTransWrap": { "text": "One block: [[attention]] looks around, the [[MLP]] applies patterns, the [[residual]] carries both forward. [[12 blocks]] stacked. Every [[weight]] — in every attention head, in every pattern — was [[learned]] from training data.", "mode": "rewrite" },
     "sTrain": { "text": "[[Pre-training]]: the weights are fixed by running the machine across trillions of tokens of raw text, each time nudging it to predict the next token a little better.", "mode": "rewrite" },
     "sTrainData": { "text": "'Trillions of tokens' means roughly [[a sweep of the public internet]] — web pages, books, forums, code repositories, scientific papers. The raw text humanity has written.", "mode": "rewrite" },
     "sTrainStep": { "text": "At each step: show the machine a chunk of text, hide the next token, let it guess, [[measure how wrong]] it was, then [[nudge]] every one of the [[billions of numbers]] inside the matrices a tiny bit — in the direction that would have made it less wrong. \n\nRepeat trillions of times.", "mode": "rewrite" },
@@ -151,7 +159,23 @@
               }
             }
           },
-          "sTrans": {},
+          "sTrans": {
+            "sTransEif": {
+              "sTransEifArc": {
+                "sTransEifDrift": {
+                  "sTransMLP": {
+                    "sTransMLPBank": {
+                      "sTransMLPFire": {
+                        "sTransMLPWrite": {
+                          "sTransWrap": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "sTrain": {
             "sTrainData": {
               "sTrainStep": {
