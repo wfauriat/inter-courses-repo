@@ -407,7 +407,7 @@ def render_attention_layer(tokens: list[str], positions: list[tuple[str, float]]
         label_y = ARC_BASELINE - arc_h_here + 13
         out.append(
             f'    <text x="{label_x:.1f}" y="{label_y:.1f}" text-anchor="middle" '
-            f'fill="{ARC_STRONG}" font-size="10" font-style="italic" '
+            f'fill="{ARC_STRONG}" font-size="12" font-style="italic" '
             f'opacity="0.85">&#945;&#8776;{w:.2f}</text>')
 
     # Re-render tower + the 4 context words in amber on this layer so
@@ -486,11 +486,14 @@ def render_landmarks_layer(pos_px: dict[str, tuple[float, float]],
         "generic:monument":   (-10, 4,  "end"),
         "generic:spire":      (-10, 4,  "end"),
         "generic:obelisk":    (10, 4,   "start"),
-        "named:Pisa":   (10,  4,  "start"),
-        "named:Burj":   (10, -6,  "start"),
-        "named:Empire": (-10, 4,  "end"),
-        "named:Tokyo":  (-10, -6, "end"),
-        "named:Eiffel": (14, 4,   "start"),
+        "named:Pisa":   (10,  4,   "start"),
+        # Tokyo/Empire/Burj cluster is tight in wte-cosine; spread labels
+        # into a rough triangle: Tokyo up-right, Empire down-left, Burj
+        # straight right. Keeps clear of trajectory curve too.
+        "named:Tokyo":  (10, -12,  "start"),
+        "named:Empire": (-14, 20,  "end"),
+        "named:Burj":   (12,  8,   "start"),
+        "named:Eiffel": (14, 4,    "start"),
     }
 
     out = ['  <g class="layer" id="landmarks">']
@@ -499,7 +502,7 @@ def render_landmarks_layer(pos_px: dict[str, tuple[float, float]],
     # silent until the drift story starts.
     out.append(
         f'    <text x="{WIDTH // 2}" y="{PANEL_SPLIT + 26}" text-anchor="middle" '
-        f'fill="{SUBTITLE_COLOR}" font-size="12" font-style="italic">'
+        f'fill="{SUBTITLE_COLOR}" font-size="14" font-style="italic">'
         f"how &#8216;tower&#8217; drifts in meaning as the 12 layers process the sentence"
         f'</text>')
 
@@ -515,7 +518,7 @@ def render_landmarks_layer(pos_px: dict[str, tuple[float, float]],
         out.append(
             f'    <text x="{x + dx:.1f}" y="{y + dy:.1f}" '
             f'text-anchor="{anchor}" fill="{DIM_COLOR}" '
-            f'font-size="11" font-style="italic">{w.strip()}</text>')
+            f'font-size="13" font-style="italic">{w.strip()}</text>')
 
     for w in landmarks_named:
         key = f"named:{w.strip()}"
@@ -534,7 +537,7 @@ def render_landmarks_layer(pos_px: dict[str, tuple[float, float]],
         out.append(
             f'    <text x="{x + dx:.1f}" y="{y + dy:.1f}" '
             f'text-anchor="{anchor}" fill="{label_color}" '
-            f'font-size="12" font-weight="{weight}">{w.strip()}</text>')
+            f'font-size="14" font-weight="{weight}">{w.strip()}</text>')
 
     out.append('  </g>')
     return out
@@ -558,11 +561,13 @@ def render_drift_start(pos_px: dict[str, tuple[float, float]]) -> list[str]:
     ly = LAND_MARGIN_T + 14
     out.append(
         f'    <text x="{lx:.1f}" y="{ly:.1f}" text-anchor="start" '
-        f'fill="{FG}" font-size="11" font-style="italic" font-weight="600">'
+        f'fill="{FG}" font-size="13" font-style="italic" font-weight="600">'
         f'start  (layer 0)</text>')
-    # Thin connector from label corner to the marker.
+    # Thin connector from RIGHT END of label to the marker. At 13pt
+    # Iosevka, "start  (layer 0)" is ~135px wide; start the line a
+    # hair past that so it doesn't cut through the text.
     out.append(
-        f'    <line x1="{lx + 45:.1f}" y1="{ly + 4:.1f}" '
+        f'    <line x1="{lx + 150:.1f}" y1="{ly + 4:.1f}" '
         f'x2="{x - 6:.1f}" y2="{y - 4:.1f}" '
         f'stroke="{DIM_COLOR}" stroke-width="1" opacity="0.5" '
         f'stroke-dasharray="3,2"/>')
@@ -669,11 +674,11 @@ def render_drift_trajectory(pos_px: dict[str, tuple[float, float]],
     ann_y_bot = ey - 26
     out.append(
         f'    <text x="{ann_x:.1f}" y="{ann_y_top:.1f}" text-anchor="end" '
-        f'fill="{AMBER}" font-size="12" font-style="italic" font-weight="600">'
+        f'fill="{AMBER}" font-size="14" font-style="italic" font-weight="600">'
         f'end  (layer 12)</text>')
     out.append(
         f'    <text x="{ann_x:.1f}" y="{ann_y_bot:.1f}" text-anchor="end" '
-        f'fill="{SUBTITLE_COLOR}" font-size="10" font-style="italic">'
+        f'fill="{SUBTITLE_COLOR}" font-size="12" font-style="italic">'
         f"&#8216;Eiffel&#8217; rank: {eiffel_rank_start:,} &#8594; {eiffel_rank_final}</text>")
     # Leader from annotation block to the star.
     out.append(
@@ -735,7 +740,7 @@ def build_svg() -> str:
         f'</text>')
     lines.append(
         f'  <text x="{WIDTH // 2}" y="62" text-anchor="middle" '
-        f'fill="{SUBTITLE_COLOR}" font-size="12" font-style="italic">'
+        f'fill="{SUBTITLE_COLOR}" font-size="14" font-style="italic">'
         f"the model's representation of 'tower' drifts in meaning-space as layers process the sentence"
         f'</text>')
 

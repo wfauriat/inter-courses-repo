@@ -181,7 +181,7 @@ def render_attention_layer(layer_id: str, words: list[str], y: float,
     lines.append(
         f'    <text x="{bank_x:.1f}" y="{y + SENSE_DY:.1f}" '
         f'text-anchor="middle" fill="{SENSE_COLOR}" '
-        f'font-size="13" font-style="italic" letter-spacing="0.5">'
+        f'font-size="15" font-style="italic" letter-spacing="0.5">'
         f'↓ {sense}</text>')
 
     lines.append('  </g>')
@@ -210,7 +210,7 @@ def build_svg() -> str:
     # Subtitle
     lines.append(
         f'  <text x="{WIDTH // 2}" y="{SUBTITLE_Y}" text-anchor="middle" '
-        f'fill="{SUBTITLE_COLOR}" font-size="12" font-style="italic">'
+        f'fill="{SUBTITLE_COLOR}" font-size="14" font-style="italic">'
         'same word, two sentences — different neighbors, different meaning'
         '</text>')
 

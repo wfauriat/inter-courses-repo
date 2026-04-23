@@ -5,6 +5,7 @@
   --fresh: #fbbf24;
   --cursor: #e8e8e8;
   --divider: #2a2a2a;
+  --figure-max-h: 800px;
 }
 
 html, body {
@@ -39,7 +40,7 @@ body {
 .stage {
   flex: 1 1 0;
   min-width: 0;
-  max-width: 720px;
+  max-width: 700px;
   font-size: 1.55rem;
   line-height: 1.65;
   letter-spacing: 0.005em;
@@ -56,7 +57,7 @@ body {
 }
 
 .figure {
-  flex: 0 0 620px;
+  flex: 0 0 860px;
   min-height: 360px;
   display: none;
   align-items: center;
@@ -86,18 +87,21 @@ body {
 
 .figure-image {
   max-width: 100%;
-  max-height: 500px;
+  max-height: var(--figure-max-h);
   height: auto;
   width: auto;
   display: block;
 }
 
-/* Inline SVG figures fill the panel like static images do. */
+/* Inline SVG figures fill the panel like static images do.
+   width: 100% forces the SVG to match the panel width regardless of its
+   intrinsic width/height attributes (Inkscape writes these on save). The
+   viewBox handles aspect-ratio so height follows; --figure-max-h caps it. */
 .figure svg {
   max-width: 100%;
-  max-height: 500px;
+  max-height: var(--figure-max-h);
   height: auto;
-  width: auto;
+  width: 100%;
   display: block;
 }
 

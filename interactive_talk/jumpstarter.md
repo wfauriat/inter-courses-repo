@@ -25,8 +25,11 @@ speaker can branch live.
   outline. Authoring contract is fully specified in `specs.md` §
   "Authoring contract" — read that before editing node shape.
 - `resources/*.svg` — layered figures rendered in the side panel.
-  **Never hand-edit.** They regenerate from `workspace/build_interactive_*.py`
-  (see § "Building SVG figures" below).
+  Generated from `workspace/build_interactive_*.py` (see § "Building SVG
+  figures" below). **Do not regenerate existing SVGs without explicit
+  user approval** — some have been hand-tuned after generation and
+  re-running the script would clobber those edits. New figures: fine
+  to generate. Existing figures: ask first.
 
 **Viewer (don't touch unless you need to):**
 - `index.html` — minimal shell; loads `app.js` + `style.css`.
@@ -86,9 +89,12 @@ sRoot
     ├── sTrans → sTransEif → sTransEifArc → sTransEifDrift
     │          → sTransMLP → sTransMLPBank → sTransMLPFire → sTransMLPWrite
     │          → sTransWrap
+    │          → sArch → sArchShapes → sArchParams → sArchZoom
     │   (transformer intro → Eiffel attention example → MLP "bank of
-    │    learned patterns" companion figure → three-mechanic wrap-up
-    │    bridging to pre-training; data-driven where clean,
+    │    learned patterns" companion figure → three-mechanic wrap-up →
+    │    architecture capstone: full GPT-2 data-flow pipeline with
+    │    shapes, parameter counts, and a block-zoom reveal; closes the
+    │    machinery section before pre-training. Data-driven where clean,
     │    schematic-with-real-measurements where individual
     │    interpretation breaks down)
     └── sTrain → sTrainData → sTrainStep → sTrainEmerge → sTrainEff
@@ -103,13 +109,13 @@ positional embedding); both are intentionally skippable for a layman
 audience.
 
 The `sTrans → sTransEif*` chain uses the Eiffel example sentence
-("In Paris today, I climbed the 400+ steps of the famous old iron
+("In Paris today, I climbed the 1000+ steps of the famous old iron
 tower.") to make attention concrete. See the generator for the
 honesty caveats — the drift trajectory is a pedagogical summary
 curve, not a literal 2D projection of residuals, because residual
 direction in cosine-space doesn't cleanly align with wte[' Eiffel']
 even though the logit-lens rank of ' Eiffel' at ' tower' drops from
-~42,000 to 142.
+~42,000 to 146.
 
 The `sTransMLP*` chain continues the same example through the MLP
 block. Sparsity shown is real (3-5% of 3072 neurons fire strongly at
@@ -244,6 +250,7 @@ with two arbitrary mock vectors, no embedding lookup.
 | `build_interactive_bank_attention_svg.py` | `bank_attention.svg` | `attention-river`, `attention-money` (schematic, no backend — hand-picked weights) |
 | `build_interactive_eiffel_attention_svg.py` | `eiffel_attention.svg` | `sentence-amber`, `attn-arcs`, `landmarks`, `drift-start`, `drift-trajectory` (GPT-2 small backend; attention arcs and Eiffel-rank annotation are real data; drift curve is pedagogical summary) |
 | `build_interactive_eiffel_mlp_svg.py` | `eiffel_mlp.svg` | `mlp-input`, `mlp-library`, `mlp-firing`, `mlp-labels`, `mlp-output` (schematic; sparsity ~4% and aggregate layer themes are measured, per-neuron callouts are illustrative — no model backend used, the script just draws from the probe findings) |
+| *(hand-authored, no generator)* | `gpt2_architecture.svg` | `shapes`, `params`, `block-zoom` (GPT-2 small data-flow capstone — pipeline + shape annotations + param counts + expanded transformer-block view. All numbers static; hand-written SVG, not script-generated) |
 
 **Unwired (deferred) figure:** `build_interactive_bank_disambig_svg.py` →
 `bank_disambig.svg` exists but isn't referenced in `tree.json`. It's the
@@ -275,10 +282,12 @@ show the "what token would this residual decode to" view.
 
 ## Design invariants (don't violate without reason)
 
-- **Figures regenerate from source.** Never hand-edit files in
-  `resources/`. The generator's header comment captures design
-  rationale (e.g. why PCA is fit on top-10k GloVe and not the full
-  vocab).
+- **Figures generate from source, but existing SVGs may have hand
+  tweaks on top.** Do not re-run `build_interactive_*.py` against an
+  already-shipped SVG without explicit user approval — regeneration
+  clobbers post-hoc edits. New figures are fine to generate freely.
+  The generator's header comment captures design rationale (e.g. why
+  PCA is fit on top-10k GloVe and not the full vocab).
 - **Workshops keep scope.** GloVe-based embedding work and GPT-2-based
   attention/arch work stay separate in `workspace/` (see memory
   `feedback_glove_gpt2_disconnected.md`). The interactive talk is

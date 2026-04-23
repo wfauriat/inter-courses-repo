@@ -70,6 +70,10 @@
     "sTransMLPFire": { "text": "Given the contextualized '[[tower]]' vector arriving from attention, only a [[sparse handful]] of these 3072 patterns match strongly. Most stay near zero.", "mode": "rewrite", "figure": { "svg": "resources/eiffel_mlp.svg", "show": ["mlp-input", "mlp-library", "mlp-firing"] } },
     "sTransMLPWrite": { "text": "The firing patterns [[sum]] their outputs and [[write them back]] into the residual — adding features like '[[tall]]', '[[landmark-like]]', '[[located]]' onto '[[tower]]'. Real neurons mix many patterns; the labels here [[summarize]] what the layer's aggregate does.", "mode": "rewrite", "figure": { "svg": "resources/eiffel_mlp.svg", "show": ["mlp-input", "mlp-library", "mlp-firing", "mlp-labels", "mlp-output"] } },
     "sTransWrap": { "text": "One block: [[attention]] looks around, the [[MLP]] applies patterns, the [[residual]] carries both forward. [[12 blocks]] stacked. Every [[weight]] — in every attention head, in every pattern — was [[learned]] from training data.", "mode": "rewrite" },
+    "sArch":       { "text": "Here is the [[whole machine]] drawn as a pipeline. Token ids in at the left, a distribution over the next token out at the right — with [[embedding]], [[twelve stacked transformer blocks]], and [[unembedding]] in between.", "mode": "rewrite", "figure": { "svg": "resources/gpt2_architecture.svg", "show": [] } },
+    "sArchShapes": { "text": "Sizes at each stage. Tokens come in as [[integer ids]]. Between boxes, each token is carried as a [[768-dim vector]] — that width stays constant through all 12 blocks. At the output, [[one score per vocab entry]].", "mode": "rewrite", "figure": { "svg": "resources/gpt2_architecture.svg", "show": ["shapes"] } },
+    "sArchParams": { "text": "Now the [[weight count]]. [[~124M parameters]] total — [[~40M]] in the embedding table, [[~85M]] spread across the 12 stacked blocks. Unembedding reuses the embedding table ([[tied weights]]) — no extra cost there.", "mode": "rewrite", "figure": { "svg": "resources/gpt2_architecture.svg", "show": ["shapes", "params"] } },
+    "sArchZoom":   { "text": "Zoom into [[one block]]. [[Attention]] (c_attn → Q, K, V heads → c_proj) and [[MLP]] (c_fc → GELU → c_proj) each [[read]] the residual stream and [[add]] their output back to it. Same structure, twelve times over.", "mode": "rewrite", "figure": { "svg": "resources/gpt2_architecture.svg", "show": ["shapes", "params", "block-zoom"] } },
     "sTrain": { "text": "[[Pre-training]]: the weights are fixed by running the machine across trillions of tokens of raw text, each time nudging it to predict the next token a little better.", "mode": "rewrite" },
     "sTrainData": { "text": "'Trillions of tokens' means roughly [[a sweep of the public internet]] — web pages, books, forums, code repositories, scientific papers. The raw text humanity has written.", "mode": "rewrite" },
     "sTrainStep": { "text": "At each step: show the machine a chunk of text, hide the next token, let it guess, [[measure how wrong]] it was, then [[nudge]] every one of the [[billions of numbers]] inside the matrices a tiny bit — in the direction that would have made it less wrong. \n\nRepeat trillions of times.", "mode": "rewrite" },
@@ -167,7 +171,15 @@
                     "sTransMLPBank": {
                       "sTransMLPFire": {
                         "sTransMLPWrite": {
-                          "sTransWrap": {}
+                          "sTransWrap": {
+                            "sArch": {
+                              "sArchShapes": {
+                                "sArchParams": {
+                                  "sArchZoom": {}
+                                }
+                              }
+                            }
+                          }
                         }
                       }
                     }
