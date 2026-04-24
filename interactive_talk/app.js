@@ -9,12 +9,15 @@ const CONFIG = {
   rewritePauseMs:   50,  // gap between fade-out and type phase in rewrite mode
   figureFadeInMs: 1000,  // figure panel fade-in (first render + swap)
   figureFadeOutMs: 150,  // figure panel fade-out (swap + going to no-figure)
+  autoAdvanceMs:  2000,  // delay between transitions in auto mode (press 'a')
 };
 
 const beforeEl     = document.getElementById('before');
 const afterEl      = document.getElementById('after');
 const breadcrumbEl = document.getElementById('breadcrumb');
 const figureEl     = document.getElementById('figure');
+let   minimapEl    = null;  // injected by setupMinimap on init
+let   minimapLayout = null; // { positions: Map<id, {x,y,structural,parentId}>, width, height }
 
 let tree       = null;
 let currentId  = null;
@@ -74,6 +77,7 @@ async function init() {
   currentId = tree.id;
   pathIds   = [tree.id];
   computePreorder();
+  setupMinimap(data);
   // Sync CSS fade durations with CONFIG so tuning in one place propagates.
   // Panel fade-in drives the .figure.visible CSS animation; fade-out is set
   // inline on the element's transitionDuration just before each opacity flip.
@@ -84,6 +88,7 @@ async function init() {
   afterEl.textContent = '';
   updateFigure(tree);
   updateBreadcrumb();
+  updateMinimap();
   document.addEventListener('keydown', onKey);
 }
 
@@ -479,12 +484,9 @@ async function goTo(node) {
   const forward  = isForward(currentId, node.id);
   const { clean, ranges } = parseHighlights(node.text);
   const mode = node.mode === 'rewrite' ? 'rewrite' : 'diff';
-  updateFigure(node);                       // shift layout first, then animate
-  if (mode === 'rewrite') {
-    await animateRewrite(fromText, clean, ranges);
-  } else {
-    await animateTransition(fromText, clean, { showFresh: forward });
-  }
+
+  // Commit state eagerly so minimap cursor (and breadcrumb) lead the text
+  // animation — navigation feedback is instant even while text is still typing.
   lastFromText = fromText;
   lastToText   = clean;
   lastForward  = forward;
@@ -493,6 +495,14 @@ async function goTo(node) {
   currentId    = node.id;
   rebuildPath();
   updateBreadcrumb();
+  updateMinimap();
+  updateFigure(node);                       // shifts layout, then animates
+
+  if (mode === 'rewrite') {
+    await animateRewrite(fromText, clean, ranges);
+  } else {
+    await animateTransition(fromText, clean, { showFresh: forward });
+  }
 }
 
 async function replayLast() {
@@ -509,12 +519,52 @@ async function replayLast() {
   }
 }
 
+// ----- auto-advance (press 'a') -----
+// Toggles a walker that presses ArrowRight for you every
+// CONFIG.autoAdvanceMs ms. For showcasing / development. Any other
+// handled key while auto is on cancels it.
+let autoOn = false;
+let autoTimer = null;
+
+function startAuto() {
+  if (autoOn) return;
+  autoOn = true;
+  scheduleAutoNext();
+}
+
+function stopAuto() {
+  autoOn = false;
+  if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+}
+
+function scheduleAutoNext() {
+  if (!autoOn) return;
+  autoTimer = setTimeout(async () => {
+    autoTimer = null;
+    if (!autoOn) return;
+    const node = findNode(currentId);
+    const next = preorderNext(node);
+    if (!next) { stopAuto(); return; }  // reached the end of preorder
+    await goTo(next);
+    if (autoOn) scheduleAutoNext();
+  }, CONFIG.autoAdvanceMs);
+}
+
 // ----- keyboard nav -----
-const HANDLED_KEYS = new Set(['ArrowRight','ArrowLeft','ArrowUp','ArrowDown',' ','r','R']);
+const HANDLED_KEYS = new Set(['ArrowRight','ArrowLeft','ArrowUp','ArrowDown',' ','r','R','a','A']);
 
 function onKey(e) {
   if (!HANDLED_KEYS.has(e.key)) return;
   if (e.key === ' ') e.preventDefault();
+
+  if (e.key === 'a' || e.key === 'A') {
+    if (autoOn) stopAuto(); else startAuto();
+    return;
+  }
+
+  // Any other handled keypress while auto is running cancels it,
+  // then falls through to normal behaviour.
+  if (autoOn) stopAuto();
 
   if (animating) {
     // Second-press behaviour: collapse the current animation to its final
@@ -544,6 +594,280 @@ function performKey(key) {
   } else if (key === 'r' || key === 'R') {
     goTo(tree);
   }
+}
+
+// ===================================================================
+// MINIMAP — stylized tips-only tree above the breadcrumb.
+// Only nodes listed in data.tips render as dots; content chains
+// between tips collapse into edges whose length is proportional to
+// the count of "meaningful" (rewrite-mode, non-layer-reveal) content
+// nodes between them.
+//
+// Cursor = closest tip ancestor of the currentId. Navigating among
+// content nodes that share a tip ancestor leaves the minimap cursor
+// on that tip (a finer in-branch cursor can be added later).
+// ===================================================================
+
+// A content node is "countable" if it represents a distinct step in
+// the talk: rewrite-mode. Diff-mode (iterative text extensions of a
+// rewrite node) are skipped. Note: we don't filter same-SVG siblings —
+// sClust1→sClust4 etc. share an SVG via layer toggles but still do
+// full text rewrites, so they count as real steps.
+function countsAsContent(node, _parent) {
+  return node.mode === 'rewrite';
+}
+
+function closestTipAncestor(id, tipsSet) {
+  let cur = id;
+  while (cur) {
+    if (tipsSet.has(cur)) return cur;
+    const p = findParent(cur);
+    cur = p ? p.id : null;
+  }
+  return null;
+}
+
+function computeTipsSet(data) {
+  if (data && Array.isArray(data.tips) && data.tips.length) {
+    return new Set(data.tips);
+  }
+  return new Set([tree.id]);  // fallback: just root
+}
+
+// Count of countable content nodes inside a tip's sub-tree that are NOT
+// inside any descendant tip's sub-tree. For leaf tips, this is the full
+// "trailing chapter depth"; for non-leaf tips, it's side content orphaned
+// under this tip (rendered separately, if at all).
+function countTrailingContent(tipId, tipsSet) {
+  const tipNode = findNode(tipId);
+  if (!tipNode) return 0;
+  let count = 0;
+  (function dfs(node) {
+    for (const c of node.children || []) {
+      if (tipsSet.has(c.id)) continue;  // stop at descendant tips
+      if (countsAsContent(c, node)) count++;
+      dfs(c);
+    }
+  })(tipNode);
+  return count;
+}
+
+function computeMinimapLayout(tipsSet) {
+  // tipInfo[tipId] = { parentTipId, contentFromParent, childTipIds: [], trailingContent }
+  const tipInfo = new Map();
+  let rootTipId = null;
+
+  (function walk(node, parent, parentTipId, pathContent) {
+    if (tipsSet.has(node.id)) {
+      tipInfo.set(node.id, {
+        parentTipId,
+        contentFromParent: pathContent,
+        childTipIds: [],
+        trailingContent: 0,
+      });
+      if (parentTipId === null) rootTipId = node.id;
+      else tipInfo.get(parentTipId).childTipIds.push(node.id);
+      parentTipId = node.id;
+      pathContent = 0;
+    } else if (countsAsContent(node, parent)) {
+      pathContent++;
+    }
+    for (const c of node.children || []) walk(c, node, parentTipId, pathContent);
+  })(tree, null, null, 0);
+
+  if (!rootTipId) return { positions: new Map(), width: 40, height: 20 };
+
+  for (const [tipId, info] of tipInfo) {
+    info.trailingContent = countTrailingContent(tipId, tipsSet);
+  }
+
+  // Lane assignment on the tips-only tree: first child-tip inherits
+  // parent's lane; siblings 2+ take new lanes.
+  let nextLane = 1;
+  const tipLane = new Map();
+  (function lay(tipId, inherited) {
+    tipLane.set(tipId, inherited);
+    tipInfo.get(tipId).childTipIds.forEach((c, i) => {
+      lay(c, (i === 0) ? inherited : nextLane++);
+    });
+  })(rootTipId, 0);
+  const laneCount = nextLane;
+
+  // X = cumulative content-distance from root along the tips path.
+  // MIN_EDGE guarantees even zero-content edges show as a visible link.
+  // Bump COLW if you want the branches stretched out more; CSS width
+  // on #minimap then scales the whole SVG to pixel target.
+  const MIN_EDGE = 1;
+  const COLW = 22;
+  const tipX = new Map();
+  (function placeX(tipId, baseX) {
+    tipX.set(tipId, baseX);
+    tipInfo.get(tipId).childTipIds.forEach(c => {
+      const edgeLen = Math.max(MIN_EDGE, tipInfo.get(c).contentFromParent);
+      placeX(c, baseX + edgeLen * COLW);
+    });
+  })(rootTipId, 0);
+
+  const padX = 12;
+  const padY = 8;
+  const laneH = 7;
+
+  // Width includes trailing-chain extensions from leaf tips.
+  let maxExtent = 0;
+  for (const [tipId, info] of tipInfo) {
+    const isLeaf = info.childTipIds.length === 0;
+    const trailLen = isLeaf ? info.trailingContent * COLW : 0;
+    maxExtent = Math.max(maxExtent, tipX.get(tipId) + trailLen);
+  }
+  const width  = padX * 2 + maxExtent;
+  const height = padY * 2 + Math.max(0, laneCount - 1) * laneH;
+
+  // subtree size per tip — used to position the in-branch cursor as a
+  // fraction along the trail (every preorder step = one slot).
+  const subtreeSize = new Map();
+  (function measure(tipId) {
+    const node = findNode(tipId);
+    let count = 0;
+    (function w(n) { count++; for (const c of n.children || []) w(c); })(node);
+    subtreeSize.set(tipId, count);
+    for (const c of tipInfo.get(tipId).childTipIds) measure(c);
+  })(rootTipId);
+
+  const positions = new Map();
+  for (const [tipId, info] of tipInfo) {
+    const isLeaf = info.childTipIds.length === 0;
+    positions.set(tipId, {
+      x: padX + tipX.get(tipId),
+      y: padY + tipLane.get(tipId) * laneH,
+      parentTipId: info.parentTipId,
+      contentFromParent: info.contentFromParent,
+      trailingContent: info.trailingContent,
+      isLeaf,
+      trailLen: isLeaf ? info.trailingContent * COLW : 0,
+      subtreeSize: subtreeSize.get(tipId),
+    });
+  }
+  return { positions, width, height, tipsSet };
+}
+
+function setupMinimap(data) {
+  minimapEl = document.getElementById('minimap');
+  if (!minimapEl) {
+    minimapEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    minimapEl.setAttribute('id', 'minimap');
+    document.body.appendChild(minimapEl);
+  }
+
+  const tipsSet = computeTipsSet(data);
+  minimapLayout = computeMinimapLayout(tipsSet);
+  const { positions, width, height } = minimapLayout;
+
+  minimapEl.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  minimapEl.setAttribute('width', width);
+  minimapEl.setAttribute('height', height);
+  minimapEl.replaceChildren();
+
+  // Inter-tip edges first (drawn under nodes).
+  for (const [id, p] of positions) {
+    if (!p.parentTipId) continue;
+    const pp = positions.get(p.parentTipId);
+    if (!pp) continue;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', pp.x);
+    line.setAttribute('y1', pp.y);
+    line.setAttribute('x2', p.x);
+    line.setAttribute('y2', p.y);
+    line.setAttribute('class', 'mm-edge');
+    line.setAttribute('data-target', id);
+    minimapEl.appendChild(line);
+  }
+
+  // Trailing chains on leaf tips — length ∝ downstream content.
+  // Each trail has a dim base and an amber progress overlay that
+  // grows as the user navigates through the chapter's content.
+  for (const [id, p] of positions) {
+    if (!p.isLeaf || p.trailLen <= 0) continue;
+    const trail = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    trail.setAttribute('x1', p.x);
+    trail.setAttribute('y1', p.y);
+    trail.setAttribute('x2', p.x + p.trailLen);
+    trail.setAttribute('y2', p.y);
+    trail.setAttribute('class', 'mm-trail');
+    trail.setAttribute('data-tip', id);
+    minimapEl.appendChild(trail);
+
+    const progress = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    progress.setAttribute('x1', p.x);
+    progress.setAttribute('y1', p.y);
+    progress.setAttribute('x2', p.x);  // zero-length until a navigation sets it
+    progress.setAttribute('y2', p.y);
+    progress.setAttribute('class', 'mm-trail-progress');
+    progress.setAttribute('data-tip', id);
+    minimapEl.appendChild(progress);
+  }
+
+  // Tip dots.
+  for (const [id, p] of positions) {
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('cx', p.x);
+    c.setAttribute('cy', p.y);
+    c.setAttribute('r', 2.8);
+    c.setAttribute('class', 'mm-node mm-struct');
+    c.setAttribute('data-id', id);
+    c.addEventListener('click', () => {
+      if (animating) return;
+      const node = findNode(id);
+      if (node) goTo(node);
+    });
+    minimapEl.appendChild(c);
+  }
+}
+
+function updateMinimap() {
+  if (!minimapEl || !minimapLayout) return;
+  const { tipsSet, positions } = minimapLayout;
+  const currentTipId = closestTipAncestor(currentId, tipsSet);
+
+  // Walk up the tips tree from currentTipId to collect the highlighted path.
+  const tipPath = new Set();
+  for (let t = currentTipId; t; ) {
+    tipPath.add(t);
+    const info = positions.get(t);
+    t = info ? info.parentTipId : null;
+  }
+
+  minimapEl.querySelectorAll('.mm-node').forEach(el => {
+    const id = el.getAttribute('data-id');
+    el.classList.toggle('mm-current', id === currentTipId);
+    el.classList.toggle('mm-path',    tipPath.has(id));
+  });
+  minimapEl.querySelectorAll('.mm-edge').forEach(el => {
+    const targetId = el.getAttribute('data-target');
+    el.classList.toggle('mm-edge-path', tipPath.has(targetId));
+  });
+  minimapEl.querySelectorAll('.mm-trail').forEach(el => {
+    const tipId = el.getAttribute('data-tip');
+    el.classList.toggle('mm-trail-active', tipId === currentTipId);
+  });
+
+  // In-branch cursor: extend the progress overlay from the current tip
+  // to a position along its trail. Step = DFS-preorder index within the
+  // tip's sub-tree, normalized to [0, 1]. Non-leaf tips have no trail —
+  // cursor stays on the tip dot (progress x2 held at tip.x).
+  const curTip = positions.get(currentTipId);
+  const curPos = preorderIds.indexOf(currentId);
+  const tipPos = currentTipId ? preorderIds.indexOf(currentTipId) : -1;
+  minimapEl.querySelectorAll('.mm-trail-progress').forEach(el => {
+    const tipId = el.getAttribute('data-tip');
+    const p = positions.get(tipId);
+    let x2 = p.x;
+    if (tipId === currentTipId && curTip && curTip.isLeaf && curTip.trailLen > 0) {
+      const denom = Math.max(1, curTip.subtreeSize - 1);
+      const frac = Math.max(0, Math.min(1, (curPos - tipPos) / denom));
+      x2 = p.x + frac * p.trailLen;
+    }
+    el.setAttribute('x2', x2);
+  });
 }
 
 init();
