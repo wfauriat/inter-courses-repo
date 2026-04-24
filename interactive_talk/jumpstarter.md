@@ -73,7 +73,7 @@ meaning as the tree gets reshuffled — semantic names stay stable and
 read cleanly in diffs. Pure integer keys (`"0"`, `"42"`) are the one
 thing to avoid: JSON parsers reorder them ahead of strings.
 
-**Current tree shape** (as of 2026-04-24; regenerate with
+**Current tree shape** (as of 2026-04-25; regenerate with
 `python3 -c "import json; d=json.load(open('tree.json'))" ...` or just
 walk the outline if unsure — it drifts often):
 ```
@@ -85,35 +85,52 @@ sRoot
 │       → sStats → sStatsb → sStatsc
 │       → sNTP
 │   (next-token-prediction backbone)
-└── sMachin → sInWork → sInWorkb
-    ├── sTok → sTokb → sTokSol → sTokSolb
-    │   (tokenization chapter, text-only)
-    ├── sEmb
-    │   ├── sSpace → sSpaceb → sMatrix → sMatrixb → sMatrixc
-    │   │   (vector coords + matrix-of-vectors intro)
-    │   ├── sEmbLogic → sClust → sClustb → sClust1..sClust4
-    │   │   (what embeddings encode → 2D projection, cluster reveal)
-    │   ├── sArithm → sCap1..sCap4
-    │   │   (analogy geometry — country/capital)
-    │   ├── sVeh1..sVeh4 → sEmbConcl → sEmbConclb → sEmbConclc
-    │   │   (vehicle analogy + embedding-chapter wrap-up)
-    │   └── sPos → sPosb
-    │       (positional embedding, text-only)
-    ├── sAttn → sAttnb → sAttnc
-    │        → sAttnBank → sAttnBankR → sAttnBankM
-    │        → sAttnBankH → sAttnBankHb → sAttnBankHc → sAttnWrap
-    │   (attention setup → schematic "bank" example → heads as subspace
-    │    filters → synthesis)
-    ├── sTrans → sTransEif → sTransEifArc → sTransEifDrift
-    │          → sTransMLP → sTransMLPBank → sTransMLPFire → sTransMLPWrite
-    │          → sTransWrap
-    │          → sArch → sArchShapes → sArchParams → sArchZoom
-    │   (transformer intro → Eiffel attention → MLP "bank of
-    │    learned patterns" → three-mechanic wrap-up → architecture
-    │    capstone. Data-driven where clean, schematic-with-real-
-    │    measurements where individual interpretation breaks down)
-    └── sTrain → sTrainData → sTrainStep → sTrainEmerge → sTrainEff
-        (what training does + why the weird machinery works; text-only)
+├── sMachin → sInWork → sInWorkb
+│    ├── sTok → sTokb → sTokSol → sTokSolb
+│    │   (tokenization chapter, text-only)
+│    ├── sEmb
+│    │   ├── sSpace → sSpaceb → sMatrix → sMatrixb → sMatrixc
+│    │   │   (vector coords + matrix-of-vectors intro)
+│    │   ├── sEmbLogic → sClust → sClustb → sClust1..sClust4
+│    │   │   (what embeddings encode → 2D projection, cluster reveal)
+│    │   ├── sArithm → sCap1..sCap4
+│    │   │   (analogy geometry — country/capital)
+│    │   ├── sVeh1..sVeh4 → sEmbConcl → sEmbConclb → sEmbConclc
+│    │   │   (vehicle analogy + embedding-chapter wrap-up)
+│    │   └── sPos → sPosb
+│    │       (positional embedding, text-only)
+│    ├── sAttn → sAttnb → sAttnLogic
+│    │         ├── sAttnBank → sAttnBankR → sAttnBankM
+│    │         ├── sAttnCas → sAttnCasb
+│    │         ├── sAttnBankH → sAttnBankHb → sAttnBankHc → sAttnForm  [technical]
+│    │         └── sAttnWrap
+│    │   (attention setup → ambiguous-bank example → causal masking →
+│    │    heads as subspace filters + QKV formula [technical] → synthesis.
+│    │    sAttnWrap is the light-mode synthesis, outside the technical subtree)
+│    ├── sTrans
+│    │    ├── sTransEif → sTransEifArc → sTransEifDrift  [technical]
+│    │    └── sTransMLP → sTransMLPBank → sTransMLPFire
+│    │                → sTransMLPWrite → sTransWrap → sTransProb
+│    │   (Eiffel attention [technical] + MLP "bank of learned patterns"
+│    │    → three-mechanic block wrap-up → top-of-stack probability.
+│    │    sTransProb is terminal in the MLP chain, not a bridge above it)
+│    ├── sArch → sArchShapes
+│    │          ├── sArchParams → sArchZoom  [technical]
+│    │          └── sArchNature
+│    │   (whole-pipeline capstone → shapes → param counts + optional
+│    │    block-zoom → "it's mostly parameters" bridge to training)
+│    └── sTrain → sTrainData
+│         ├── sTrainStep → sTrainStepb
+│         └── sTrainEmerge → sTrainEmergeb → sTrainEff → sAlign → sAlignb
+│        (pretraining: what it does + why the weird machinery works
+│         → sAlign bridges base-model NTP to chat-assistant via SFT+RLHF)
+└── sComput
+     ├── sComputTrain → sComputTrainGPU → sComputTrainAutodiff  [technical]
+     ├── sComputInfer → sComputInferCost → sComputInferKV       [technical]
+     └── sComputWrap
+     (training vs inference compute — scale, GPUs, auto-regressive
+      inference, latency; autodiff/KV-cache are technical refinements.
+      sComput is a top-level sibling of sMachin, not nested inside it)
 ```
 
 Embedding fans out into five sub-branches under `sEmb`:
@@ -230,8 +247,11 @@ subtrees whose root is marked `"technical": true` in `tree.json`;
 
 **Authoring.** Mark the root of a technical sub-branch:
 `"sAttnBankH": { ..., "technical": true }`. The flag inherits in
-`reifyTree` — every descendant is hidden in light mode. `sAttnBankH`
-and `sTransEif` currently carry the flag.
+`reifyTree` — every descendant is hidden in light mode. Current
+technical roots: `sAttnBankH` (heads + QKV formula), `sTransEif`
+(Eiffel attention case study), `sArchZoom` (transformer-block
+internals), `sComputTrainAutodiff` (backprop / autodiff),
+`sComputInferKV` (KV cache).
 
 **Runtime.** `t` toggles the mode. `?mode=light|technical` in the URL
 seeds the initial value (non-locking — `t` still works after). The
@@ -257,13 +277,18 @@ sits at the bottom of `app.js`; styling is scoped under `#minimap` in
 `tips` field in `tree.json` (user-curated list of chapter markers):
 
 ```json
-"tips": ["sRoot", "sUse", "sNextWord", "sMachin",
-         "sTok", "sEmb", "sEmbLogic", "sArithm", "sVeh1",
-         "sPos", "sAttn", "sAttnBankH", "sTrans", "sArch", "sTrain"]
+"tips": ["sRoot", "sUse", "sUTrans", "sNextWord", "sNTP",
+         "sMachin", "sTok", "sEmb", "sEmbLogic", "sEmbConcl",
+         "sArithm", "sVeh1", "sPos", "sAttn", "sAttnCas",
+         "sAttnBankH", "sAttnWrap", "sTrans", "sTransEif",
+         "sTransMLP", "sArch", "sArchNature", "sTrain",
+         "sTrainStep", "sTrainEmerge", "sAlign", "sComput",
+         "sComputTrain", "sComputInfer"]
 ```
 
-(Tips drift — this is a snapshot. `sAttnBankH` is a technical tip; in
-light mode it's filtered out of the minimap along with its subtree.)
+(Tips drift — this is a 2026-04-25 snapshot. `sAttnBankH` and
+`sTransEif` are technical tips; in light mode they're filtered out
+of the minimap along with their subtrees.)
 
 Content nodes (refinements between tips) are **not rendered as dots**.
 They collapse into:

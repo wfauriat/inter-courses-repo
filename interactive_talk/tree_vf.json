@@ -1,0 +1,310 @@
+{
+  "root": "sRoot",
+  "tips": ["sRoot", "sUse", "sUTrans", "sNextWord", "sNTP", "sMachin", "sTok", "sEmb", "sEmbLogic", "sEmbConcl", "sArithm", "sVeh1", "sPos", "sAttn", "sAttnCas", "sAttnBankH", "sAttnWrap", "sTrans", "sTransEif", "sTransMLP", "sArch", "sArchNature", "sTrain", "sTrainStep", "sTrainEmerge", "sAlign", "sComput", "sComputTrain", "sComputInfer"],
+  "nodes": {
+    "sRoot":   { "text": "Que sont les [[LLM]] et comment [[fonctionnent-ils]] ?", "mode": "rewrite" },
+
+    "sUse":   {"text" : "Vous avez probablement déjà 'joué' avec \nles soi-disant [[chatbots IA]].\n (ChatGPT d'OpenAI, Gemini de Google, Claude d'Anthropic, Le Chat de Mistral, ...)" , "mode": "rewrite" },
+    "sUseb":  {"text" : "Vous avez probablement déjà 'joué' avec \nles soi-disant [[chatbots IA]].\n (ChatGPT d'OpenAI, Gemini de Google, Claude d'Anthropic, Le Chat de Mistral, ...).\n\nIls sont tous propulsés par des LLM\n(Large Language Models)"},
+    "sUsec":    {"text" : "Vous avez probablement déjà 'joué' avec \nles soi-disant chatbots IA.\n (ChatGPT d'OpenAI, Gemini de Google, Claude d'Anthropic, Le Chat de Mistral, ...).\n\nIls sont tous propulsés par des LLM\n(Large Language Models)\n\nEn voici un aperçu :"},
+    "sUE1":  { "text": "> Comment fait-on des [[pancakes]] ?", "mode": "rewrite" },
+    "sUE1b": { "text": "> Comment fait-on des pancakes ?\n\nFouettez 250g de farine, 2 œufs, 500ml de lait, une cuillère à soupe de sucre et une pincée de sel jusqu'à obtenir une pâte lisse. Laissez reposer la pâte 15 minutes, puis faites cuire de petites louches dans une poêle beurrée bien chaude — retournez quand des bulles se forment, encore 30 secondes. Servez chaud." },
+    "sUE2":  { "text": "> Combien de temps faut-il attendre [[entre deux couches de peinture]] ?", "mode": "rewrite" },
+    "sUE2b": { "text": "> Combien de temps faut-il attendre entre deux couches de peinture ?\n\nPour les peintures à l'eau (acrylique, latex), 2 à 4 heures. Pour les peintures à l'huile, comptez 16 à 24 heures. Vérifiez sur le pot le délai exact entre couches — l'humidité ou le froid peuvent allonger ces délais." },
+    "sUE3":  { "text": "> Comment lister et trier des [[sous-répertoires par taille]] sous Unix ?", "mode": "rewrite" },
+    "sUE3b": { "text": "> Comment lister et trier des sous-répertoires par taille sous Unix ?\n\nCombinez du et sort :\n\n  du -sh */ | sort -h\n\n'du -sh */' : affiche la taille totale de chaque sous-répertoire immédiat sous forme lisible ; 'sort -h' : trie ces tailles naturellement." },
+    "sUE4":  { "text": "> Donne-moi du [[pseudo-code pour résoudre une EDO simple]].", "mode": "rewrite" },
+    "sUE4b": { "text": "> Donne-moi du pseudo-code pour résoudre une EDO simple.\n\nL'approche la plus simple est la méthode d'Euler. \n\nPour dy/dt = f(y, t) :\n  t, y = t0, y0\n  while t < t_end:\n      y += h * f(y, t)\n      t += h\n\nChoisissez un pas h assez petit pour la stabilité ; passez à RK4 pour une meilleure précision." },
+    "sUTrans":  {"text": "Les [[outils basés sur des LLM]] peuvent faire des choses impressionnantes et pourtant ...", "mode":"rewrite"},
+
+    "sNextWord":   { "text": "Les LLM sont essentiellement construits pour faire une seule chose : [[prédire le mot suivant]].", "mode": "rewrite" },
+    "sNextWordb":  { "text": "Les LLM sont essentiellement construits pour faire une seule chose : prédire le mot suivant. Le mot qui suit n'importe quel morceau de texte -- ou prompt -- qu'on leur fournit.", "figure": { "svg": "resources/LLM_in_out.svg", "show": ["prompt", "llm"]}},
+    "sNextWordc":  { "text": "Les LLM sont essentiellement construits pour faire une seule chose : prédire le mot suivant. Le mot qui suit n'importe quel morceau de texte -- ou prompt -- qu'on leur fournit.", "figure": { "svg": "resources/LLM_in_out.svg", "show": ["prompt", "llm", "text"]} },
+    "sGen":   { "text": "Les LLM de type [[decoder]] (comme GPT) sont des machines [[génératives]]. Ils choisissent [[le mot suivant]] dans une [[liste calculée des plus probables]].", "mode": "rewrite" , "figure": { "svg": "resources/seq_feed.svg", "show": ["the", "dog", "chases", "promptR", "prompt", "next", "after", "geneL1", "geneT1"]}},
+    "sGenb":  { "text": "Les LLM de type decoder (comme GPT) sont des machines génératives. Ils choisissent le mot suivant dans une liste calculée des plus probables. Puis la séquence, allongée d'un mot, est réinjectée et le processus se répète.", "figure": { "svg": "resources/seq_feed.svg", "show": ["the", "dog", "chases", "promptR2", "prompt2", "after2", "next2", "the2", "geneL2", "geneT2"]}},
+    "sGenc":  { "text": "Les LLM de type decoder (comme GPT) sont des machines génératives. Ils choisissent le mot suivant dans une liste calculée des plus probables. Puis la séquence, allongée d'un mot, est réinjectée et le processus se répète, générant progressivement un bloc de texte.",  "figure": { "svg": "resources/seq_feed.svg", "show": ["the", "dog", "chases", "promptR3", "prompt3", "after2", "next3", "the3", "cat", "geneL3", "geneT3"]} },
+    "sGend":  { "text": "Les LLM de type decoder (comme GPT) sont des machines génératives. Ils choisissent le token suivant dans une liste calculée des plus probables. Puis la séquence, allongée d'un token, est réinjectée et le processus se répète, générant progressivement un bloc de texte.\n\nLes LLM modernes manipulent surtout des tokens : des fragments de mots, plutôt que des mots entiers.", "figure": { "svg": "resources/token1.svg"} },
+    "sStats":   { "text": "Les LLM sont construits par [[entraînement intensif sur d'énormes corpus de texte]] (des milliards de tokens).", "mode": "rewrite" },
+    "sStatsb":  { "text": "Les LLM sont construits par entraînement intensif sur d'énormes corpus de texte (des milliards de tokens). Pendant l'entraînement, ils captent des régularités statistiques et apprennent ce que pourrait être le token suivant." },
+    "sStatsc":  { "text": "Les LLM sont construits par entraînement intensif sur d'énormes corpus de texte (des milliards de tokens). Pendant l'entraînement, ils captent des régularités statistiques et apprennent ce que pourrait être le token suivant, étant donné ce qu'ils ont observé dans les corpus." },
+    "sNTP":   { "text": "En résumé, les LLM de type decoder (comme GPT) sont des [[producteurs séquentiels de tokens suivants]], dotés d'une [['fluidité statistique']].", "mode": "rewrite" },
+
+    "sMachin":   { "text": "Comment une [[machine mécanique]], obstinément occupée à prédire le token suivant, peut-elle générer du texte [[fluide]] et, disons-le, [[porteur de sens]], [[répondre à des questions]], [[écrire du code]], [[résumer]] des documents ?", "mode": "rewrite"},
+    "sInWork":   { "text": "Pour répondre à cette question, il faut [[jeter un œil à l'intérieur]] de cette machine et regarder quelques-unes de ses [[caractéristiques essentielles]] :", "mode": "rewrite" },
+    "sInWorkb":   { "text": "Pour répondre à cette question, il faut jeter un œil à l'intérieur de cette machine et regarder quelques-unes de ses [[caractéristiques essentielles]] :\n\n-tokenization \n-embedding \n-attention \n-architecture transformer \n-objectif d'entraînement self-supervised"},
+
+    "sTok":   { "text": "[[Tokenization]]\n\n Travailler directement avec les [[mots]] pose des problèmes", "mode": "rewrite" },
+    "sTokb":   { "text": "[[Tokenization]]\n\n Travailler directement avec les [[mots]] pose des problèmes, \n faible robustesse aux fautes d'orthographe et gestion difficile des mots techniques longs (comme 'tokenization', \nplus naturel sous la forme 'token-ization')."},
+    "sTokSol":   { "text": "Différentes solutions de [[tokenization]] existent pour [['découper']] les mots en [[fragments]], et chacune a ses compromis :", "mode": "rewrite" },
+    "sTokSolb":   { "text": "Différentes solutions de tokenization existent pour 'découper' les mots en fragments, et chacune a ses compromis :\n des morceaux trop longs font grossir la taille du vocabulaire,\n trop petits rendent difficile l'extraction robuste du sens."},
+
+    "sEmb":   { "text": "[[Embedding]]\n\n Chaque token est transformé en [[vecteur]] — un [[paquet de nombres]] que le modèle peut effectivement [[traiter]] \n('faire des maths dessus').", "mode": "rewrite" },
+    "sSpace":  { "text": "Pour être explicite, un [[vecteur]] est une [[liste de coordonnées]] dans un [[espace]] de grande dimension (comme des coordonnées GPS sur une carte).", "mode": "rewrite", "figure": { "svg": "resources/token_vector.svg", "show": [] } },
+    "sSpaceb":  { "text": "Pour être explicite, un [[vecteur]] est une liste de coordonnées dans un espace de grande dimension (comme des coordonnées GPS sur une carte). \nDes tokens différents vivent dans des 'régions' différentes de cet espace.", "figure": { "svg": "resources/token_vector.svg", "show": ["id1", "id2"] } },
+    "sMatrix": { "text": "Transformer un [[texte d'entrée]] en tokens,\n avec des [[indices de tokens]] lus dans un [[vocabulaire]] (par ex. 50257 tokens avec Byte-Pair Encoding pour GPT-2)", "mode": "rewrite", "figure": { "svg": "resources/embedding_matrix.svg", "show": ["token-ids"] } },
+    "sMatrixb": { "text": "Transformer un texte d'entrée en tokens,\n avec des indices de tokens lus dans un vocabulaire (par ex. 50257 tokens avec Byte-Pair Encoding pour GPT-2),\n puis associer à chaque token un vecteur dans un espace de dimension d \n(d=768 pour GPT2-small)", "figure": { "svg": "resources/embedding_matrix.svg", "show": ["token-ids",  "matrix-numbers"] } },
+    "sMatrixc": { "text": "Transformer un texte d'entrée en tokens,\n avec des indices de tokens lus dans un vocabulaire (par ex. 50257 tokens avec Byte-Pair Encoding pour GPT-2),\n puis associer à chaque token un vecteur dans un espace de dimension d \n(d=768 pour GPT2-small),\n produit une matrice d'entrée de taille (5, 768).", "figure": { "svg": "resources/embedding_matrix.svg", "show": ["token-ids", "matrix-numbers"] } },
+
+    "sEmbLogic" : {"text": "Pourquoi cette idée de [[disposer]] (projeter) les tokens dans des [[régions différentes]] d'un [[espace de grande dimension]] ?", "mode":"rewrite"},
+    "sClust": { "text": "Parce que ces [[coordonnées]] peuvent servir à [[encoder]] (en nombres) et à [[traiter le sens]].", "mode": "rewrite"},
+    "sClustb": { "text": "Parce que ces coordonnées peuvent servir à encoder (en nombres) et à traiter le sens. Prenons une tranche de l'espace de dimension d, et projetons les tokens dessus. \n(on projettera des mots plutôt que des tokens pour simplifier)", "figure": { "svg": "resources/embedding.svg", "show": [] } },
+    "sClust1": { "text": "Les [[mots d'animaux]] atterrissent [[les uns près des autres]] -- cat, dog, fish, bird.", "mode":"rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals"] } },
+    "sClust2": { "text": "Les [[verbes d'action]] se taillent leur propre région -- predict, simulate, compute, estimate.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs"] } },
+    "sClust3": { "text": "Les [[termes statistiques]] se regroupent ailleurs -- probability, variance, posterior, distribution.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs", "stats-terms"] } },
+    "sClust4": { "text": "Les [[figures royales]] dans une autre région -- king, queen, prince, princess.", "mode": "rewrite", "figure": { "svg": "resources/embedding.svg", "show": ["animals", "verbs", "stats-terms", "royalty"] } },
+
+    "sArithm": { "text": "Ce n'est pas que la [[proximité]] qui compte : les [[directions]] comptent aussi. On peut faire de l'[[arithmétique]] (additionner et soustraire des vecteurs) et les résultats [[veulent dire]] quelque chose.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_capital.svg", "show": [] } },
+    "sCap1": { "text": "Prenons paris, france, germany, berlin — [[deux pays et leurs capitales]].", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_capital.svg", "show": ["capital-words"] } },
+    "sCap2": { "text": "Partons de paris. Soustrayons le vecteur [[france]] — on retire la composante 'pays'.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_capital.svg", "show": ["capital-words", "capital-sub"] } },
+    "sCap3": { "text": "Puis ajoutons le vecteur [[germany]] — un pays différent.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_capital.svg", "show": ["capital-words", "capital-sub", "capital-add"] } },
+    "sCap4": { "text": "On atterrit juste à côté de [[berlin]]. La relation 'capitale-de-pays' vit comme une [[direction]] dans l'espace.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_capital.svg", "show": ["capital-words", "capital-sub", "capital-add", "capital-resolve"] } },
+    "sVeh1": { "text": "Le schéma est général. Essayons [[plane - air + sea]].", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_vehicle.svg", "show": ["vehicle-words"] } },
+    "sVeh2": { "text": "Soustrayons le vecteur [[air]] — on retire le milieu.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_vehicle.svg", "show": ["vehicle-words", "vehicle-sub"] } },
+    "sVeh3": { "text": "Ajoutons le vecteur [[sea]] — un milieu différent.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_vehicle.svg", "show": ["vehicle-words", "vehicle-sub", "vehicle-add"] } },
+    "sVeh4": { "text": "On atterrit juste à côté de [[boat]]. Même géométrie, sens différent.", "mode": "rewrite", "figure": { "svg": "resources/embedding_analogy_vehicle.svg", "show": ["vehicle-words", "vehicle-sub", "vehicle-add", "vehicle-resolve"] }},
+    "sEmbConcl": {"text": "Ces deux exemples illustrent deux [[remarques cruciales]] :", "mode":"rewrite"},
+    "sEmbConclb": {"text": "Ces deux exemples illustrent deux remarques cruciales : \n-La géométrie de l'espace d'embedding encode le sens."},
+    "sEmbConclc": {"text": "Ces deux exemples illustrent deux remarques cruciales : \n-La géométrie de l'espace d'embedding encode le sens, \n-Les LLM modernes peuvent extraire du sens en traitant des nombres."},
+
+    "sPos":  { "text": "Clairement, l'ordre des mots compte. \n[[dog chases cat]] vs [[cat chases dog]] — mêmes tokens, sens opposés.", "mode": "rewrite" },
+    "sPosb": { "text": "Clairement, l'ordre des mots compte. \ndog chases cat vs cat chases dog — mêmes tokens, sens opposés. \n\n On encode non seulement les tokens (wte) mais aussi leurs positions, via le positional embedding (wpe), qui est généralement ajouté à l'embedding des tokens (wte+wpe)." },
+
+    "sAttn":       { "text": "[[Attention]] \n\nLes vecteurs de tokens bruts -- les [[embeddings]] -- même avec un positional embedding, ne peuvent pas rendre compte du [[mécanisme évident]] suivant :", "mode": "rewrite" },
+    "sAttnb":       { "text": "Attention \n\nLes vecteurs de tokens bruts -- les embeddings -- même avec un positional embedding, ne peuvent pas rendre compte du mécanisme évident suivant :\n\n Le sens d'un mot dans une phrase est souvent inextricablement lié aux autres mots autour de lui." },
+    "sAttnLogic":   { "text": "C'est là qu'intervient l'idée d'[['attention']] \n-- la [[pièce maîtresse]] des [[LLM modernes]].", "mode":"rewrite" },
+    "sAttnBank":   { "text": "Prenons un mot ambigu — [[bank]] — dans deux phrases. [[Même token]], donc [[même vecteur d'embedding]] ; rien dans 'bank' seul ne vous dit quel sens est en jeu.", "mode": "rewrite", "figure": { "svg": "resources/bank_attention.svg", "show": [] } },
+    "sAttnBankR":  { "text": "Dans la première phrase, [[fishing]] tire le plus fort sur le sens de bank. L'intensité de l'arc, c'est l'[[attention]] — le modèle pondère quels voisins regarder. Bank devient [[rive]].", "mode": "rewrite", "figure": { "svg": "resources/bank_attention.svg", "show": ["attention-river"] } },
+    "sAttnBankM":  { "text": "Dans la seconde, [[deposit]] fait le même travail — bank devient [[banque (au sens monétaire)]]. Même mot, même vecteur de départ. Voisins différents → sens différent.", "mode": "rewrite", "figure": { "svg": "resources/bank_attention.svg", "show": ["attention-river", "attention-money"] } },
+    "sAttnCas":   {"text": "Pour les architectures [[decoder]], on applique un [[causal masking]] lors du calcul de l'attention : \n\ncela signifie que les tokens ne peuvent regarder que leurs [[voisins précédents]], pas leurs [[voisins 'futurs']].", "mode":"rewrite"},
+    "sAttnCasb":   {"text": "Pour les architectures decoder, on applique un causal masking lors du calcul de l'attention : \n\ncela signifie que les tokens ne peuvent regarder que leurs voisins précédents, pas leurs voisins 'futurs'. \n\nC'est une architecture générative, elle ne peut avancer que 'vers l'avant'."},
+
+    "sAttnBankH":  { "text": "Les [['têtes' d'attention]] sont des [['filtres' appris]] (projections de sous-espaces) dans l'espace d'embedding \n(d=768 -> 64 pour GPT2-small).", "mode":"rewrite", "technical": true, "figure": { "svg": "resources/bank_attention.svg", "show": ["attention-river", "attention-money"] }},
+    "sAttnBankHb":  { "text": "Les 'têtes' d'attention sont des 'filtres' appris (projections de sous-espaces) dans l'espace d'embedding \n(d=768 -> 64 pour GPT2-small). \n\nElles apprennent à chercher du contexte :", "figure": { "svg": "resources/bank_attention.svg", "show": ["attention-river", "attention-money"] }},
+    "sAttnBankHc":  { "text": "Les 'têtes' d'attention sont des 'filtres' appris (projections de sous-espaces) dans l'espace d'embedding \n(d=768 -> 64 pour GPT2-small). \n\nElles apprennent à chercher du contexte : \n\n'bank' (une direction particulière dans l'espace d'embedding) \npeut chercher autour de lui des détails architecturaux \n(dans une autre direction particulière), \nun nom peut chercher un adjectif qualificatif, \n une prémisse, une conclusion.", "figure": { "svg": "resources/bank_attention.svg", "show": ["attention-river", "attention-money"] }},
+    "sAttnForm": {"text": "Trois [[projections]] sont dérivées de chaque vecteur de token : \n[[Q]] -- la [['query']] (ce que je cherche), \n[[K]] -- la [['key']] (ce que j'offre), \n[[V]] -- la [['value']] (ce que j'apporte si je suis choisi). \n\nsoftmax(Q.K^T) [[score]] chaque correspondance QK et la convertit en [[poids]] ; \n ces poids [[somment les vecteurs V des voisins]] dans le vecteur du token lui-même. \n\n[[Forte correspondance QK]] -> grande part de V qui entre.", "mode":"rewrite"},
+
+    "sAttnWrap": {"text":"En utilisant plusieurs [[têtes d'attention]] avec des focus différents (syntaxe, sémantique, logique, ...), \n un vecteur de token [[regarde autour de lui]] et [[décale]] progressivement sa direction dans l'espace d'embedding.", "mode":"rewrite"},
+
+    "sTrans": { "text": "[[Architecture Transformer]]\n\n De nombreuses [[couches d'attention]] sont [[empilées]] dans une même machine : des [[raffinements successifs]] de la lecture du contexte sont effectués.", "mode": "rewrite" },
+
+    "sTransEif": { "text": "Pour voir la pile à l'œuvre, traçons un token. '[[tower]]' dans cette phrase part [[générique]] — le modèle n'a encore aucune idée de quelle tour il s'agit.", "mode": "rewrite", "technical": true, "figure": { "svg": "resources/eiffel_attention.svg", "show": ["sentence-amber"] } },
+    "sTransEifArc": { "text": "Les premières têtes [[regardent en arrière]] depuis '[[tower]]' vers les attributs distinctifs et les [[attirent à elles]]. Une tête se spécialise dans ' iron', une autre dans ' old', une autre dans ' famous'. Les têtes sont des [[détecteurs étroits]] — pas des chercheurs génériques.", "mode": "rewrite", "figure": { "svg": "resources/eiffel_attention.svg", "show": ["sentence-amber", "attn-arcs"] } },
+    "sTransEifDrift": { "text": "Empilée sur de nombreuses couches (12 dans GPT small), cette attraction [[oriente]] la représentation de '[[tower]]' — loin de 'tour générique', vers la région où vivent les monuments nommés. Le modèle n'a pas [[nommé]] la tour ; mais son encodage interne est devenu [[spécifique]].", "mode": "rewrite", "figure": { "svg": "resources/eiffel_attention.svg", "show": ["sentence-amber", "attn-arcs", "landmarks", "drift-start", "drift-trajectory"] } },
+
+    "sTransMLP": { "text": "L'[[attention]] ne fait que la moitié du travail. Après chaque bloc d'attention, un [[second]] bloc écrit sur les vecteurs de tokens : le [[MLP]] (Multi-Layer Perceptron).", "mode": "rewrite", "figure": { "svg": "resources/eiffel_mlp.svg", "show": [] } },
+    "sTransMLPBank": { "text": "Le MLP est une [[banque de motifs appris]]. Chacun s'allume pour un type d'entrée particulier.", "mode": "rewrite", "figure": { "svg": "resources/eiffel_mlp.svg", "show": ["mlp-input", "mlp-library"] } },
+    "sTransMLPFire": { "text": "Étant donné le vecteur '[[tower]]' contextualisé arrivant de l'attention, \n\n(''À [[Paris]] aujourd'hui, j'ai gravi les 1000+ marches de la [[vieille tour en fer]]'') \n\nseule une [[petite poignée]] de ces motifs s'active fortement. La plupart restent proches de zéro.", "mode": "rewrite", "figure": { "svg": "resources/eiffel_mlp.svg", "show": ["mlp-input", "mlp-library", "mlp-firing"] } },
+    "sTransMLPWrite": { "text": "Les motifs activés [[somment]] leurs sorties et [[les réécrivent]] dans le vecteur du token — ajoutant des caractéristiques comme '[[grande]]', '[[de type monument]]', '[[située]]' sur '[[tower]]'. \n\n Certains aiment voir le MLP comme la [['mémoire']] ou la [['base factuelle']] du modèle entier. \n\n''Vieille tour en fer à Paris -> tour Eiffel''", "mode": "rewrite", "figure": { "svg": "resources/eiffel_mlp.svg", "show": ["mlp-input", "mlp-library", "mlp-firing", "mlp-labels", "mlp-output"] } },
+    "sTransWrap": { "text": "Dans un bloc transformer : \nl'[[attention]] regarde autour, \nle [[MLP]] applique des motifs, \nle [[vecteur]] de token reçoit les deux [['ajustements']]. \n\n[[12 blocs]] x (attention + MLP) empilés \n(pour GPT2-small).", "mode": "rewrite" },
+    "sTransProb": { "text": "Au sommet de la pile, une [[liste des tokens les plus probables]] est calculée.", "mode":"rewrite", "figure":{"svg": "resources/ProbaOut.svg"}},
+
+    "sArch":       { "text": "Voici la [[machine entière]] dessinée sous forme de pipeline. \n\nLes ids de tokens entrent à gauche, une distribution sur le token suivant sort à droite \n— avec l'[[embedding]], les [[douze blocs transformer empilés]], et l'[[unembedding]] au milieu.", "mode": "rewrite", "figure": { "svg": "resources/gpt2_architecture.svg", "show": [] } },
+    "sArchShapes": { "text": "Voici le [[flux de données]]. \n\nLes tokens entrent comme des [[ids entiers]]. Entre les boîtes, chaque token est porté par un [[vecteur de dimension 768]], \nchaque vecteur reçoit de nombreux ajustements en traversant les 12 blocs transformer. \n\nEn sortie, après [[unembedding]], \n[[un score par entrée du vocabulaire]] \n(ou proba en % par token).", "mode": "rewrite", "figure": { "svg": "resources/gpt2_architecture.svg", "show": ["shapes"] } },
+    "sArchParams": { "text": "Faisons une pause et regardons la [['taille' de la machinerie]]. \n\n [[~124M paramètres]] au total, \n[[~40M]] dans la table d'embedding, \n[[~85M]] répartis dans les 12 blocs empilés \n(~1/3 pour les têtes d'attention, ~2/3 pour le MLP).", "mode": "rewrite", "figure": { "svg": "resources/gpt2_architecture.svg", "show": ["shapes", "params"] } },
+    "sArchZoom":   { "text": "Voici les composants des [[blocs transformer]]. \n\n Les boîtes vertes dans le graphe sont les projections (produits par matrice de poids) qui impliquent des [[paramètres appris]].", "mode": "rewrite", "technical": true, "figure": { "svg": "resources/gpt2_architecture.svg", "show": ["shapes", "params", "block-zoom"] } },
+    "sArchNature":   {"text": "Au-delà des [[choix architecturaux]] précédents, intéressants pour le traitement du langage (NLP) et l'extraction de sens, \n\nce sont surtout les [[paramètres]] -- des centaines de millions -- \nles [[petits boutons]] que l'on ajuste pendant l'[[entraînement]], \nqui rendent les LLM modernes efficaces.", "mode":"rewrite"},
+
+    "sTrain": { "text": "[[(Pré-)Entraînement]] \n\n Les paramètres (ou poids) sont fixés en faisant tourner la machine sur [[des milliers de milliards de tokens de texte brut]], en les ajustant à chaque fois pour [[prédire un peu mieux le token suivant]].", "mode": "rewrite" },
+    "sTrainData": { "text": "[[(Pré-)Entraînement]] \n\n Les paramètres (ou poids) sont fixés en faisant tourner la machine sur [[des milliers de milliards de tokens de texte brut]], en les ajustant à chaque fois pour prédire un peu mieux le token suivant. \n\n'Des milliers de milliards de tokens' signifie grosso modo [[un balayage de l'internet public]] — pages web, livres, forums, dépôts de code, articles scientifiques."},
+
+    "sTrainStep": { "text": "[[(Pré-)Entraînement self-supervised]] \n\nÀ chaque étape : on montre à la machine un morceau de texte, on [[cache le token suivant]], on la laisse deviner,\n on [[mesure à quel point elle se trompe]], puis on [[ajuste]] chacun des [[milliards de nombres]] à l'intérieur des matrices d'un tout petit peu — dans la direction qui l'aurait rendue moins fausse. \n\n[[Répétez des milliers de milliards de fois]].", "mode": "rewrite" },
+    "sTrainStepb": { "text": "(Pré-)Entraînement self-supervised \n\nÀ chaque étape : on montre à la machine un morceau de texte, on cache le token suivant, on la laisse deviner,\n on mesure à quel point elle se trompe, puis on ajuste chacun des milliards de nombres à l'intérieur des matrices d'un tout petit peu — dans la direction qui l'aurait rendue moins fausse. \n\nRépétez des milliers de milliards de fois. \n\nÀ cette échelle, les solutions logicielles et les capacités matérielles sont des 'enablers' indispensables. \n\nOn y reviendra."},
+
+    "sTrainEmerge": { "text": "[[Personne n'a conçu]] les clusters d'embedding, les motifs d'attention, les directions d'orientation. \n\n Ils ont [[émergé]] parce qu'ils se sont avérés [[utiles pour prédire]].", "mode": "rewrite" },
+    "sTrainEmergeb": { "text": "Personne n'a conçu les clusters d'embedding, les motifs d'attention, les directions d'orientation. \n\n Ils ont émergé parce qu'ils se sont avérés utiles pour prédire. \n\nGrammaire, sens des mots, connaissance du monde — tout ce qui aide à prédire le token suivant finit par être [[encodé quelque part dans les poids]]."},
+    "sTrainEff": { "text": "Ce qui peut [[paraître assez mystique ou magique]] : projeter des tokens dans un espace d'embedding et les orienter en fonction de leurs voisins \n('Faire du calcul sur des vecteurs obscurs'),\n\n finit par marcher parce que ces manipulations sont [[ajustées jusqu'à ce que le modèle devienne un devineur efficace du token suivant]].", "mode": "rewrite" },
+
+    "sAlign": { "text": "Mais un bon [[devineur de token suivant]] n'est pas encore un [[chatbot]]. \n\nDemandez au modèle de base brut \n'Comment fait-on des pancakes ?', \net il est aussi susceptible de [[continuer le prompt]] \n('...est une question sur bien des esprits. D'abord il vous faut...') \nque d'y [[répondre]] directement.", "mode": "rewrite" },
+    "sAlignb": { "text": "Le [[post-training]] comble l'écart. \n\nLe [[supervised fine-tuning]] sur des paires instruction-réponse soigneusement sélectionnées apprend au modèle à [[répondre]] plutôt qu'à [[continuer]]. \n\nLe [[RLHF]] (reinforcement learning from human feedback) ajuste ensuite ses réponses vers ce que les humains [[préfèrent]] -- utile, honnête, sûr. \n\nC'est l'étape qui transforme la machine à tokens suivants en [[ChatGPT ou Claude]].", "mode": "rewrite" },
+
+    "sComput": {"text": "[[Calcul]] \n\nLes choix architecturaux et mathématiques ne sont que la moitié de l'histoire. \n[[Des milliards de paramètres]] x [[des milliers de milliards de tokens]] = un [[vrai problème d'ingénierie]]. \n\nDeux phases à considérer : l'[[entraînement]] (comment le modèle est construit) et l'[[inférence]] (comment on l'utilise).", "mode": "rewrite"},
+
+    "sComputTrain": {"text": "[[Calcul d'entraînement]] \n\nUne seule étape d'entraînement : \n faire passer un morceau de texte à travers toute la machine, \n comparer les prédictions aux vrais tokens suivants, \n [[ajuster chaque paramètre]] d'un tout petit peu dans la bonne direction. \n\nRépéter [[des milliards de fois]].", "mode": "rewrite"},
+    "sComputTrainGPU": {"text": "Chaque bloc transformer est essentiellement fait de [[produits matriciels]]. \n\nLes [[GPU]] (graphics processing units) font [[des milliers de multiplications en parallèle]] -- les maths de matrices sont leur forme native. \n\nUn entraînement moderne utilise [[des milliers de GPU]] pendant des semaines ou des mois.", "mode": "rewrite"},
+    "sComputTrainAutodiff": {"text": "Comment le modèle sait-il [[dans quel sens]] ajuster chaque paramètre ? \n\nDes frameworks comme [[PyTorch]] construisent un [[graphe de calcul]] de chaque opération pendant la passe avant. \n\nLors de la passe arrière, la [[règle de la chaîne]] propage les gradients -- c'est la [[backpropagation]] -- qui donne la direction de plus forte descente dans un espace de paramètres de [[dimension milliardaire]].", "mode": "rewrite", "technical": true},
+
+    "sComputInfer": {"text": "[[Inférence]] \n\nUtiliser le modèle entraîné a sa propre forme de calcul. \n\nLa génération de texte est [[auto-régressive]] : pour produire le token N+1, on fait tourner toute la machine vers l'avant. Pour produire N+2, on relance avec la séquence étendue. \n\n[[Un token à la fois.]]", "mode": "rewrite"},
+    "sComputInferCost": {"text": "Chaque nouveau token = [[une passe avant complète]] à travers les 12 blocs. \n\nLa [[latence]] croît avec la [[taille du modèle]] (plus de paramètres = plus de calcul par passe) et la [[longueur de la séquence]] (contexte plus long = plus de travail d'attention). \n\nC'est pour ça que les réponses longues [[défilent]] visiblement, token par token.", "mode": "rewrite"},
+    "sComputInferKV": {"text": "Une astuce de production : le [[KV cache]]. \n\nNaïvement, chaque étape recalcule l'attention sur tous les tokens précédents -- du travail en [[O(n^2)]]. \n Mettre en cache les projections [[K]] et [[V]] des étapes précédentes ramène le travail par étape à [[O(n)]] : seul le [[Q]] du nouveau token a besoin de faire son attention sur le cache.", "mode": "rewrite", "technical": true},
+
+    "sComputWrap": {"text": "[[Entraînement]] : un investissement de calcul ponctuel et massif \n(des milliers de GPU, des mois de calcul, des millions de dollars). \n\n[[Inférence]] : un coût continu par requête \n(une passe avant par token, par utilisateur, par requête). \n\nLes deux façonnent ce que les LLM peuvent être [[déployés]] comme, et à quelle [[échelle]].", "mode": "rewrite"}
+  },
+  "tree": {
+    "sRoot": {
+      "sUse": {
+        "sUseb": {
+          "sUsec": {
+            "sUE1": { "sUE1b": {} },
+            "sUE2": { "sUE2b": {} },
+            "sUE3": { "sUE3b": {} },
+            "sUE4": { "sUE4b": {} }
+          }
+        },
+        "sUTrans": {}
+      },
+      "sNextWord": {
+        "sNextWordb": {
+          "sNextWordc": {
+            "sGen": {
+              "sGenb": {
+                "sGenc":{
+                  "sGend": {
+                    "sStats": {
+                      "sStatsb": {
+                        "sStatsc": {
+                          "sNTP": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "sMachin": {
+        "sInWork": {
+          "sInWorkb": {
+
+            "sTok": {
+              "sTokb":{
+                "sTokSol": {
+                  "sTokSolb": {}
+                }
+              }
+            },
+            "sEmb": {
+              "sSpace": {
+                "sSpaceb":{
+                  "sMatrix": {
+                    "sMatrixb": {
+                      "sMatrixc": {
+                        "sEmbLogic" : {
+                          "sClust": {
+                            "sClustb": {
+                              "sClust1": {
+                                "sClust2": {
+                                  "sClust3": {
+                                    "sClust4": {}
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "sArithm": {
+                          "sCap1": {
+                            "sCap2": {
+                              "sCap3": {
+                                "sCap4": {}
+                                }
+                              }
+                            }
+                          },
+                        "sVeh1": {
+                          "sVeh2": {
+                            "sVeh3": {
+                              "sVeh4": {
+                                "sEmbConcl": {
+                                  "sEmbConclb": {
+                                    "sEmbConclc": {}
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "sPos": {
+                          "sPosb": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "sAttn": {
+              "sAttnb":{
+                "sAttnLogic":{
+                  "sAttnBank": {
+                    "sAttnBankR": {
+                      "sAttnBankM": {
+                      }
+                    }
+                  },
+                  "sAttnCas": {
+                    "sAttnCasb": {}
+                  },
+                  "sAttnBankH": {
+                    "sAttnBankHb": {
+                      "sAttnBankHc": {
+                        "sAttnForm": {}
+                      }
+                    }
+                  },
+                  "sAttnWrap": {}
+                }
+              }
+            },
+            "sTrans": {
+              "sTransEif": {
+                "sTransEifArc": {
+                  "sTransEifDrift": {}
+                }
+              },
+              "sTransMLP": {
+                "sTransMLPBank": {
+                  "sTransMLPFire": {
+                    "sTransMLPWrite": {
+                      "sTransWrap": {
+                        "sTransProb": {}
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "sArch": {
+              "sArchShapes": {
+                "sArchParams": {
+                  "sArchZoom": {}
+                },
+                "sArchNature": {}
+              }
+            },
+            "sTrain": {
+              "sTrainData": {
+                "sTrainStep": {
+                  "sTrainStepb":{}
+                  },
+                "sTrainEmerge": {
+                  "sTrainEmergeb": {
+                    "sTrainEff": {
+                      "sAlign": {
+                        "sAlignb": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "sComput": {
+        "sComputTrain": {
+          "sComputTrainGPU": {
+            "sComputTrainAutodiff": {}
+          }
+        },
+        "sComputInfer": {
+          "sComputInferCost": {
+            "sComputInferKV": {}
+          }
+        },
+        "sComputWrap": {}
+      }
+    }
+  }
+}
