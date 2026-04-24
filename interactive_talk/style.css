@@ -226,3 +226,13 @@ body {
   stroke-linecap: round;
   transition: all 220ms ease;
 }
+
+/* Tip dot gets a lighter-amber ring when the user is exactly at a tip
+   whose ↑/↓ would jump to a sibling chapter. Lighter shade (vs. the
+   amber fill from .mm-current) + thicker stroke so the ring reads
+   clearly through the 0.35 default minimap opacity. */
+#minimap .mm-node.mm-tip-sibling {
+  stroke: #fde68a;
+  stroke-width: 2;
+  paint-order: stroke fill;
+}

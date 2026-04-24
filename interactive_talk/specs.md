@@ -40,9 +40,10 @@ Each entry in `nodes` is keyed by id and holds only per-node fields:
 
 ```jsonc
 "sTok": {
-  "text":   "...",        // displayed text; may contain [[...]] markers and \n newlines
-  "mode":   "rewrite",    // optional: "rewrite" | (default "diff")
-  "figure": "foo.png"     // optional: image path, placeholder text, SVG spec, or omitted
+  "text":      "...",        // displayed text; may contain [[...]] markers and \n newlines
+  "mode":      "rewrite",    // optional: "rewrite" | (default "diff")
+  "figure":    "foo.png",    // optional: image path, placeholder text, SVG spec, or omitted
+  "technical": true          // optional: hides this subtree in light mode (see Light/technical mode)
 }
 ```
 
@@ -84,18 +85,37 @@ Two shapes, discriminated by type:
 
 Both forms are just different values of the same `figure` field; the node shape is otherwise unchanged.
 
+### Light / technical mode
+
+A tree-wide filter on top of the DFS structure. Two modes:
+
+- **`light`** (default) hides every node whose root-of-subtree carries `"technical": true` (the flag inherits to all descendants).
+- **`technical`** shows everything.
+
+Authoring: set `"technical": true` only on the *root* of a branch meant to be skippable; descendants inherit. Don't flag the root node — the whole tree would vanish.
+
+Runtime: `t` / `T` toggles the mode. `?mode=light|technical` in the URL seeds the initial value; it is non-locking — `t` still flips the mode after load, so the URL param is for sharing a presentation flavour, not for locking it. The help strip shows the current mode.
+
+Effects:
+
+- Navigation (preorder, sibling cycle) skips hidden subtrees.
+- The minimap rebuilds: hidden tips drop from the dot set, trailing-content counts skip hidden subtrees.
+- If the current node becomes hidden on flip, the viewer snaps to the nearest visible ancestor via an animated `goTo`.
+
 ---
 
 ## Interaction model
 
-- `→` next in DFS preorder
-- `←` previous in DFS preorder
-- `↑` / `↓` cycle siblings at the current level
+- `→` next in (visible) DFS preorder
+- `←` previous in (visible) DFS preorder
+- `↑` / `↓` cycle visible siblings at the current level
 - `space` replay the last transition
 - `r` / `R` jump to root
-- Any of the above pressed *during* an animation fast-forwards the current animation to its final state. The key is not queued — the user must press again to navigate further. This trades traversal speed for control.
+- `a` / `A` toggle auto-advance (steps `→` every `CONFIG.autoAdvanceMs` ms)
+- `t` / `T` toggle light / technical mode
+- Any of the navigation keys (arrows, space, r) pressed *during* an animation fast-forwards the current animation to its final state. The key is not queued — the user must press again to navigate further. This trades traversal speed for control. `a` and `t` are modal keys, not navigation, so they don't skip — they apply immediately.
 
-The breadcrumb bottom-left shows the DFS path from root to current node. The help strip bottom-right summarizes the keys.
+The breadcrumb bottom-left shows the DFS path from root to current node. The help strip bottom-right summarizes the keys and current mode.
 
 ---
 
@@ -112,7 +132,7 @@ The breadcrumb bottom-left shows the DFS path from root to current node. The hel
 ## Non-goals
 
 - **No build step, no framework, no bundler.** A handful of plain files, browser APIs only. Edit and reload.
-- **No persistence state.** The viewer is idempotent over `tree.json`; there is no session memory, no history, no URL state.
+- **No persistence state.** The viewer is idempotent over `tree.json`; there is no session memory and no history. The only URL state is the optional `?mode=light|technical` seed for the light/technical filter.
 - **Backward ≠ inverse.** A rewrite-mode node replays its own animation; going back through it does not un-type it in reverse.
 - **No WYSIWYG editor for the tree.** Authors edit `tree.json` by hand. This is intentional — it keeps the content format simple and diffable.
 - **Highlights are author intent, not computed salience.** There is no NLP, no emphasis model. In rewrite mode the author chooses what's fresh; in diff mode the diff algorithm does.
@@ -167,4 +187,44 @@ A group without `class="layer"` is part of the base and always visible — usefu
 - Transition paths and node history remain the tree's responsibility. The figure has no memory of what was shown before; each node re-declares its `show` list.
 - The `show` list is order-independent — it's a set.
 - Back-navigation applies the target node's `show` just like forward. Symmetric with the text-side "backward ≠ inverse" rule.
+
+---
+
+## Minimap
+
+**Status: implemented.** A compact navigation skeleton above the breadcrumb. Lives in `app.js` with styling scoped under `#minimap` in `style.css`.
+
+### Data shape
+
+A top-level `tips` array in `tree.json` lists chapter-marker ids. Everything else — trails, edges, cursor progression — is derived from the tree plus `tips`.
+
+```jsonc
+"tips": ["sRoot", "sUse", "sNextWord", "sMachin", "sTok", "sEmb", ...]
+```
+
+### What it shows
+
+- **Tip dots.** One dot per visible id in `tips`. Hidden tips (tip whose subtree root is `technical` in light mode) drop out.
+- **Inter-tip edges.** Length proportional to the count of countable content nodes (rewrite-mode, not hidden) on the tree path from parent tip to child tip. A small `MIN_EDGE` floor keeps zero-content edges visible.
+- **Trails.** Leaf tips (tips with no descendant tip in the visible set) get a dim trailing line whose length is proportional to their trailing content count. An amber "progress overlay" on top grows as the user navigates the chapter.
+- **Non-leaf tips** draw no trail yet; orphan content under a non-leaf tip currently renders as nothing (known limitation).
+
+### Cursor and path highlighting
+
+The closest visible tip ancestor of `currentId` is the "current tip." It receives amber fill + glow (`.mm-current`). Every tip on the tips-tree path from root to current tip gets `.mm-path`. The current tip's trail progress extends to `tip.x + (preorderOffset / (subtreeSize − 1)) × trailLen`, giving a smooth slide through the chapter.
+
+### Sibling-tip border
+
+When the user is exactly at a tip whose visible full-tree siblings include at least one other tip (so `↑/↓` would jump to a sibling chapter), the tip dot gets a lighter-amber ring via `.mm-tip-sibling`. Applied dynamically — the ring disappears the moment the user steps into the tip's subtree, so it reflects "sibling-jump is actually possible right now" rather than a static structural property.
+
+### Interaction
+
+- **Click-to-jump.** Each tip dot is clickable; same animation guard as keyboard nav.
+- **Mode filter.** `talkMode` flips rebuild the minimap: hidden tips drop, trails shorten.
+
+### Scope notes
+
+- The minimap is derived state. `tree.json` remains the source of truth; the minimap never stores navigation history beyond reading `currentId`.
+- Markers are restricted to tip dots. Non-tip nodes are never rendered as dots — intermediate content (`sInWork` between `sMachin` and `sTok`, diff-mode refinements, etc.) is visible only via the progress overlay and the breadcrumb.
+- Tips list drift is expected. The author adds/removes tips to shape the chapter pacing without touching the viewer code.
 

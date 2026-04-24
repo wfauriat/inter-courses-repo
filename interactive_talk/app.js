@@ -20,16 +20,32 @@ let   minimapEl    = null;  // injected by setupMinimap on init
 let   minimapLayout = null; // { positions: Map<id, {x,y,structural,parentId}>, width, height }
 
 let tree       = null;
+let rawData    = null;    // parsed tree.json, kept so the minimap can be rebuilt on mode toggle
 let currentId  = null;
 let pathIds    = [];
 let animating  = false;
-let preorderIds  = [];    // flat list of ids in DFS preorder, for direction check
+let preorderIds  = [];    // DFS-preorder ids *filtered to the current talkMode*; drives nav + minimap math
 let lastFromText = null;  // for space-to-replay
 let lastToText   = null;
 let lastForward  = true;
 let lastMode     = 'diff'; // 'diff' | 'rewrite' — for replay
 let lastRanges   = [];     // highlight ranges for last rewrite replay
 let skipRequested = false; // set by onKey during animation; collapses remaining ops
+
+// Two-mode talk filter. `light` (default) hides subtrees whose root is
+// marked `"technical": true` in tree.json; `technical` shows everything.
+// `?mode=technical` (or `?mode=light`) in the URL seeds the initial value;
+// the `t` key flips it at runtime.
+let talkMode = (() => {
+  const p = new URLSearchParams(window.location.search).get('mode');
+  return p === 'technical' ? 'technical' : 'light';
+})();
+
+function isVisible(node) {
+  if (!node) return false;
+  if (talkMode === 'technical') return true;
+  return !node.technical;
+}
 
 // Figure state. The panel may hold one of: nothing, a static image, an
 // inline SVG (whose .layer groups get toggled), or a text placeholder.
@@ -48,19 +64,24 @@ function reifyTree(data) {
     console.error('tree.json: missing "root" field');
     return { id: '(missing root)', text: 'tree.json: missing "root" field', children: [] };
   }
-  function build(id, subtree) {
+  // `technical` propagates down: a flag on a subtree root marks the whole
+  // subtree. We stamp the effective value on each node so isVisible is O(1).
+  function build(id, subtree, inheritedTechnical) {
     const raw = nodes[id];
     if (!raw) console.warn(`tree.json: node "${id}" referenced in tree but not in nodes map`);
+    const selfTechnical = !!(raw && raw.technical);
+    const technical = inheritedTechnical || selfTechnical;
     const node = {
       id,
       text: (raw && raw.text) || '',
-      children: Object.keys(subtree || {}).map(cid => build(cid, subtree[cid])),
+      technical,
+      children: Object.keys(subtree || {}).map(cid => build(cid, subtree[cid], technical)),
     };
     if (raw && raw.mode   !== undefined) node.mode   = raw.mode;
     if (raw && raw.figure !== undefined) node.figure = raw.figure;
     return node;
   }
-  return build(rootId, outline[rootId] || {});
+  return build(rootId, outline[rootId] || {}, false);
 }
 
 async function init() {
@@ -73,11 +94,13 @@ async function init() {
       "Serve locally: run `python -m http.server` in this folder, then open http://localhost:8000";
     return;
   }
+  rawData = data;
   tree = reifyTree(data);
   currentId = tree.id;
   pathIds   = [tree.id];
   computePreorder();
   setupMinimap(data);
+  updateModeIndicator();
   // Sync CSS fade durations with CONFIG so tuning in one place propagates.
   // Panel fade-in drives the .figure.visible CSS animation; fade-out is set
   // inline on the element's transitionDuration just before each opacity flip.
@@ -193,9 +216,13 @@ async function updateFigure(node) {
   currentFigureType = spec.type;
 }
 
+// Rebuilds the visible-preorder list for the current talkMode. Hidden
+// subtrees are skipped wholesale so nothing inside them appears in nav,
+// direction checks, or minimap math. Call after any talkMode change.
 function computePreorder() {
   preorderIds = [];
   (function walk(n) {
+    if (!isVisible(n)) return;
     preorderIds.push(n.id);
     (n.children || []).forEach(walk);
   })(tree);
@@ -225,30 +252,18 @@ function findParent(id, node = tree, parent = null) {
   return null;
 }
 
-// Preorder-DFS: "next" = first child, else nearest ancestor's next sibling.
+// Preorder nav uses the filtered list — hidden nodes are absent from
+// preorderIds, so step ±1 naturally lands on the next visible node.
 function preorderNext(node) {
-  if (node.children && node.children.length) return node.children[0];
-  let cur = node;
-  while (true) {
-    const parent = findParent(cur.id);
-    if (!parent) return null;
-    const sibs = parent.children;
-    const idx  = sibs.indexOf(cur);
-    if (idx < sibs.length - 1) return sibs[idx + 1];
-    cur = parent;
-  }
+  const idx = preorderIds.indexOf(node.id);
+  if (idx < 0 || idx >= preorderIds.length - 1) return null;
+  return findNode(preorderIds[idx + 1]);
 }
 
-// Preorder-DFS: "prev" = previous sibling's rightmost descendant, else parent.
 function preorderPrev(node) {
-  const parent = findParent(node.id);
-  if (!parent) return null;
-  const sibs = parent.children;
-  const idx  = sibs.indexOf(node);
-  if (idx === 0) return parent;
-  let cur = sibs[idx - 1];
-  while (cur.children && cur.children.length) cur = cur.children[cur.children.length - 1];
-  return cur;
+  const idx = preorderIds.indexOf(node.id);
+  if (idx <= 0) return null;
+  return findNode(preorderIds[idx - 1]);
 }
 
 function rebuildPath() {
@@ -263,7 +278,21 @@ function rebuildPath() {
 }
 
 function updateBreadcrumb() {
-  breadcrumbEl.textContent = pathIds.join(' › ');
+  // Trim the full root→current path so the breadcrumb starts at the
+  // nearest tip ancestor. Keeps the visible trail short and chapter-
+  // scoped. `…` prefix signals hidden ancestors above.
+  const tipsSet = minimapLayout && minimapLayout.tipsSet;
+  let displayPath = pathIds;
+  let trimmed = false;
+  if (tipsSet) {
+    for (let i = pathIds.length - 1; i >= 0; i--) {
+      if (tipsSet.has(pathIds[i])) {
+        if (i > 0) { displayPath = pathIds.slice(i); trimmed = true; }
+        break;
+      }
+    }
+  }
+  breadcrumbEl.textContent = (trimmed ? '… › ' : '') + displayPath.join(' › ');
 }
 
 // ----- tokenize + LCS diff -----
@@ -551,7 +580,7 @@ function scheduleAutoNext() {
 }
 
 // ----- keyboard nav -----
-const HANDLED_KEYS = new Set(['ArrowRight','ArrowLeft','ArrowUp','ArrowDown',' ','r','R','a','A']);
+const HANDLED_KEYS = new Set(['ArrowRight','ArrowLeft','ArrowUp','ArrowDown',' ','r','R','a','A','t','T']);
 
 function onKey(e) {
   if (!HANDLED_KEYS.has(e.key)) return;
@@ -572,7 +601,38 @@ function onKey(e) {
     skipRequested = true;
     return;
   }
+
+  if (e.key === 't' || e.key === 'T') {
+    toggleMode();
+    return;
+  }
   performKey(e.key);
+}
+
+// Flip light ↔ technical. Rebuilds the visible-preorder list and the
+// minimap, then snaps to the nearest visible ancestor if the current
+// node just became hidden. Called only when not animating (onKey guards).
+function toggleMode() {
+  talkMode = talkMode === 'light' ? 'technical' : 'light';
+  computePreorder();
+  if (rawData) setupMinimap(rawData);
+  updateModeIndicator();
+
+  const cur = findNode(currentId);
+  if (cur && !isVisible(cur)) {
+    let ancestor = findParent(currentId);
+    while (ancestor && !isVisible(ancestor)) ancestor = findParent(ancestor.id);
+    if (!ancestor) ancestor = tree;  // root is always visible by convention
+    goTo(ancestor);                  // also refreshes breadcrumb + minimap cursor
+    return;
+  }
+  updateBreadcrumb();
+  updateMinimap();
+}
+
+function updateModeIndicator() {
+  const el = document.getElementById('modeValue');
+  if (el) el.textContent = talkMode;
 }
 
 function performKey(key) {
@@ -585,8 +645,9 @@ function performKey(key) {
     goTo(preorderPrev(node));
   } else if (key === 'ArrowDown' || key === 'ArrowUp') {
     if (!parent) return;
-    const sibs  = parent.children;
+    const sibs  = parent.children.filter(isVisible);
     const idx   = sibs.findIndex(s => s.id === currentId);
+    if (idx < 0 || sibs.length < 2) return;
     const delta = key === 'ArrowDown' ? 1 : -1;
     goTo(sibs[(idx + delta + sibs.length) % sibs.length]);
   } else if (key === ' ') {
@@ -629,7 +690,13 @@ function closestTipAncestor(id, tipsSet) {
 
 function computeTipsSet(data) {
   if (data && Array.isArray(data.tips) && data.tips.length) {
-    return new Set(data.tips);
+    // Hidden tips (e.g. sAttnBankH when it's `technical` in light mode)
+    // drop out of the minimap entirely — their nearest visible ancestor
+    // tip absorbs the remaining trailing content.
+    return new Set(data.tips.filter(id => {
+      const n = findNode(id);
+      return n && isVisible(n);
+    }));
   }
   return new Set([tree.id]);  // fallback: just root
 }
@@ -644,6 +711,7 @@ function countTrailingContent(tipId, tipsSet) {
   let count = 0;
   (function dfs(node) {
     for (const c of node.children || []) {
+      if (!isVisible(c)) continue;      // skip hidden subtrees entirely
       if (tipsSet.has(c.id)) continue;  // stop at descendant tips
       if (countsAsContent(c, node)) count++;
       dfs(c);
@@ -658,6 +726,7 @@ function computeMinimapLayout(tipsSet) {
   let rootTipId = null;
 
   (function walk(node, parent, parentTipId, pathContent) {
+    if (!isVisible(node)) return;       // hidden subtree ⇒ no tips, no content
     if (tipsSet.has(node.id)) {
       tipInfo.set(node.id, {
         parentTipId,
@@ -723,12 +792,18 @@ function computeMinimapLayout(tipsSet) {
   const height = padY * 2 + Math.max(0, laneCount - 1) * laneH;
 
   // subtree size per tip — used to position the in-branch cursor as a
-  // fraction along the trail (every preorder step = one slot).
+  // fraction along the trail (every preorder step = one slot). Counts
+  // only visible nodes so in-mode progress lines up with the filtered
+  // preorder list.
   const subtreeSize = new Map();
   (function measure(tipId) {
     const node = findNode(tipId);
     let count = 0;
-    (function w(n) { count++; for (const c of n.children || []) w(c); })(node);
+    (function w(n) {
+      if (!isVisible(n)) return;
+      count++;
+      for (const c of n.children || []) w(c);
+    })(node);
     subtreeSize.set(tipId, count);
     for (const c of tipInfo.get(tipId).childTipIds) measure(c);
   })(rootTipId);
@@ -736,6 +811,14 @@ function computeMinimapLayout(tipsSet) {
   const positions = new Map();
   for (const [tipId, info] of tipInfo) {
     const isLeaf = info.childTipIds.length === 0;
+    // Tip has a "tip sibling" if any of its full-tree visible siblings is
+    // itself a tip — i.e. ↑/↓ from this tip jumps to another chapter.
+    // Lets the minimap flag inter-chapter jump points without conflating
+    // them with in-chapter nav.
+    const parentNode = findParent(tipId);
+    const hasTipSibling = !!(parentNode && parentNode.children.some(
+      s => s.id !== tipId && isVisible(s) && tipsSet.has(s.id)
+    ));
     positions.set(tipId, {
       x: padX + tipX.get(tipId),
       y: padY + tipLane.get(tipId) * laneH,
@@ -745,8 +828,10 @@ function computeMinimapLayout(tipsSet) {
       isLeaf,
       trailLen: isLeaf ? info.trailingContent * COLW : 0,
       subtreeSize: subtreeSize.get(tipId),
+      hasTipSibling,
     });
   }
+
   return { positions, width, height, tipsSet };
 }
 
@@ -806,7 +891,11 @@ function setupMinimap(data) {
     minimapEl.appendChild(progress);
   }
 
-  // Tip dots.
+  // Tip dots. `mm-tip-sibling` is applied dynamically in updateMinimap
+  // — a border appears only when the user is *at* a tip that has a
+  // tip sibling (so ↑/↓ would jump to another chapter). Off the tip
+  // (e.g. sInWork inside sMachin's subtree) the border disappears,
+  // matching "is sibling-jump actually possible right now?".
   for (const [id, p] of positions) {
     const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     c.setAttribute('cx', p.x);
@@ -840,6 +929,14 @@ function updateMinimap() {
     const id = el.getAttribute('data-id');
     el.classList.toggle('mm-current', id === currentTipId);
     el.classList.toggle('mm-path',    tipPath.has(id));
+    // Border only when the user is exactly at this tip *and* the tip
+    // has a visible sibling tip. Navigating into the tip's subtree
+    // (e.g. sInWork under sMachin) drops the border.
+    const p = positions.get(id);
+    el.classList.toggle(
+      'mm-tip-sibling',
+      id === currentId && !!(p && p.hasTipSibling),
+    );
   });
   minimapEl.querySelectorAll('.mm-edge').forEach(el => {
     const targetId = el.getAttribute('data-target');

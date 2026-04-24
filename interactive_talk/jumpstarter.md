@@ -33,12 +33,11 @@ speaker can branch live.
 
 **Viewer (don't touch unless you need to):**
 - `index.html` — minimal shell; loads `app.js` + `style.css`.
-- `app.js` (~550 lines) — all logic. Summary below.
-- `style.css` (~200 lines) — teletype aesthetic + figure panel + minimap. Summary below.
-- `index_v2.html` + `app_v2.js` — **v2 variant** with a tips-only minimap
-  above the breadcrumb. Same shell, same content, extra nav widget.
-  `app.js` stays untouched so v1 is always a working fallback.
-  See § "Minimap (v2)" below.
+- `app.js` (~990 lines) — all logic, minimap included. Summary below.
+- `style.css` (~215 lines) — teletype aesthetic + figure panel + minimap. Summary below.
+- `old_index.html` + `old_app.js` — archival pre-minimap shell, kept as
+  a read-only fallback. There used to be a v1/v2 split; v2 has been
+  folded into `app.js` as the single viewer.
 
 **Design:**
 - `specs.md` — **source of truth for viewer behavior and authoring
@@ -53,10 +52,13 @@ speaker can branch live.
 
 Node fields: `text` (required), `mode` (`"rewrite"` or default `"diff"`),
 `figure` (optional — `"foo.png"` for static, or
-`{ "svg": "foo.svg", "show": ["layer-id", ...] }` for layered).
+`{ "svg": "foo.svg", "show": ["layer-id", ...] }` for layered),
+`technical` (optional `true` — hides the subtree in light mode; see
+§ "Mode filter").
 
 Top-level fields: `root` (id), `nodes` (map), `tree` (outline),
-`tips` (optional array — used by the v2 minimap; see § "Minimap (v2)").
+`tips` (optional array — chapter markers used by the minimap; see
+§ "Minimap").
 
 `[[word or phrase]]` marks highlights (rendered via `.fresh` class).
 Avoid pure integer keys (`"0"`, `"1"`) — JSON parsers reorder those.
@@ -219,22 +221,49 @@ visible.
 
 ---
 
-## Minimap (v2 viewer)
+## Mode filter (light / technical)
 
-A compact navigation skeleton above the breadcrumb, opt-in via
-`index_v2.html` (which loads `app_v2.js`). `app.js` stays untouched —
-`app_v2.js` is `app.js` + a minimap module at the bottom (~200 lines).
-CSS lives in the shared `style.css` under a scoped `#minimap` block; it
-has no effect when the v1 shell is loaded (the element doesn't exist).
+Two-mode talk filter on top of the DFS tree. `light` (default) hides
+subtrees whose root is marked `"technical": true` in `tree.json`;
+`technical` shows everything. Lives in `app.js` as the module-level
+`talkMode` variable.
+
+**Authoring.** Mark the root of a technical sub-branch:
+`"sAttnBankH": { ..., "technical": true }`. The flag inherits in
+`reifyTree` — every descendant is hidden in light mode. `sAttnBankH`
+and `sTransEif` currently carry the flag.
+
+**Runtime.** `t` toggles the mode. `?mode=light|technical` in the URL
+seeds the initial value (non-locking — `t` still works after). The
+help strip shows current mode via `#modeValue`.
+
+**What it affects.** `computePreorder` filters the preorder list, so
+`preorderNext/Prev` and the ↑/↓ sibling cycle skip hidden nodes. The
+minimap rebuilds on toggle (`setupMinimap(rawData)`): hidden tips
+drop from the dot set, and trailing-content counts skip hidden
+subtrees. If the current node becomes hidden on flip, `toggleMode`
+snaps to the nearest visible ancestor via `goTo`.
+
+---
+
+## Minimap
+
+A compact navigation skeleton above the breadcrumb. The minimap module
+sits at the bottom of `app.js`; styling is scoped under `#minimap` in
+`style.css`. Previously a v2-only opt-in — v2 has been folded into
+`app.js` as the single viewer.
 
 **What it shows.** Only "tip" nodes as dots. Tips come from the
 `tips` field in `tree.json` (user-curated list of chapter markers):
 
 ```json
 "tips": ["sRoot", "sUse", "sNextWord", "sMachin",
-         "sTok", "sEmb", "sClust1", "sArithm", "sPos",
-         "sAttn", "sTrans", "sTrain"]
+         "sTok", "sEmb", "sEmbLogic", "sArithm", "sVeh1",
+         "sPos", "sAttn", "sAttnBankH", "sTrans", "sArch", "sTrain"]
 ```
+
+(Tips drift — this is a snapshot. `sAttnBankH` is a technical tip; in
+light mode it's filtered out of the minimap along with its subtree.)
 
 Content nodes (refinements between tips) are **not rendered as dots**.
 They collapse into:
@@ -242,10 +271,11 @@ They collapse into:
   between parent tip and child tip. Typically short (0–1).
 - **Trailing lines** past leaf tips whose length ∝ countable content
   in the tip's sub-tree. This is where the "big chapter = long branch"
-  visual comes from (e.g. `sTrans` has 12 trailing content nodes).
+  visual comes from (e.g. `sTrans` has 8 trailing content nodes in
+  technical mode, 5 in light — `sTransEif`'s subtree is hidden).
 
 A node is "countable" iff `node.mode === 'rewrite'` (see
-`countsAsContent` in `app_v2.js`). Diff-mode nodes are skipped. This
+`countsAsContent` in `app.js`). Diff-mode nodes are skipped. This
 includes rewrites that reuse an SVG via `show` changes (e.g. `sClust2-4`,
 `sCap*`, `sArchShapes/Params/Zoom`) — those *are* real content steps
 even though they share a figure.
@@ -257,14 +287,31 @@ giving a smooth slide as the user steps through the chapter's content.
 Non-leaf tips don't get a trail yet — their cursor sits on the tip dot.
 
 **Navigation feedback is eager.** `goTo` commits `currentId`, path,
-breadcrumb, and minimap *before* the text animation starts (edit in
-`app_v2.js:goTo`). The cursor jumps to target on keypress/click; the
+breadcrumb, and minimap *before* the text animation starts (see
+`app.js:goTo`). The cursor jumps to target on keypress/click; the
 text types out behind it.
 
 **Click-to-jump.** Each tip dot is clickable → jumps directly to that
 tip. Same animation guard as keyboard.
 
-**Layout knobs** (top of `computeMinimapLayout` in `app_v2.js`):
+**Sibling-tip border.** When the user is *exactly at* a tip whose
+full-tree visible siblings include another tip (so ↑/↓ would jump to
+a sibling chapter), the tip dot gets a lighter-amber ring via
+`mm-tip-sibling`. Applied dynamically in `updateMinimap`, not at
+render time — the ring vanishes the moment the user steps into the
+tip's subtree, so it tracks "can I sibling-jump from here?" rather
+than the static structural property. `hasTipSibling` is precomputed
+per tip on the layout position; visibility of the sibling follows the
+current `talkMode` (so e.g. `sAttnBankH` never rings in technical mode
+because its only sibling `sAttnBank` isn't a tip).
+
+**Mode-filter interaction.** `talkMode` flips rebuild the minimap
+via `setupMinimap(rawData)`: hidden tips drop out of `computeTipsSet`,
+trails shorten because `countTrailingContent` skips hidden subtrees,
+and `subtreeSize` uses visible-only counts (so in-trail progress
+still maps cleanly). See § "Mode filter".
+
+**Layout knobs** (top of `computeMinimapLayout` in `app.js`):
 - `COLW` (viewBox units per content-step) — scales inter-tip edges
   *and* trails. Bigger = stretched branches.
 - `laneH` — vertical spacing between sibling lanes.
@@ -277,18 +324,16 @@ tip. Same animation guard as keyboard.
   compete with the stage during presentation.
 - `.mm-trail` (dim base), `.mm-trail-progress` (amber overlay).
 - `.mm-node.mm-current { r: 3.4 }` — bump dot radius for the current.
+- `.mm-node.mm-tip-sibling` — lighter-amber ring (`#fde68a`,
+  stroke-width `2`, `paint-order: stroke fill`) for the current
+  tip-with-tip-sibling.
 
-**Falling back to v1.** If something breaks in v2, open `index.html`
-instead. The two entry points share `tree.json`, `style.css`, and
-`resources/`, so content edits land in both.
-
-**Known not-done.** `sEmb` is a non-leaf tip (has child tips
-`sClust1`, `sArithm`, `sPos`) so it doesn't draw a trail. The `sSpace`
-and `sVeh1` chains under `sEmb` are orphan content — not on any
-child-tip path — and currently render as nothing. Two fixes: (a) add
-`sSpace` and/or `sVeh1` to `tips` to promote them to leaf tips with
-their own trails, or (b) extend the minimap to render orphan trails on
-non-leaf tips (short perpendicular ticks, say).
+**Known not-done.** `sEmb` is a non-leaf tip (child tips `sEmbLogic`,
+`sArithm`, `sVeh1`, `sPos`) so it doesn't draw a trail. The `sSpace`
+chain under `sEmb` is orphan content — not on any child-tip path —
+and currently renders as nothing. Two fixes: (a) promote `sSpace` to
+a leaf tip with its own trail, or (b) extend the minimap to render
+orphan trails on non-leaf tips (short perpendicular ticks, say).
 
 ---
 
