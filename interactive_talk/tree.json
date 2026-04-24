@@ -1,6 +1,6 @@
 {
   "root": "sRoot",
-  "tips": ["sRoot", "sUse", "sUTrans", "sNextWord", "sNTP", "sMachin", "sTok", "sEmb", "sEmbLogic", "sEmbConcl", "sArithm", "sVeh1", "sPos", "sAttn", "sAttnCas", "sAttnBankH", "sAttnWrap", "sTrans", "sTransEif", "sTransMLP", "sArch", "sArchNature", "sTrain", "sTrainStep", "sTrainEmerge", "sComput"],
+  "tips": ["sRoot", "sUse", "sUTrans", "sNextWord", "sNTP", "sMachin", "sTok", "sEmb", "sEmbLogic", "sEmbConcl", "sArithm", "sVeh1", "sPos", "sAttn", "sAttnCas", "sAttnBankH", "sAttnWrap", "sTrans", "sTransEif", "sTransMLP", "sArch", "sArchNature", "sTrain", "sTrainStep", "sTrainEmerge", "sAlign", "sComput", "sComputTrain", "sComputInfer"],
   "nodes": {
     "sRoot":   { "text": "What are [[LLMs]] and how do they [[work]]?", "mode": "rewrite" },
 
@@ -81,8 +81,8 @@
     "sAttnBankH":  { "text": "[[Attention 'heads']] are [[learned 'screenings']] (subspace projections) in embedding space \n(d=768 -> 64 for GPT2-small).", "mode":"rewrite", "technical": true, "figure": { "svg": "resources/bank_attention.svg", "show": ["attention-river", "attention-money"] }},
     "sAttnBankHb":  { "text": "Attention 'heads' are learned 'screenings' (subspace projections) in embedding space \n(d=768 -> 64 for GPT2-small). \n\nThey learn to look for context:", "figure": { "svg": "resources/bank_attention.svg", "show": ["attention-river", "attention-money"] }},
     "sAttnBankHc":  { "text": "Attention 'heads' are learned 'screenings' (subspace projections) in embedding space \n(d=768 -> 64 for GPT2-small). \n\nThey learn to look for context: \n\n'bank' (a particular direction in embedding space) \nmay be looking around for architectural details \n(in another particular direction), \na noun may be looking for a qualifying adjective, \n a premise, for a conclusion.", "figure": { "svg": "resources/bank_attention.svg", "show": ["attention-river", "attention-money"] }},
-    "sAttnForm": {"text": "Attention is computed via: \n[[attn = softmax(Q.K^T).V]] \n\n A [[given]] token emits [[Q]] \n'here is what I am looking for', \n [[neighbors]] token answer with [[K]] or \n'here is what I can offer you', \n\nsoftmax(Q.K^T) identifies the 'strong' [[QK associations]] \n-- which token attend to which -- \nand V [[scales]] the association.  \n ", "mode":"rewrite"},
-    
+    "sAttnForm": {"text": "Three [[projections]] are derived from each token vector: \n[[Q]] -- the [['query']] (what do I look for), \n[[K]] -- the [['key']] (what do I offer), \n[[V]] -- the [['value']] (what do I contribute if picked). \n\nsoftmax(Q.K^T) [[scores]] every QK match and turns it into a [[weight]]; \n those weights [[sum neighbors' V vectors]] into the token's own vector. \n\n[[Strong QK match]] -> large slice of V flows in.", "mode":"rewrite"},
+
     "sAttnWrap": {"text":"Using multiple [[attention heads]] with different focus (syntax, semantics, logic, ...), \n a token vector [[looks around]] and progressively [[shifts]] direction in embedding space.", "mode":"rewrite"},
     
     "sTrans": { "text": "[[Transformer Architecture]]\n\n Many [[attention layers]] are [[stacked]] into a single machine: [[successive refinements]] of context reading are made.", "mode": "rewrite" },
@@ -114,7 +114,20 @@
     "sTrainEmergeb": { "text": "Nobody designed the embedding clusters, the attention patterns, the steering directions. \n\n They emerged because they turned out to be useful for predicting. \n\nGrammar, word meaning, world knowledge — whatever helps predict the next token ends up [[encoded somewhere in the weights]]."}, 
     "sTrainEff": { "text": "What may [[appear quite mystical or magical]]: projecting tokens in embedding space and steering them based on their neighbors \n('Doing computation on obscure vectors'),\n\n ends up working because such manipulations are [[tweaked until the model becomes an efficient next-token guesser]].", "mode": "rewrite" },
 
-    "sComput": {"text": "TO BE DONE: [[Parallelized]] self-supervised (masked) training on large corpora, \noptimized [[large matrix products]] (tensors) via [[GPU hardware]], use of [[computation graph and autodiff]](PyTorch) for [[loss backpropagation]] and optimization in billion-parametric spaces. \n\nConversely, [[inference]] is auto-regressive (n+2 needs n+1 computed), \n[[latency]] issue (proportional to model size) and [[compute cost]] are engineering / application questions.", "mode": "rewrite"}
+    "sAlign": { "text": "But a good [[next-token guesser]] is not yet a [[chatbot]]. \n\nAsk the raw base model \n'How do I make pancakes?', \nand it is as likely to [[continue the prompt]] \n('...is a question on many minds. First you need to...') \nas to [[answer]] it directly.", "mode": "rewrite" },
+    "sAlignb": { "text": "[[Post-training]] closes the gap. \n\n[[Supervised fine-tuning]] on curated instruction-response pairs teaches the model to [[respond]] rather than [[continue]]. \n\n[[RLHF]] (reinforcement learning from human feedback) then nudges its responses toward what humans [[prefer]] -- helpful, honest, safe. \n\nThat's the step that turns the next-token machine into [[ChatGPT or Claude]].", "mode": "rewrite" },
+
+    "sComput": {"text": "[[Computation]] \n\nThe architectural and mathematical choices are only half the story. \n[[Billions of parameters]] x [[trillions of tokens]] = a [[serious engineering]] problem. \n\nTwo phases to consider: [[training]] (how the model is built) and [[inference]] (how it's used).", "mode": "rewrite"},
+
+    "sComputTrain": {"text": "[[Training compute]] \n\nA single training step: \n feed a chunk of text through the whole machine, \n compare predictions to the real next tokens, \n [[nudge every parameter]] a tiny bit in the right direction. \n\nRepeat [[billions of times]].", "mode": "rewrite"},
+    "sComputTrainGPU": {"text": "Every transformer block is mostly [[matrix products]]. \n\n[[GPUs]] (graphics processing units) do [[thousands of multiplications in parallel]] -- matrix math is their native shape. \n\nA modern training run uses [[thousands of GPUs]] for weeks or months.", "mode": "rewrite"},
+    "sComputTrainAutodiff": {"text": "How does the model know [[which way]] to nudge each parameter? \n\nFrameworks like [[PyTorch]] build a [[computation graph]] of every operation during the forward pass. \n\nOn the backward pass, the [[chain rule]] propagates gradients -- [[backpropagation]] -- giving the direction of steepest descent in [[billion-dimensional]] parameter space.", "mode": "rewrite", "technical": true},
+
+    "sComputInfer": {"text": "[[Inference]] \n\nUsing the trained model has its own compute shape. \n\nText generation is [[auto-regressive]]: to produce token N+1, run the whole machine forward. To produce N+2, rerun with the extended sequence. \n\n[[One token at a time.]]", "mode": "rewrite"},
+    "sComputInferCost": {"text": "Each new token = [[one full forward pass]] through the 12 blocks. \n\n[[Latency]] scales with [[model size]] (more params = more math per pass) and [[sequence length]] (longer context = more attention work). \n\nThis is why long answers [[stream in]] visibly, token by token.", "mode": "rewrite"},
+    "sComputInferKV": {"text": "A production trick: the [[KV cache]]. \n\nNaively, each step recomputes attention over all previous tokens -- [[O(n^2)]] work. \n Caching [[K]] and [[V]] projections from prior steps turns per-step work into [[O(n)]]: only the new token's [[Q]] has to attend to the cache.", "mode": "rewrite", "technical": true},
+
+    "sComputWrap": {"text": "[[Training]]: a one-time, massive compute investment \n(thousands of GPUs, months of compute, millions of dollars). \n\n[[Inference]]: an ongoing per-query cost \n(one forward pass per token, per user, per request). \n\nBoth shape what LLMs can be [[deployed]] as, and at what [[scale]].", "mode": "rewrite"}
   },
   "tree": {
     "sRoot": {
@@ -226,8 +239,7 @@
                   "sAttnBankH": {
                     "sAttnBankHb": {
                       "sAttnBankHc": {
-                        "sAttnForm": {
-                        }
+                        "sAttnForm": {}
                       }
                     }
                   },
@@ -268,7 +280,11 @@
                   },
                 "sTrainEmerge": {
                   "sTrainEmergeb": {
-                    "sTrainEff": {}
+                    "sTrainEff": {
+                      "sAlign": {
+                        "sAlignb": {}
+                      }
+                    }
                   }
                 }
               }
@@ -277,7 +293,17 @@
         } 
       },
       "sComput": {
-
+        "sComputTrain": {
+          "sComputTrainGPU": {
+            "sComputTrainAutodiff": {}
+          }
+        },
+        "sComputInfer": {
+          "sComputInferCost": {
+            "sComputInferKV": {}
+          }
+        },
+        "sComputWrap": {}
       }
     }
   }

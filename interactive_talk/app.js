@@ -9,7 +9,7 @@ const CONFIG = {
   rewritePauseMs:   50,  // gap between fade-out and type phase in rewrite mode
   figureFadeInMs: 1000,  // figure panel fade-in (first render + swap)
   figureFadeOutMs: 150,  // figure panel fade-out (swap + going to no-figure)
-  autoAdvanceMs:  2000,  // delay between transitions in auto mode (press 'a')
+  autoAdvanceMs:  1200,  // delay between transitions in auto mode (press 'a')
 };
 
 const beforeEl     = document.getElementById('before');
