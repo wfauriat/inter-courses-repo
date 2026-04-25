@@ -86,8 +86,10 @@ function reifyTree(data) {
 
 async function init() {
   let data;
+  const lang = (new URLSearchParams(location.search).get('lang') || 'en').toLowerCase();
+  const treeFile = lang === 'fr' ? 'tree_vf.json' : 'tree.json';
   try {
-    const resp = await fetch('tree.json', { cache: 'no-store' });
+    const resp = await fetch(treeFile, { cache: 'no-store' });
     data = await resp.json();
   } catch (e) {
     beforeEl.textContent =

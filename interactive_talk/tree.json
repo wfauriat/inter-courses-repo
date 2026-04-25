@@ -1,6 +1,6 @@
 {
   "root": "sRoot",
-  "tips": ["sRoot", "sUse", "sUTrans", "sNextWord", "sNTP", "sMachin", "sTok", "sEmb", "sEmbLogic", "sEmbConcl", "sArithm", "sVeh1", "sPos", "sAttn", "sAttnCas", "sAttnBankH", "sAttnWrap", "sTrans", "sTransEif", "sTransMLP", "sArch", "sArchNature", "sTrain", "sTrainStep", "sTrainEmerge", "sAlign", "sComput", "sComputTrain", "sComputInfer"],
+  "tips": ["sRoot", "sUse", "sUTrans", "sNextWord", "sNTP", "sMachin", "sTok", "sEmb", "sEmbLogic", "sEmbConcl", "sArithm", "sVeh1", "sPos", "sAttn", "sAttnCas", "sAttnBankH", "sAttnWrap", "sTrans", "sTransEif", "sTransMLP", "sArch", "sArchNature", "sTrain", "sTrainStep", "sTrainEmerge", "sAlign", "sComput", "sComputTrain", "sComputInfer", "sComputWrap"],
   "nodes": {
     "sRoot":   { "text": "What are [[LLMs]] and how do they [[work]]?", "mode": "rewrite" },
 
