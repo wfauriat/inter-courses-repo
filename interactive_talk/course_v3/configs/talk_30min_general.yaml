@@ -1,0 +1,29 @@
+# 30-minute talk for a mixed/general audience.
+# Hits all six belief-trajectory waypoints. Skips technical
+# branches and the compute branch (compute is a separate config).
+format: talk_30min_general
+audience: general
+depth: standard
+include_technical: false
+budget_seconds: 1800
+
+tree:
+  - hook
+  - chatbot_interactions
+  - next_token_predictor
+  - autoregression
+  - ntp_summary
+  - mechanisms_overview
+  - tokenisation
+  - embedding
+  - embedding_geometry
+  - attention
+  - attention_disambig
+  - transformer_block
+  - transformer_stack_summary
+  - architecture_pipeline
+  - architecture_scale
+  - training_objective
+  - training_emergence
+  - alignment_gap
+  - alignment_thesis
