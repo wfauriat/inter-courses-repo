@@ -1,0 +1,1035 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 700 540"
+   font-family="Iosevka, 'JetBrains Mono', monospace"
+   version="1.1"
+   id="svg5381"
+   sodipodi:docname="gpt2_architecture.svg"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   width="700"
+   height="540"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs5385" />
+  <sodipodi:namedview
+     id="namedview5383"
+     pagecolor="#000000"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="1.5733333"
+     inkscape:cx="381.99153"
+     inkscape:cy="307.30933"
+     inkscape:window-width="1854"
+     inkscape:window-height="1131"
+     inkscape:window-x="66"
+     inkscape:window-y="32"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg5381" />
+  <!--
+    Hand-authored capstone figure for the transformer section.
+    Shows GPT-2 small data flow: token IDs → embedding → 12 transformer
+    blocks → unembedding → softmax. Shapes and parameter counts appear
+    as layered reveals. A block-zoom layer expands one transformer
+    block into its attention + MLP sub-operations.
+
+    Layers:
+      - shapes      : shape annotations at each pipeline stage
+      - params      : parameter counts per stage + grand total
+      - block-zoom  : expanded view of one transformer block
+  -->
+  <!-- ================================================================ -->
+  <!-- BASE: title + main pipeline + tied-weights arc                   -->
+  <!-- ================================================================ -->
+  <text
+     x="350"
+     y="34"
+     text-anchor="middle"
+     fill="#b8b8b8"
+     font-size="17px"
+     font-weight="500"
+     id="text5152"
+     style="font-size:18.6667px">GPT-2 <tspan
+   style="fill:#22c55e"
+   id="tspan23437">small</tspan> — data flow</text>
+  <!-- Pipeline boxes (y: 70–120, height 50, centered at y=95) -->
+  <!-- Box 1 : Token IDs -->
+  <rect
+     x="3.9967651"
+     y="70"
+     width="84.003235"
+     height="50"
+     rx="3"
+     fill="none"
+     stroke="#e8e8e8"
+     stroke-width="1.2"
+     id="rect5154" />
+  <text
+     x="46"
+     y="91"
+     text-anchor="middle"
+     fill="#e8e8e8"
+     font-size="12px"
+     id="text5156"
+     style="font-size:13.3333px">token ids</text>
+  <text
+     x="46"
+     y="108"
+     text-anchor="middle"
+     fill="#8a8a8a"
+     font-size="10px"
+     id="text5158"
+     style="font-size:10.6667px">integers</text>
+  <!-- Arrow 1 -->
+  <line
+     x1="88"
+     y1="95"
+     x2="116"
+     y2="95"
+     stroke="#e8e8e8"
+     stroke-width="1.1"
+     id="line5160" />
+  <polygon
+     points="143,99 150,95 143,91 "
+     fill="#e8e8e8"
+     id="polygon5162"
+     transform="translate(-30)" />
+  <!-- Box 2 : wte + wpe -->
+  <rect
+     x="120"
+     y="70"
+     width="120"
+     height="50"
+     rx="3"
+     fill="none"
+     stroke="#e8e8e8"
+     stroke-width="1.2"
+     id="rect5164"
+     style="stroke:#22c55e" />
+  <text
+     x="180"
+     y="91"
+     text-anchor="middle"
+     fill="#e8e8e8"
+     font-size="12px"
+     id="text5166"
+     style="font-size:13.3333px;fill:#22c55e;fill-opacity:1">wte + wpe</text>
+  <text
+     x="180"
+     y="108"
+     text-anchor="middle"
+     fill="#8a8a8a"
+     font-size="10px"
+     id="text5168"
+     style="font-size:10.6667px">embed lookup</text>
+  <!-- Arrow 2 -->
+  <line
+     x1="240"
+     y1="95"
+     x2="268"
+     y2="95"
+     stroke="#e8e8e8"
+     stroke-width="1.1"
+     id="line5170" />
+  <polygon
+     points="295,99 302,95 295,91 "
+     fill="#e8e8e8"
+     id="polygon5172"
+     transform="translate(-30)" />
+  <!-- Box 3 : Transformer block ×12 (highlighted, taller) -->
+  <rect
+     x="272"
+     y="62"
+     width="160"
+     height="66"
+     rx="3"
+     fill="none"
+     stroke="#e8e8e8"
+     stroke-width="1.6"
+     id="rect5174"
+     style="stroke:#3b82f6;stroke-width:2;stroke-dasharray:none;stroke-opacity:1" />
+  <text
+     x="352"
+     y="86"
+     text-anchor="middle"
+     fill="#e8e8e8"
+     font-size="12px"
+     id="text5176"
+     style="font-size:13.3333px;fill:#3b82f6"><tspan
+       style="fill:#3b82f6"
+       id="tspan6291">transformer block</tspan></text>
+  <text
+     x="352"
+     y="105"
+     text-anchor="middle"
+     fill="#fbbf24"
+     font-size="14px"
+     font-weight="500"
+     id="text5178"
+     style="font-size:14.6667px">× 12</text>
+  <text
+     x="352"
+     y="121"
+     text-anchor="middle"
+     fill="#8a8a8a"
+     font-size="9.5px"
+     id="text5180"
+     style="font-size:10.6667px">attn + MLP on residual</text>
+  <!-- Arrow 3 -->
+  <line
+     x1="432"
+     y1="95"
+     x2="460"
+     y2="95"
+     stroke="#e8e8e8"
+     stroke-width="1.1"
+     id="line5182" />
+  <polygon
+     points="487,99 494,95 487,91 "
+     fill="#e8e8e8"
+     id="polygon5184"
+     transform="translate(-30)" />
+  <!-- Box 4 : Unembedding -->
+  <rect
+     x="464"
+     y="70"
+     width="120"
+     height="50"
+     rx="3"
+     fill="none"
+     stroke="#e8e8e8"
+     stroke-width="1.2"
+     id="rect5186" />
+  <text
+     x="524"
+     y="91"
+     text-anchor="middle"
+     fill="#e8e8e8"
+     font-size="12px"
+     id="text5188"
+     style="font-size:13.3333px">unembedding</text>
+  <text
+     x="524"
+     y="108"
+     text-anchor="middle"
+     fill="#8a8a8a"
+     font-size="10px"
+     id="text5190"
+     style="font-size:10.6667px">(tied wte.T)</text>
+  <!-- Arrow 4 -->
+  <line
+     x1="584"
+     y1="95"
+     x2="612"
+     y2="95"
+     stroke="#e8e8e8"
+     stroke-width="1.1"
+     id="line5192" />
+  <polygon
+     points="639,99 646,95 639,91 "
+     fill="#e8e8e8"
+     id="polygon5194"
+     transform="translate(-30)" />
+  <!-- Box 5 : Softmax → top-k -->
+  <rect
+     x="616"
+     y="70"
+     width="79.436569"
+     height="50"
+     rx="3"
+     fill="none"
+     stroke="#e8e8e8"
+     stroke-width="1.2"
+     id="rect5196" />
+  <text
+     x="654"
+     y="91"
+     text-anchor="middle"
+     fill="#e8e8e8"
+     font-size="12px"
+     id="text5198"
+     style="font-size:13.3333px">softmax</text>
+  <text
+     x="654"
+     y="108"
+     text-anchor="middle"
+     fill="#8a8a8a"
+     font-size="10px"
+     id="text5200"
+     style="font-size:10.6667px">→ top-k</text>
+  <!-- ================================================================ -->
+  <!-- LAYER : shapes                                                   -->
+  <!-- ================================================================ -->
+  <g
+     class="layer"
+     id="shapes"
+     style="display:inline"
+     transform="translate(-30)">
+    <!-- Under each box -->
+    <text
+       x="74"
+       y="150"
+       text-anchor="middle"
+       fill="#fbbf24"
+       font-size="12px"
+       id="text5202"
+       style="font-size:13.3333px">(T,)</text>
+    <text
+       x="78"
+       y="167"
+       text-anchor="middle"
+       fill="#8a8a8a"
+       font-size="9.5px"
+       id="text5204"
+       style="font-size:10.6667px">vocab: 50,257</text>
+    <text
+       x="210"
+       y="150"
+       text-anchor="middle"
+       fill="#fbbf24"
+       font-size="12px"
+       id="text5206"
+       style="font-size:13.3333px">(T, 768)</text>
+    <text
+       x="210"
+       y="167"
+       text-anchor="middle"
+       fill="#8a8a8a"
+       font-size="9.5px"
+       id="text5208"
+       style="font-size:10.6667px">one vector per token</text>
+    <text
+       x="382"
+       y="150"
+       text-anchor="middle"
+       fill="#fbbf24"
+       font-size="12px"
+       id="text5210"
+       style="font-size:13.3333px">(T, 768)</text>
+    <text
+       x="382"
+       y="167"
+       text-anchor="middle"
+       fill="#8a8a8a"
+       font-size="9.5px"
+       id="text5212"
+       style="font-size:10.6667px">residual stream</text>
+    <text
+       x="554"
+       y="150"
+       text-anchor="middle"
+       fill="#fbbf24"
+       font-size="12px"
+       id="text5214"
+       style="font-size:13.3333px">(T, 50,257)</text>
+    <text
+       x="554"
+       y="167"
+       text-anchor="middle"
+       fill="#8a8a8a"
+       font-size="9.5px"
+       id="text5216"
+       style="font-size:10.6667px">logits over vocab</text>
+    <text
+       x="686"
+       y="150"
+       text-anchor="middle"
+       fill="#fbbf24"
+       font-size="12px"
+       id="text5218"
+       style="font-size:13.3333px">probs</text>
+    <text
+       x="686"
+       y="167"
+       text-anchor="middle"
+       fill="#8a8a8a"
+       font-size="9.5px"
+       id="text5220"
+       style="font-size:10.6667px">→ next token</text>
+  </g>
+  <!-- ================================================================ -->
+  <!-- LAYER : params                                                   -->
+  <!-- ================================================================ -->
+  <g
+     class="layer"
+     id="params"
+     style="display:inline"
+     transform="translate(-30)">
+    <text
+       x="210"
+       y="193"
+       text-anchor="middle"
+       fill="#e8e8e8"
+       font-size="12px"
+       id="text5223"
+       style="fill:#00ff00"><tspan
+         style="fill:#22c55e"
+         id="tspan23441">39.4M params</tspan></text>
+    <text
+       x="210"
+       y="207"
+       text-anchor="middle"
+       fill="#8a8a8a"
+       font-size="9.5px"
+       id="text5225"
+       style="font-size:10.6667px">wte 38.6M + wpe 0.8M</text>
+    <text
+       x="382"
+       y="193"
+       text-anchor="middle"
+       fill="#e8e8e8"
+       font-size="12px"
+       id="text5227"
+       style="fill:#008000"><tspan
+         style="fill:#22c55e"
+         id="tspan23439">~85M params</tspan></text>
+    <text
+       x="382"
+       y="207"
+       text-anchor="middle"
+       fill="#8a8a8a"
+       font-size="9.5px"
+       id="text5229"
+       style="font-size:10.6667px">~7.1M × 12 blocks</text>
+    <text
+       x="554"
+       y="193"
+       text-anchor="middle"
+       fill="#8a8a8a"
+       font-size="11px"
+       id="text5231"
+       style="font-size:12px">0 extra</text>
+    <text
+       x="554"
+       y="207"
+       text-anchor="middle"
+       fill="#8a8a8a"
+       font-size="9.5px"
+       id="text5233"
+       style="font-size:10.6667px">(tied with wte)</text>
+    <!-- Tied-weights arc + label: structural symmetry (appears with param counts) -->
+    <!-- Grand total punchline at the bottom of the canvas -->
+    <text
+       x="380"
+       y="240"
+       text-anchor="middle"
+       fill="#fbbf24"
+       font-size="17px"
+       font-weight="500"
+       id="text5239"
+       style="font-size:16px">~124M parameters total</text>
+  </g>
+  <!-- ================================================================ -->
+  <!-- LAYER : block-zoom — one transformer block expanded              -->
+  <!-- ================================================================ -->
+  <g
+     class="layer"
+     id="block-zoom"
+     style="display:inline"
+     transform="translate(-30,34)">
+    <!-- Dashed connectors from the ×12 box down to the expanded view -->
+    <path
+       d="M 302,128 40,238"
+       fill="none"
+       stroke="#666666"
+       stroke-width="0.9"
+       stroke-dasharray="2, 3"
+       id="path5244"
+       style="display:none" />
+    <path
+       d="M 462,128 720,238"
+       fill="none"
+       stroke="#666666"
+       stroke-width="0.9"
+       stroke-dasharray="2, 3"
+       id="path5246"
+       style="display:none" />
+    <!-- Divider + subtitle -->
+    <line
+       x1="40"
+       y1="220"
+       x2="720"
+       y2="220"
+       stroke="#2a2a2a"
+       stroke-width="1"
+       id="line5248" />
+    <text
+       x="380"
+       y="249"
+       text-anchor="middle"
+       fill="#b8b8b8"
+       font-size="13px"
+       font-weight="500"
+       id="text5250"
+       style="font-size:18.6667px;fill:#3b82f6"><tspan
+         style="fill:#3b82f6"
+         id="tspan4400">inside one transformer block</tspan></text>
+    <!-- ==============  ATTENTION ROW  ============== -->
+    <!-- y band 280–345 -->
+    <!-- Left residual label -->
+    <text
+       x="76"
+       y="316"
+       fill="#8a8a8a"
+       font-size="10.5px"
+       id="text5252">X</text>
+    <text
+       x="40"
+       y="329"
+       fill="#666666"
+       font-size="9px"
+       id="text5254">(T, 768)</text>
+    <!-- Right residual' label -->
+    <text
+       x="698"
+       y="328"
+       text-anchor="end"
+       fill="#8a8a8a"
+       font-size="10.5px"
+       id="text5256">X'</text>
+    <text
+       x="690"
+       y="343"
+       text-anchor="end"
+       fill="#666666"
+       font-size="9px"
+       id="text5258">(T, 768)</text>
+    <!-- Input arrow -->
+    <line
+       x1="92"
+       y1="312"
+       x2="112"
+       y2="312"
+       stroke="#e8e8e8"
+       stroke-width="1"
+       id="line5260" />
+    <polygon
+       points="109,308 109,316 116,312 "
+       fill="#e8e8e8"
+       id="polygon5262" />
+    <!-- Box A1 : c_attn -->
+    <rect
+       x="116"
+       y="292"
+       width="92"
+       height="42"
+       rx="2"
+       fill="none"
+       stroke="#e8e8e8"
+       stroke-width="1"
+       id="rect5264"
+       style="stroke:#008000" />
+    <text
+       x="162"
+       y="309"
+       text-anchor="middle"
+       fill="#e8e8e8"
+       font-size="11px"
+       id="text5266"
+       style="font-size:12px;fill:#008000"><tspan
+         style="fill:#22c55e"
+         id="tspan23443">[W</tspan><tspan
+         style="font-size:65%;baseline-shift:sub;fill:#22c55e"
+         id="tspan844">Q</tspan><tspan
+         style="fill:#22c55e"
+         id="tspan23445">,W</tspan><tspan
+         style="font-size:65%;baseline-shift:sub;fill:#22c55e"
+         id="tspan846">K</tspan><tspan
+         style="fill:#22c55e"
+         id="tspan23447">,W</tspan><tspan
+         style="font-size:65%;baseline-shift:sub;fill:#22c55e"
+         id="tspan848">V</tspan><tspan
+         style="fill:#22c55e"
+         id="tspan23449">]</tspan></text>
+    <text
+       x="162"
+       y="324"
+       text-anchor="middle"
+       fill="#fbbf24"
+       font-size="9.5px"
+       id="text5268"
+       style="font-size:10.6667px">768 → 3x768</text>
+    <line
+       x1="208"
+       y1="312"
+       x2="224"
+       y2="312"
+       stroke="#e8e8e8"
+       stroke-width="1"
+       id="line5270" />
+    <polygon
+       points="221,308 221,316 228,312 "
+       fill="#e8e8e8"
+       id="polygon5272" />
+    <!-- Box A2 : Q, K, V × 12 heads -->
+    <rect
+       x="228"
+       y="292"
+       width="108"
+       height="42"
+       rx="2"
+       fill="none"
+       stroke="#e8e8e8"
+       stroke-width="1"
+       id="rect5274" />
+    <text
+       x="282"
+       y="308"
+       text-anchor="middle"
+       fill="#e8e8e8"
+       font-size="11px"
+       id="text5276"
+       style="font-size:12px">Q, K, V × 12</text>
+    <text
+       x="282"
+       y="324"
+       text-anchor="middle"
+       fill="#fbbf24"
+       font-size="9.5px"
+       id="text5278"
+       style="font-size:10.6667px">each (T, 12, 64)</text>
+    <line
+       x1="336"
+       y1="312"
+       x2="352"
+       y2="312"
+       stroke="#e8e8e8"
+       stroke-width="1"
+       id="line5280" />
+    <polygon
+       points="349,308 349,316 356,312 "
+       fill="#e8e8e8"
+       id="polygon5282" />
+    <!-- Box A3 : attention compute -->
+    <rect
+       x="356"
+       y="292"
+       width="110"
+       height="42"
+       rx="2"
+       fill="none"
+       stroke="#e8e8e8"
+       stroke-width="1"
+       id="rect5284" />
+    <text
+       x="411"
+       y="308"
+       text-anchor="middle"
+       fill="#e8e8e8"
+       font-size="11px"
+       id="text5286"
+       style="font-size:12px">attention</text>
+    <text
+       x="411"
+       y="324"
+       text-anchor="middle"
+       fill="#8a8a8a"
+       font-size="9.5px"
+       id="text5288"
+       style="font-size:10.6667px">softmax(QKᵀ).V</text>
+    <line
+       x1="466"
+       y1="312"
+       x2="482"
+       y2="312"
+       stroke="#e8e8e8"
+       stroke-width="1"
+       id="line5290" />
+    <polygon
+       points="479,308 479,316 486,312 "
+       fill="#e8e8e8"
+       id="polygon5292" />
+    <!-- Box A4 : c_proj -->
+    <rect
+       x="486"
+       y="292"
+       width="92"
+       height="42"
+       rx="2"
+       fill="none"
+       stroke="#e8e8e8"
+       stroke-width="1"
+       id="rect5294"
+       style="stroke:#008000" />
+    <text
+       x="532"
+       y="309"
+       text-anchor="middle"
+       fill="#e8e8e8"
+       font-size="11px"
+       id="text5296"
+       style="font-size:12px;fill:#008000"><tspan
+         style="fill:#22c55e"
+         id="tspan23451">W</tspan><tspan
+         style="font-size:65%;baseline-shift:sub;fill:#22c55e"
+         id="tspan2404">o</tspan></text>
+    <text
+       x="532"
+       y="324"
+       text-anchor="middle"
+       fill="#fbbf24"
+       font-size="9.5px"
+       id="text5298"
+       style="font-size:10.6667px">768 → 768</text>
+    <line
+       x1="578"
+       y1="312"
+       x2="596"
+       y2="312"
+       stroke="#e8e8e8"
+       stroke-width="1"
+       id="line5300" />
+    <polygon
+       points="593,308 593,316 600,312 "
+       fill="#e8e8e8"
+       id="polygon5302" />
+    <!-- Residual add circle -->
+    <circle
+       cx="612"
+       cy="312"
+       r="8"
+       fill="#141414"
+       stroke="#e8e8e8"
+       stroke-width="1.2"
+       id="circle5304" />
+    <text
+       x="612"
+       y="316"
+       text-anchor="middle"
+       fill="#e8e8e8"
+       font-size="12px"
+       id="text5306">+</text>
+    <line
+       x1="620"
+       y1="312"
+       x2="678"
+       y2="312"
+       stroke="#e8e8e8"
+       stroke-width="1"
+       id="line5308" />
+    <polygon
+       points="675,308 675,316 682,312 "
+       fill="#e8e8e8"
+       id="polygon5310" />
+    <!-- Skip connection arc over attention row -->
+    <path
+       d="m 85,302 c 0.467591,-36.38918 527.63657,-34.08178 527,0"
+       fill="none"
+       stroke="#666666"
+       stroke-width="0.9"
+       stroke-dasharray="3, 3"
+       id="path5312"
+       sodipodi:nodetypes="cc" />
+    <text
+       x="356"
+       y="271"
+       text-anchor="middle"
+       fill="#666666"
+       font-size="9px"
+       font-style="italic"
+       id="text5314"
+       style="font-size:9.33333px">skip (residual add)</text>
+    <!-- Attention branch label -->
+    <text
+       x="380"
+       y="354"
+       text-anchor="middle"
+       fill="#fbbf24"
+       font-size="11px"
+       id="text5316"
+       style="font-size:14.6667px">attention sub-block</text>
+    <text
+       x="378"
+       y="368"
+       text-anchor="middle"
+       fill="#8a8a8a"
+       font-size="9.5px"
+       id="text5318"
+       style="font-size:12px;fill:#008000"><tspan
+         style="fill:#22c55e"
+         id="tspan23453">~2.4M params per block</tspan></text>
+    <!-- ==============  MLP ROW  ============== -->
+    <!-- y band 400–470 -->
+    <!-- Left residual' label -->
+    <text
+       x="74"
+       y="436"
+       fill="#8a8a8a"
+       font-size="10.5px"
+       id="text5320"
+       style="font-size:10.6667px">X'</text>
+    <text
+       x="40"
+       y="449"
+       fill="#666666"
+       font-size="9px"
+       id="text5322"
+       style="font-size:9.33333px">(T, 768)</text>
+    <!-- Right residual'' label -->
+    <text
+       x="698"
+       y="448"
+       text-anchor="end"
+       fill="#8a8a8a"
+       font-size="10.5px"
+       id="text5324"
+       style="font-size:10.6667px">X''</text>
+    <text
+       x="686"
+       y="461"
+       text-anchor="end"
+       fill="#666666"
+       font-size="9px"
+       id="text5326"
+       style="font-size:9.33333px">(T, 768)</text>
+    <!-- Input arrow -->
+    <line
+       x1="92"
+       y1="432"
+       x2="180"
+       y2="432"
+       stroke="#e8e8e8"
+       stroke-width="1"
+       id="line5328" />
+    <polygon
+       points="177,428 177,436 184,432 "
+       fill="#e8e8e8"
+       id="polygon5330" />
+    <!-- Box M1 : c_fc -->
+    <rect
+       x="184"
+       y="412"
+       width="108"
+       height="42"
+       rx="2"
+       fill="none"
+       stroke="#e8e8e8"
+       stroke-width="1"
+       id="rect5332"
+       style="stroke:#008000" />
+    <text
+       x="238"
+       y="429"
+       text-anchor="middle"
+       fill="#e8e8e8"
+       font-size="11px"
+       id="text5334"
+       style="font-size:12px;fill:#008000"><tspan
+         style="fill:#22c55e"
+         id="tspan23455">W</tspan><tspan
+         style="font-size:65%;baseline-shift:sub;fill:#22c55e"
+         id="tspan2406">up</tspan></text>
+    <text
+       x="238"
+       y="444"
+       text-anchor="middle"
+       fill="#fbbf24"
+       font-size="9.5px"
+       id="text5336"
+       style="font-size:10.6667px">768 → 3072</text>
+    <line
+       x1="292"
+       y1="432"
+       x2="310"
+       y2="432"
+       stroke="#e8e8e8"
+       stroke-width="1"
+       id="line5338" />
+    <polygon
+       points="307,428 307,436 314,432 "
+       fill="#e8e8e8"
+       id="polygon5340" />
+    <!-- Box M2 : GELU -->
+    <rect
+       x="314"
+       y="412"
+       width="80"
+       height="42"
+       rx="2"
+       fill="none"
+       stroke="#e8e8e8"
+       stroke-width="1"
+       id="rect5342" />
+    <text
+       x="354"
+       y="429"
+       text-anchor="middle"
+       fill="#e8e8e8"
+       font-size="11px"
+       id="text5344"
+       style="font-size:12px">GELU</text>
+    <text
+       x="354"
+       y="444"
+       text-anchor="middle"
+       fill="#8a8a8a"
+       font-size="9.5px"
+       id="text5346"
+       style="font-size:10.6667px">nonlinearity</text>
+    <line
+       x1="394"
+       y1="432"
+       x2="410"
+       y2="432"
+       stroke="#e8e8e8"
+       stroke-width="1"
+       id="line5348" />
+    <polygon
+       points="407,428 407,436 414,432 "
+       fill="#e8e8e8"
+       id="polygon5350" />
+    <!-- Box M3 : c_proj -->
+    <rect
+       x="414"
+       y="412"
+       width="108"
+       height="42"
+       rx="2"
+       fill="none"
+       stroke="#e8e8e8"
+       stroke-width="1"
+       id="rect5352"
+       style="stroke:#008000" />
+    <text
+       x="468"
+       y="429"
+       text-anchor="middle"
+       fill="#e8e8e8"
+       font-size="11px"
+       id="text5354"
+       style="font-size:12px;fill:#008000"><tspan
+         style="fill:#22c55e"
+         id="tspan23459">W</tspan><tspan
+         style="font-size:65%;baseline-shift:sub;fill:#22c55e"
+         id="tspan2408">down</tspan></text>
+    <text
+       x="468"
+       y="444"
+       text-anchor="middle"
+       fill="#fbbf24"
+       font-size="9.5px"
+       id="text5356"
+       style="font-size:10.6667px">3072 → 768</text>
+    <line
+       x1="522"
+       y1="432"
+       x2="596"
+       y2="432"
+       stroke="#e8e8e8"
+       stroke-width="1"
+       id="line5358" />
+    <polygon
+       points="593,428 593,436 600,432 "
+       fill="#e8e8e8"
+       id="polygon5360" />
+    <!-- Residual add circle -->
+    <circle
+       cx="612"
+       cy="432"
+       r="8"
+       fill="#141414"
+       stroke="#e8e8e8"
+       stroke-width="1.2"
+       id="circle5362" />
+    <text
+       x="612"
+       y="436"
+       text-anchor="middle"
+       fill="#e8e8e8"
+       font-size="12px"
+       id="text5364">+</text>
+    <line
+       x1="620"
+       y1="432"
+       x2="678"
+       y2="432"
+       stroke="#e8e8e8"
+       stroke-width="1"
+       id="line5366" />
+    <polygon
+       points="675,428 675,436 682,432 "
+       fill="#e8e8e8"
+       id="polygon5368" />
+    <!-- Skip connection arc over MLP row -->
+    <path
+       d="m 85,422 c 7.377394,-25.38047 514.5256,-27.71712 527,0"
+       fill="none"
+       stroke="#666666"
+       stroke-width="0.9"
+       stroke-dasharray="3, 3"
+       id="path5370"
+       sodipodi:nodetypes="cc" />
+    <text
+       x="352"
+       y="395"
+       text-anchor="middle"
+       fill="#666666"
+       font-size="9px"
+       font-style="italic"
+       id="text5372"
+       style="font-size:9.33333px">skip (residual add)</text>
+    <!-- MLP branch label -->
+    <text
+       x="380"
+       y="474"
+       text-anchor="middle"
+       fill="#fbbf24"
+       font-size="11px"
+       id="text5374"
+       style="font-size:14.6667px">MLP sub-block</text>
+    <text
+       x="376"
+       y="488"
+       text-anchor="middle"
+       fill="#8a8a8a"
+       font-size="9.5px"
+       id="text5376"
+       style="font-size:12px;fill:#008000"><tspan
+         style="fill:#22c55e"
+         id="tspan23457">~4.7M params per block</tspan></text>
+    <!-- Summary line -->
+    <text
+       x="157"
+       y="348"
+       text-anchor="middle"
+       fill="#8a8a8a"
+       font-size="9.5px"
+       id="text850"
+       style="font-size:10.6667px"><tspan
+         sodipodi:role="line"
+         id="tspan854"
+         x="157"
+         y="348">&quot;subspace projections&quot;</tspan><tspan
+         sodipodi:role="line"
+         x="157"
+         y="361.33337"
+         id="tspan985">or &quot;filters&quot;(for each head)</tspan></text>
+    <text
+       x="281"
+       y="288.72882"
+       text-anchor="middle"
+       fill="#8a8a8a"
+       font-size="9.5px"
+       id="text1114"
+       style="font-size:10.6667px"><tspan
+         sodipodi:role="line"
+         x="281"
+         y="288.72882"
+         id="tspan1112">Note: 12x64=768</tspan></text>
+  </g>
+  <text
+     x="180"
+     y="132"
+     text-anchor="middle"
+     fill="#8a8a8a"
+     font-size="10px"
+     id="text1243"
+     style="font-size:10.6667px">token + pos embedding</text>
+</svg>

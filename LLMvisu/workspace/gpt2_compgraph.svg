@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 2380"
+     font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+    <marker id="arrW" viewBox="0 0 10 10" refX="8" refY="5"
+            markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#888"/>
+    </marker>
+    <marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#C44E52"/>
+    </marker>
+    <style><![CDATA[
+      .title   { font-size: 22px; font-weight: 700; fill: #222; }
+      .sub     { font-size: 13px; fill: #555; }
+      .sect    { font-size: 14px; font-weight: 700; fill: #333; letter-spacing: 0.5px; }
+      .t       { font-size: 13px; fill: #112; font-family: ui-monospace, Menlo, Consolas, monospace; }
+      .op      { font-size: 14px; font-weight: 700; fill: #111; }
+      .opsub   { font-size: 11px; fill: #444; font-style: italic; }
+      .note    { font-size: 11px; fill: #666; font-style: italic; }
+      .shape   { font-size: 11px; fill: #225; font-family: ui-monospace, Menlo, Consolas, monospace; }
+      .wlabel  { font-size: 12px; font-weight: 600; fill: #333; font-family: ui-monospace, Menlo, Consolas, monospace; }
+      .red     { fill: #C44E52; font-weight: 600; }
+    ]]></style>
+  </defs>
+
+  <!-- Title -->
+  <text x="750" y="34" class="title" text-anchor="middle">
+    GPT-2 small — computational graph view
+  </text>
+  <text x="750" y="56" class="sub" text-anchor="middle">
+    Activation tensors (blue)  ·  weight tensors (grey)  ·  matmuls and element-wise ops (yellow / green)  ·  shapes shown ignoring batch B
+  </text>
+  <text x="750" y="76" class="sub" text-anchor="middle">
+    Eight matrix products move all the data. Everything else is element-wise (add, LN, GELU, softmax) or just reshape.
+  </text>
+
+  <!-- ============================================================ -->
+  <!-- 1. EMBEDDING                                                  -->
+  <!-- ============================================================ -->
+  <text x="40" y="112" class="sect">① EMBEDDING — gather, not really a matmul</text>
+
+  <!-- token_ids input -->
+  <rect x="60" y="130" width="90" height="40" rx="4" fill="#FFFFFF" stroke="#666"/>
+  <text x="105" y="154" class="t" text-anchor="middle">token_ids</text>
+  <text x="105" y="182" class="shape" text-anchor="middle">(T,)</text>
+
+  <!-- arrow -->
+  <line x1="150" y1="150" x2="230" y2="150" stroke="#333" marker-end="url(#arr)"/>
+
+  <!-- gather op -->
+  <rect x="230" y="130" width="130" height="40" rx="20" fill="#FFF5C8" stroke="#B07020"/>
+  <text x="295" y="149" class="op" text-anchor="middle">gather</text>
+  <text x="295" y="164" class="opsub" text-anchor="middle">rows of wte</text>
+
+  <!-- wte weight -->
+  <rect x="230" y="60" width="130" height="32" rx="4" fill="#ECECEC" stroke="#555" stroke-dasharray="4 2"/>
+  <text x="295" y="80" class="wlabel" text-anchor="middle">wte</text>
+  <text x="295" y="94" class="shape" text-anchor="middle">(50257, 768)</text>
+  <line x1="295" y1="92" x2="295" y2="130" stroke="#888" stroke-dasharray="3 3" marker-end="url(#arrW)"/>
+
+  <line x1="360" y1="150" x2="430" y2="150" stroke="#333" marker-end="url(#arr)"/>
+
+  <!-- tok_emb -->
+  <rect x="430" y="130" width="140" height="40" rx="4" fill="#D6E0F0" stroke="#3a5a8a"/>
+  <text x="500" y="150" class="t" text-anchor="middle">tok_emb</text>
+  <text x="500" y="182" class="shape" text-anchor="middle">(T, 768)</text>
+
+  <!-- add -->
+  <line x1="570" y1="150" x2="640" y2="150" stroke="#333" marker-end="url(#arr)"/>
+  <circle cx="660" cy="150" r="18" fill="#D5EDDB" stroke="#3a7a50"/>
+  <text x="660" y="155" class="op" text-anchor="middle">+</text>
+
+  <!-- pos_emb input -->
+  <rect x="430" y="210" width="140" height="40" rx="4" fill="#D6E0F0" stroke="#3a5a8a"/>
+  <text x="500" y="230" class="t" text-anchor="middle">pos_emb</text>
+  <text x="500" y="262" class="shape" text-anchor="middle">(T, 768)</text>
+  <text x="500" y="278" class="note" text-anchor="middle">wpe[0 : T]</text>
+  <line x1="570" y1="230" x2="640" y2="170" stroke="#333" marker-end="url(#arr)"/>
+
+  <!-- wpe weight -->
+  <rect x="230" y="210" width="130" height="32" rx="4" fill="#ECECEC" stroke="#555" stroke-dasharray="4 2"/>
+  <text x="295" y="230" class="wlabel" text-anchor="middle">wpe</text>
+  <text x="295" y="244" class="shape" text-anchor="middle">(1024, 768)</text>
+  <line x1="360" y1="230" x2="430" y2="230" stroke="#888" stroke-dasharray="3 3" marker-end="url(#arrW)"/>
+
+  <!-- x out -->
+  <line x1="680" y1="150" x2="750" y2="150" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="750" y="130" width="160" height="40" rx="4" fill="#D6E0F0" stroke="#3a5a8a" stroke-width="1.6"/>
+  <text x="830" y="150" class="t" text-anchor="middle"><tspan font-weight="700">x</tspan>  (residual stream)</text>
+  <text x="830" y="182" class="shape" text-anchor="middle">(T, 768)</text>
+
+  <text x="950" y="155" class="note">context: T ≤ 1024 rows of wpe available</text>
+
+  <!-- ============================================================ -->
+  <!-- Boundary: enter block                                         -->
+  <!-- ============================================================ -->
+  <line x1="60" y1="310" x2="1440" y2="310" stroke="#C44E52" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="70" y="304" class="red" font-size="13">enter transformer block  (repeats ×12)</text>
+
+  <!-- ============================================================ -->
+  <!-- 2. ATTENTION                                                  -->
+  <!-- ============================================================ -->
+  <text x="40" y="338" class="sect">② MULTI-HEAD SELF-ATTENTION — 4 matrix products</text>
+
+  <!-- LN_1 -->
+  <rect x="60" y="360" width="140" height="40" rx="4" fill="#D6E0F0" stroke="#3a5a8a"/>
+  <text x="130" y="380" class="t" text-anchor="middle">x</text>
+  <text x="130" y="412" class="shape" text-anchor="middle">(T, 768)</text>
+
+  <line x1="200" y1="380" x2="260" y2="380" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="260" y="360" width="100" height="40" rx="20" fill="#E8F0D8" stroke="#5a7a3a"/>
+  <text x="310" y="379" class="op" text-anchor="middle">LN_1</text>
+  <text x="310" y="393" class="opsub" text-anchor="middle">per-row, over 768</text>
+
+  <line x1="360" y1="380" x2="410" y2="380" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="410" y="360" width="140" height="40" rx="4" fill="#D6E0F0" stroke="#3a5a8a"/>
+  <text x="480" y="380" class="t" text-anchor="middle">x̃</text>
+  <text x="480" y="412" class="shape" text-anchor="middle">(T, 768)</text>
+
+  <!-- Matmul #1: c_attn -->
+  <line x1="550" y1="380" x2="610" y2="380" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="610" y="360" width="60" height="40" rx="20" fill="#FFF5C8" stroke="#B07020"/>
+  <text x="640" y="386" class="op" text-anchor="middle">×</text>
+
+  <rect x="610" y="290" width="180" height="40" rx="4" fill="#ECECEC" stroke="#555" stroke-dasharray="4 2"/>
+  <text x="700" y="310" class="wlabel" text-anchor="middle">W_qkv   (c_attn)</text>
+  <text x="700" y="324" class="shape" text-anchor="middle">(768, 2304)</text>
+  <line x1="640" y1="330" x2="640" y2="360" stroke="#888" stroke-dasharray="3 3" marker-end="url(#arrW)"/>
+
+  <text x="585" y="420" class="note">matmul #1</text>
+
+  <line x1="670" y1="380" x2="730" y2="380" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="730" y="358" width="160" height="44" rx="4" fill="#D6E0F0" stroke="#3a5a8a"/>
+  <text x="810" y="380" class="t" text-anchor="middle">QKV (concat)</text>
+  <text x="810" y="412" class="shape" text-anchor="middle">(T, 2304)</text>
+
+  <line x1="890" y1="380" x2="950" y2="380" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="950" y="360" width="110" height="40" rx="20" fill="#E8F0D8" stroke="#5a7a3a"/>
+  <text x="1005" y="379" class="op" text-anchor="middle">split + reshape</text>
+  <text x="1005" y="393" class="opsub" text-anchor="middle">3 × (12, T, 64)</text>
+
+  <!-- Q, K, V -->
+  <line x1="1060" y1="380" x2="1120" y2="380" stroke="#333" marker-end="url(#arr)"/>
+  <g transform="translate(1120, 340)">
+    <rect x="0" y="0" width="120" height="30" rx="4" fill="#D6E0F0" stroke="#3a5a8a"/>
+    <text x="60" y="20" class="t" text-anchor="middle">Q  (12,T,64)</text>
+    <rect x="0" y="36" width="120" height="30" rx="4" fill="#D6E0F0" stroke="#3a5a8a"/>
+    <text x="60" y="56" class="t" text-anchor="middle">K  (12,T,64)</text>
+    <rect x="0" y="72" width="120" height="30" rx="4" fill="#D6E0F0" stroke="#3a5a8a"/>
+    <text x="60" y="92" class="t" text-anchor="middle">V  (12,T,64)</text>
+  </g>
+
+  <!-- Matmul #2: Q @ K^T -->
+  <text x="40" y="478" class="sect">       (then attention scores)</text>
+
+  <rect x="60" y="496" width="130" height="36" rx="4" fill="#D6E0F0" stroke="#3a5a8a"/>
+  <text x="125" y="518" class="t" text-anchor="middle">Q  (12,T,64)</text>
+
+  <line x1="190" y1="514" x2="250" y2="514" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="250" y="496" width="80" height="36" rx="18" fill="#FFF5C8" stroke="#B07020"/>
+  <text x="290" y="520" class="op" text-anchor="middle">× Kᵀ</text>
+
+  <text x="290" y="478" class="note" text-anchor="middle">matmul #2</text>
+
+  <line x1="330" y1="514" x2="390" y2="514" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="390" y="496" width="150" height="36" rx="4" fill="#D6E0F0" stroke="#3a5a8a"/>
+  <text x="465" y="518" class="t" text-anchor="middle">scores  (12,T,T)</text>
+
+  <line x1="540" y1="514" x2="594" y2="514" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="594" y="496" width="90" height="36" rx="18" fill="#E8F0D8" stroke="#5a7a3a"/>
+  <text x="639" y="520" class="op" text-anchor="middle">÷ √64</text>
+
+  <line x1="684" y1="514" x2="738" y2="514" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="738" y="496" width="130" height="36" rx="18" fill="#FFE4E4" stroke="#C44E52"/>
+  <text x="803" y="518" class="op" text-anchor="middle">+ causal mask</text>
+
+  <line x1="868" y1="514" x2="922" y2="514" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="922" y="496" width="120" height="36" rx="18" fill="#E8F0D8" stroke="#5a7a3a"/>
+  <text x="982" y="520" class="op" text-anchor="middle">softmax (dim=-1)</text>
+
+  <line x1="1042" y1="514" x2="1096" y2="514" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="1096" y="496" width="150" height="36" rx="4" fill="#D6E0F0" stroke="#3a5a8a"/>
+  <text x="1171" y="518" class="t" text-anchor="middle">attn  (12,T,T)</text>
+
+  <!-- Matmul #3: attn @ V -->
+  <rect x="60" y="580" width="150" height="36" rx="4" fill="#D6E0F0" stroke="#3a5a8a"/>
+  <text x="135" y="602" class="t" text-anchor="middle">attn  (12,T,T)</text>
+
+  <line x1="210" y1="598" x2="270" y2="598" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="270" y="580" width="60" height="36" rx="18" fill="#FFF5C8" stroke="#B07020"/>
+  <text x="300" y="604" class="op" text-anchor="middle">×</text>
+
+  <rect x="270" y="630" width="130" height="32" rx="4" fill="#D6E0F0" stroke="#3a5a8a"/>
+  <text x="335" y="650" class="t" text-anchor="middle">V  (12,T,64)</text>
+  <line x1="335" y1="630" x2="310" y2="616" stroke="#333" marker-end="url(#arr)"/>
+
+  <text x="300" y="566" class="note" text-anchor="middle">matmul #3</text>
+
+  <line x1="330" y1="598" x2="390" y2="598" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="390" y="580" width="150" height="36" rx="4" fill="#D6E0F0" stroke="#3a5a8a"/>
+  <text x="465" y="602" class="t" text-anchor="middle">heads (12,T,64)</text>
+
+  <line x1="540" y1="598" x2="594" y2="598" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="594" y="580" width="130" height="36" rx="18" fill="#E8F0D8" stroke="#5a7a3a"/>
+  <text x="659" y="604" class="op" text-anchor="middle">concat (reshape)</text>
+
+  <line x1="724" y1="598" x2="780" y2="598" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="780" y="580" width="120" height="36" rx="4" fill="#D6E0F0" stroke="#3a5a8a"/>
+  <text x="840" y="602" class="t" text-anchor="middle">y  (T, 768)</text>
+
+  <!-- Matmul #4: W_o -->
+  <line x1="900" y1="598" x2="954" y2="598" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="954" y="580" width="60" height="36" rx="18" fill="#FFF5C8" stroke="#B07020"/>
+  <text x="984" y="604" class="op" text-anchor="middle">×</text>
+
+  <rect x="954" y="630" width="140" height="32" rx="4" fill="#ECECEC" stroke="#555" stroke-dasharray="4 2"/>
+  <text x="1024" y="650" class="wlabel" text-anchor="middle">W_o  (c_proj)</text>
+  <text x="1024" y="664" class="shape" text-anchor="middle">(768, 768)</text>
+  <line x1="984" y1="630" x2="984" y2="616" stroke="#888" stroke-dasharray="3 3" marker-end="url(#arrW)"/>
+
+  <text x="984" y="566" class="note" text-anchor="middle">matmul #4</text>
+
+  <line x1="1014" y1="598" x2="1070" y2="598" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="1070" y="580" width="170" height="36" rx="4" fill="#D6E0F0" stroke="#3a5a8a"/>
+  <text x="1155" y="602" class="t" text-anchor="middle">attn_out (T, 768)</text>
+
+  <!-- Residual add -->
+  <line x1="1240" y1="598" x2="1296" y2="598" stroke="#333" marker-end="url(#arr)"/>
+  <circle cx="1316" cy="598" r="18" fill="#D5EDDB" stroke="#3a7a50"/>
+  <text x="1316" y="603" class="op" text-anchor="middle">+</text>
+
+  <!-- skip arrow from x (top of block) to + (attn residual add) -->
+  <!-- Route: down the left margin past attention ops, across at y=660,
+       then up into the + circle (cy=598, r=18) from below. -->
+  <path d="M 130 400 L 40 400 L 40 660 L 1316 660 L 1316 616"
+        fill="none" stroke="#7a7a7a" stroke-width="1.3" stroke-dasharray="5 3"
+        marker-end="url(#arrW)"/>
+  <text x="55" y="535" class="note">residual skip from x</text>
+
+  <line x1="1336" y1="598" x2="1390" y2="598" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="1390" y="578" width="90" height="40" rx="4" fill="#D6E0F0" stroke="#3a5a8a" stroke-width="1.6"/>
+  <text x="1435" y="600" class="t" text-anchor="middle">x'</text>
+  <text x="1435" y="632" class="shape" text-anchor="middle">(T, 768)</text>
+
+  <!-- ============================================================ -->
+  <!-- 3. MLP                                                        -->
+  <!-- ============================================================ -->
+  <line x1="60" y1="720" x2="1440" y2="720" stroke="#DDD" stroke-width="1"/>
+  <text x="40" y="748" class="sect">③ POSITION-WISE MLP — 2 matrix products, applied to every row independently</text>
+
+  <rect x="60" y="770" width="140" height="40" rx="4" fill="#D6E0F0" stroke="#3a5a8a"/>
+  <text x="130" y="790" class="t" text-anchor="middle">x'</text>
+  <text x="130" y="822" class="shape" text-anchor="middle">(T, 768)</text>
+
+  <line x1="200" y1="790" x2="260" y2="790" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="260" y="770" width="100" height="40" rx="20" fill="#E8F0D8" stroke="#5a7a3a"/>
+  <text x="310" y="790" class="op" text-anchor="middle">LN_2</text>
+  <text x="310" y="804" class="opsub" text-anchor="middle">per-row</text>
+
+  <!-- Matmul #5: c_fc -->
+  <line x1="360" y1="790" x2="420" y2="790" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="420" y="770" width="60" height="40" rx="20" fill="#FFF5C8" stroke="#B07020"/>
+  <text x="450" y="796" class="op" text-anchor="middle">×</text>
+
+  <rect x="420" y="700" width="160" height="40" rx="4" fill="#ECECEC" stroke="#555" stroke-dasharray="4 2"/>
+  <text x="500" y="720" class="wlabel" text-anchor="middle">W_fc  (c_fc)</text>
+  <text x="500" y="734" class="shape" text-anchor="middle">(768, 3072)</text>
+  <line x1="450" y1="740" x2="450" y2="770" stroke="#888" stroke-dasharray="3 3" marker-end="url(#arrW)"/>
+
+  <text x="395" y="830" class="note">matmul #5 — expand ×4</text>
+
+  <line x1="480" y1="790" x2="540" y2="790" stroke="#333" marker-end="url(#arr)"/>
+
+  <!-- wide tensor to visually convey expansion -->
+  <rect x="540" y="768" width="260" height="44" rx="4" fill="#FAE3D2" stroke="#B07020"/>
+  <text x="670" y="790" class="t" text-anchor="middle">h</text>
+  <text x="670" y="824" class="shape" text-anchor="middle">(T, 3072)</text>
+
+  <line x1="800" y1="790" x2="858" y2="790" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="858" y="770" width="90" height="40" rx="20" fill="#E8F0D8" stroke="#5a7a3a"/>
+  <text x="903" y="795" class="op" text-anchor="middle">GELU</text>
+
+  <!-- Matmul #6: c_proj -->
+  <line x1="948" y1="790" x2="1004" y2="790" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="1004" y="770" width="60" height="40" rx="20" fill="#FFF5C8" stroke="#B07020"/>
+  <text x="1034" y="796" class="op" text-anchor="middle">×</text>
+
+  <rect x="1004" y="700" width="170" height="40" rx="4" fill="#ECECEC" stroke="#555" stroke-dasharray="4 2"/>
+  <text x="1089" y="720" class="wlabel" text-anchor="middle">W_proj  (c_proj)</text>
+  <text x="1089" y="734" class="shape" text-anchor="middle">(3072, 768)</text>
+  <line x1="1034" y1="740" x2="1034" y2="770" stroke="#888" stroke-dasharray="3 3" marker-end="url(#arrW)"/>
+
+  <text x="990" y="830" class="note">matmul #6 — compress ×4</text>
+
+  <line x1="1064" y1="790" x2="1120" y2="790" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="1120" y="770" width="140" height="40" rx="4" fill="#D6E0F0" stroke="#3a5a8a"/>
+  <text x="1190" y="790" class="t" text-anchor="middle">mlp_out</text>
+  <text x="1190" y="822" class="shape" text-anchor="middle">(T, 768)</text>
+
+  <line x1="1260" y1="790" x2="1296" y2="790" stroke="#333" marker-end="url(#arr)"/>
+  <circle cx="1316" cy="790" r="18" fill="#D5EDDB" stroke="#3a7a50"/>
+  <text x="1316" y="795" class="op" text-anchor="middle">+</text>
+
+  <!-- skip arrow from x' (MLP input) to + (MLP residual add) -->
+  <!-- Route: down the left margin past the MLP row, across at y=925,
+       then up into the + circle (cy=790, r=18) from below. -->
+  <path d="M 130 810 L 30 810 L 30 925 L 1316 925 L 1316 808"
+        fill="none" stroke="#7a7a7a" stroke-width="1.3" stroke-dasharray="5 3"
+        marker-end="url(#arrW)"/>
+  <text x="45" y="875" class="note">residual skip from x'</text>
+
+  <line x1="1336" y1="790" x2="1390" y2="790" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="1390" y="770" width="90" height="40" rx="4" fill="#D5EDDB" stroke="#3a7a50" stroke-width="1.6"/>
+  <text x="1435" y="790" class="t" text-anchor="middle">x''</text>
+  <text x="1435" y="822" class="shape" text-anchor="middle">(T, 768)</text>
+
+  <!-- block repeat marker -->
+  <line x1="60" y1="950" x2="1440" y2="950" stroke="#C44E52" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="70" y="944" class="red" font-size="13">end of block  —  loop back 12 times: x'' becomes next block's x</text>
+
+  <!-- ============================================================ -->
+  <!-- 4. HEAD                                                       -->
+  <!-- ============================================================ -->
+  <text x="40" y="984" class="sect">④ FINAL LN + UNEMBEDDING — one matmul into vocab space</text>
+
+  <rect x="60" y="1006" width="160" height="40" rx="4" fill="#D6E0F0" stroke="#3a5a8a"/>
+  <text x="140" y="1026" class="t" text-anchor="middle">x (after 12 blocks)</text>
+  <text x="140" y="1058" class="shape" text-anchor="middle">(T, 768)</text>
+
+  <line x1="220" y1="1026" x2="280" y2="1026" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="280" y="1006" width="80" height="40" rx="20" fill="#E8F0D8" stroke="#5a7a3a"/>
+  <text x="320" y="1031" class="op" text-anchor="middle">ln_f</text>
+
+  <line x1="360" y1="1026" x2="420" y2="1026" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="420" y="1006" width="60" height="40" rx="20" fill="#FFF5C8" stroke="#B07020"/>
+  <text x="450" y="1032" class="op" text-anchor="middle">×</text>
+
+  <rect x="420" y="940" width="240" height="40" rx="4" fill="#ECECEC" stroke="#555" stroke-dasharray="4 2"/>
+  <text x="540" y="960" class="wlabel" text-anchor="middle">wteᵀ  (lm_head, tied)</text>
+  <text x="540" y="974" class="shape" text-anchor="middle">(768, 50257)</text>
+  <line x1="450" y1="980" x2="450" y2="1006" stroke="#888" stroke-dasharray="3 3" marker-end="url(#arrW)"/>
+
+  <text x="420" y="1070" class="note">matmul #7  (sometimes counted as matmul #8 with c_attn split as 3)</text>
+
+  <line x1="480" y1="1026" x2="540" y2="1026" stroke="#333" marker-end="url(#arr)"/>
+
+  <!-- very wide logits tensor -->
+  <rect x="540" y="1004" width="540" height="44" rx="4" fill="#FFDFDF" stroke="#C44E52"/>
+  <text x="810" y="1026" class="t" text-anchor="middle">logits</text>
+  <text x="810" y="1060" class="shape" text-anchor="middle">(T, 50257)   ←  one distribution per input position</text>
+
+  <line x1="1080" y1="1026" x2="1134" y2="1026" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="1134" y="1006" width="140" height="40" rx="20" fill="#E8F0D8" stroke="#5a7a3a"/>
+  <text x="1204" y="1026" class="op" text-anchor="middle">[:, −1, :] / T</text>
+  <text x="1204" y="1040" class="opsub" text-anchor="middle">slice + temperature</text>
+
+  <line x1="1274" y1="1026" x2="1330" y2="1026" stroke="#333" marker-end="url(#arr)"/>
+  <rect x="1330" y="1006" width="120" height="40" rx="20" fill="#E8F0D8" stroke="#5a7a3a"/>
+  <text x="1390" y="1031" class="op" text-anchor="middle">softmax</text>
+
+  <line x1="1390" y1="1046" x2="1390" y2="1080" stroke="#C44E52" stroke-width="1.6" marker-end="url(#arrR)"/>
+  <rect x="1300" y="1080" width="180" height="40" rx="4" fill="#FFDFDF" stroke="#C44E52"/>
+  <text x="1390" y="1100" class="t" text-anchor="middle">p  (50257,)</text>
+  <text x="1390" y="1132" class="shape" text-anchor="middle">sample → next token</text>
+
+  <!-- ============================================================ -->
+  <!-- Matmul inventory                                              -->
+  <!-- ============================================================ -->
+  <rect x="60" y="1170" width="1380" height="380" rx="10" fill="#FFFFFF" stroke="#AAA"/>
+  <text x="750" y="1198" class="sect" text-anchor="middle">THE EIGHT MATRIX PRODUCTS (per forward pass, per layer where noted)</text>
+
+  <g class="t" font-size="12">
+    <!-- header -->
+    <text x="90" y="1228" font-weight="700">#</text>
+    <text x="130" y="1228" font-weight="700">op</text>
+    <text x="290" y="1228" font-weight="700">input  ×  weight  =  output</text>
+    <text x="970" y="1228" font-weight="700">role</text>
+    <line x1="80" y1="1236" x2="1420" y2="1236" stroke="#999"/>
+
+    <!-- 1 -->
+    <text x="90" y="1260">1</text>
+    <text x="130" y="1260">c_attn</text>
+    <text x="290" y="1260">(T, 768)  ×  (768, 2304)  →  (T, 2304)</text>
+    <text x="970" y="1260">produce Q, K, V in one shot  (per block)</text>
+
+    <!-- 2 -->
+    <text x="90" y="1282">2</text>
+    <text x="130" y="1282">Q @ Kᵀ</text>
+    <text x="290" y="1282">(12, T, 64) × (12, 64, T)  →  (12, T, T)</text>
+    <text x="970" y="1282">raw attention scores  (per block)</text>
+
+    <!-- 3 -->
+    <text x="90" y="1304">3</text>
+    <text x="130" y="1304">attn @ V</text>
+    <text x="290" y="1304">(12, T, T) × (12, T, 64)  →  (12, T, 64)</text>
+    <text x="970" y="1304">weighted sum of values  (per block)</text>
+
+    <!-- 4 -->
+    <text x="90" y="1326">4</text>
+    <text x="130" y="1326">c_proj (attn)</text>
+    <text x="290" y="1326">(T, 768)  ×  (768, 768)  →  (T, 768)</text>
+    <text x="970" y="1326">mix heads back to residual stream  (per block)</text>
+
+    <!-- 5 -->
+    <text x="90" y="1348">5</text>
+    <text x="130" y="1348">c_fc</text>
+    <text x="290" y="1348">(T, 768)  ×  (768, 3072)  →  (T, 3072)</text>
+    <text x="970" y="1348">MLP expand ×4  (per block)</text>
+
+    <!-- 6 -->
+    <text x="90" y="1370">6</text>
+    <text x="130" y="1370">c_proj (mlp)</text>
+    <text x="290" y="1370">(T, 3072)  ×  (3072, 768)  →  (T, 768)</text>
+    <text x="970" y="1370">MLP compress ×¼  (per block)</text>
+
+    <!-- 7 -->
+    <text x="90" y="1392">7</text>
+    <text x="130" y="1392">lm_head</text>
+    <text x="290" y="1392">(T, 768)  ×  (768, 50257)  →  (T, 50257)</text>
+    <text x="970" y="1392">unembed into vocab  (once, weight-tied with wte)</text>
+
+    <text x="90" y="1430" font-style="italic" fill="#555">
+      Total matmuls per forward pass: 6 × 12 layers + 1 = 73 big ones.
+    </text>
+    <text x="90" y="1452" font-style="italic" fill="#555">
+      Embedding lookup isn't usually counted — it is a gather (select rows of wte), not a true matrix product.
+    </text>
+  </g>
+
+  <!-- op legend -->
+  <text x="90" y="1490" class="sect">Op legend</text>
+  <rect x="90" y="1500" width="24" height="24" rx="12" fill="#FFF5C8" stroke="#B07020"/>
+  <text x="124" y="1517" class="t">matmul  (dense weights)</text>
+
+  <rect x="340" y="1500" width="24" height="24" rx="12" fill="#E8F0D8" stroke="#5a7a3a"/>
+  <text x="374" y="1517" class="t">element-wise / reshape (no weights)</text>
+
+  <rect x="680" y="1500" width="24" height="24" rx="12" fill="#FFE4E4" stroke="#C44E52"/>
+  <text x="714" y="1517" class="t">causal mask / slicing</text>
+
+  <rect x="930" y="1500" width="24" height="24" rx="4" fill="#D6E0F0" stroke="#3a5a8a"/>
+  <text x="964" y="1517" class="t">activation tensor</text>
+
+  <rect x="1140" y="1500" width="24" height="24" rx="4" fill="#ECECEC" stroke="#555" stroke-dasharray="4 2"/>
+  <text x="1174" y="1517" class="t">weight tensor (static)</text>
+
+  <!-- ============================================================ -->
+  <!-- FLOPs + data volume breakdown                                 -->
+  <!-- ============================================================ -->
+  <rect x="60" y="1580" width="1380" height="330" rx="10" fill="#FFFFFF" stroke="#AAA"/>
+  <text x="750" y="1608" class="sect" text-anchor="middle">WHERE THE FLOPS GO  (per token, T = 1024 sequence)</text>
+
+  <g class="t" font-size="12">
+    <text x="90" y="1640" font-weight="700">op</text>
+    <text x="380" y="1640" font-weight="700">FLOPs  ≈  2 · product of shapes</text>
+    <text x="800" y="1640" font-weight="700">per layer (T = 1024)</text>
+    <text x="1140" y="1640" font-weight="700">total  (×12 layers)</text>
+    <line x1="80" y1="1648" x2="1420" y2="1648" stroke="#999"/>
+
+    <text x="90" y="1672">c_attn</text>
+    <text x="380" y="1672">2 · T · 768 · 2304</text>
+    <text x="800" y="1672">≈ 3.6 GFLOPs</text>
+    <text x="1140" y="1672">≈ 43 GFLOPs</text>
+
+    <text x="90" y="1694">Q @ Kᵀ + attn @ V</text>
+    <text x="380" y="1694">2 · 2 · 12 · T² · 64</text>
+    <text x="800" y="1694">≈ 3.2 GFLOPs  (T² cost)</text>
+    <text x="1140" y="1694">≈ 38 GFLOPs</text>
+
+    <text x="90" y="1716">c_proj (attn)</text>
+    <text x="380" y="1716">2 · T · 768 · 768</text>
+    <text x="800" y="1716">≈ 1.2 GFLOPs</text>
+    <text x="1140" y="1716">≈ 14 GFLOPs</text>
+
+    <text x="90" y="1738">c_fc</text>
+    <text x="380" y="1738">2 · T · 768 · 3072</text>
+    <text x="800" y="1738">≈ 4.8 GFLOPs</text>
+    <text x="1140" y="1738">≈ 58 GFLOPs</text>
+
+    <text x="90" y="1760">c_proj (mlp)</text>
+    <text x="380" y="1760">2 · T · 3072 · 768</text>
+    <text x="800" y="1760">≈ 4.8 GFLOPs</text>
+    <text x="1140" y="1760">≈ 58 GFLOPs</text>
+
+    <line x1="80" y1="1775" x2="1420" y2="1775" stroke="#BBB"/>
+
+    <text x="90" y="1802" font-weight="700">block total</text>
+    <text x="800" y="1802" font-weight="700">≈ 17.6 GFLOPs</text>
+    <text x="1140" y="1802" font-weight="700">≈ 211 GFLOPs</text>
+
+    <text x="90" y="1824">lm_head  (once)</text>
+    <text x="380" y="1824">2 · T · 768 · 50257</text>
+    <text x="800" y="1824">≈ 79 GFLOPs</text>
+    <text x="1140" y="1824">≈ 79 GFLOPs</text>
+
+    <line x1="80" y1="1839" x2="1420" y2="1839" stroke="#999"/>
+    <text x="90" y="1866" font-weight="700">full forward @ T=1024</text>
+    <text x="1140" y="1866" font-weight="700">≈ 290 GFLOPs</text>
+
+    <text x="90" y="1894" font-style="italic" fill="#555">
+      The T² term in attention grows faster than the linear MLP term — it becomes dominant beyond T ≈ 4096 in GPT-2-scale models.
+    </text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- PyTorch autograd analogy                                      -->
+  <!-- ============================================================ -->
+  <rect x="60" y="1940" width="1380" height="380" rx="10" fill="#FFFFFF" stroke="#AAA"/>
+  <text x="750" y="1968" class="sect" text-anchor="middle">PYTORCH AUTOGRAD — forward records a graph, backward walks it in reverse</text>
+
+  <g class="t" font-size="12">
+    <text x="90" y="2004">
+      During <tspan font-weight="700">forward</tspan>, every op above becomes a node in a DAG. PyTorch records:
+    </text>
+    <text x="110" y="2026">
+      • the op kind (MmBackward, AddBackward, SoftmaxBackward, LayerNormBackward, …)
+    </text>
+    <text x="110" y="2046">
+      • pointers to its input tensors (so their gradients can be written back)
+    </text>
+    <text x="110" y="2066">
+      • enough state to compute the VJP (vector-Jacobian product):
+         for  Y = X · W,  dX = dY · Wᵀ,  dW = Xᵀ · dY
+    </text>
+
+    <text x="90" y="2102">
+      At <tspan font-weight="700">backward</tspan>, starting from loss.backward(), each node contributes a matmul of roughly the same
+    </text>
+    <text x="90" y="2122">
+      cost as the forward matmul it mirrors — so a full training step is ≈ 3 × forward FLOPs (fwd + 2 bwd matmuls per linear).
+    </text>
+
+    <text x="90" y="2160" font-weight="700" fill="#C44E52">What the diagram above IS NOT showing (but the autograd graph would):</text>
+    <text x="110" y="2182">
+      • bias additions inside every linear (small, flat cost)
+    </text>
+    <text x="110" y="2202">
+      • dropout layers between ops (training only — pass-through at inference)
+    </text>
+    <text x="110" y="2222">
+      • LayerNorm internals:  y = (x − μ) / √(σ² + ε) · γ + β   →   three internal ops
+    </text>
+    <text x="110" y="2242">
+      • Softmax internals: exp → sum → divide; stable form subtracts the max first
+    </text>
+    <text x="110" y="2262">
+      • the backward graph itself, which is built implicitly from the forward graph above
+    </text>
+    <text x="110" y="2282">
+      • tensor stride / contiguity changes at every `reshape` (view, not copy)
+    </text>
+  </g>
+
+  <!-- footer -->
+  <text x="750" y="2356" class="sub" text-anchor="middle">
+    Forward = 7 distinct matmul patterns · 6 of them fire inside every transformer block · attention is the only one with T² scaling
+  </text>
+</svg>

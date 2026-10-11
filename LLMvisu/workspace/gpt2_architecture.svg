@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1580" font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+    <marker id="arrow-skip" viewBox="0 0 10 10" refX="8" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7a7a7a"/>
+    </marker>
+    <style><![CDATA[
+      .title    { font-size: 22px; font-weight: 700; fill: #222; }
+      .subtitle { font-size: 13px; fill: #555; }
+      .boxlab   { font-size: 15px; font-weight: 600; fill: #222; }
+      .boxsub   { font-size: 11px; fill: #555; font-style: italic; }
+      .shape    { font-size: 12px; fill: #225; font-family: ui-monospace, Menlo, Consolas, monospace; }
+      .ann      { font-size: 11px; fill: #444; }
+      .headnote { font-size: 11px; fill: #C44E52; font-weight: 600; }
+      .section  { font-size: 13px; font-weight: 700; fill: #333; letter-spacing: 0.5px; }
+      .mono     { font-family: ui-monospace, Menlo, Consolas, monospace; }
+    ]]></style>
+  </defs>
+
+  <!-- ===== Title ===== -->
+  <text x="600" y="36" class="title" text-anchor="middle">GPT-2 small — full forward-pass plumbing</text>
+  <text x="600" y="58" class="subtitle" text-anchor="middle">
+    vocab = 50257  ·  context = 1024  ·  d_model = 768  ·  12 layers × 12 heads × d_head 64  ·  d_mlp = 3072  ·  ≈ 124M params
+  </text>
+
+  <!-- ============================================================ -->
+  <!-- LEFT COLUMN: main spine                                      -->
+  <!-- ============================================================ -->
+
+  <!-- Input -->
+  <rect x="160" y="90" width="320" height="54" rx="6" fill="#FFFFFF" stroke="#888" stroke-width="1"/>
+  <text x="320" y="112" class="boxlab" text-anchor="middle">Input text → tokenizer (BPE)</text>
+  <text x="320" y="131" class="shape"  text-anchor="middle">token_ids  :  (B, T)     T ≤ 1024</text>
+  <line x1="320" y1="144" x2="320" y2="172" stroke="#333" stroke-width="1.4" marker-end="url(#arrow)"/>
+
+  <!-- Embedding -->
+  <rect x="140" y="172" width="360" height="78" rx="6" fill="#E6DEF0" stroke="#5d4a7a" stroke-width="1.2"/>
+  <text x="320" y="196" class="boxlab" text-anchor="middle">Embedding</text>
+  <text x="320" y="214" class="boxsub" text-anchor="middle">wte [50257 × 768]  +  wpe [1024 × 768]</text>
+  <text x="320" y="234" class="shape"  text-anchor="middle">x = wte[ids] + wpe[0..T-1]    →  (B, T, 768)</text>
+  <line x1="320" y1="250" x2="320" y2="286" stroke="#333" stroke-width="1.4" marker-end="url(#arrow)"/>
+
+  <!-- ======== Transformer block (expanded) ======== -->
+  <rect x="110" y="290" width="420" height="790" rx="10"
+        fill="#FAFAFA" stroke="#C44E52" stroke-width="2" stroke-dasharray="6 3"/>
+  <text x="320" y="314" class="section" text-anchor="middle">TRANSFORMER BLOCK  ( × 12 )</text>
+
+  <!-- block residual IN -->
+  <circle cx="320" cy="340" r="4" fill="#333"/>
+  <text x="332" y="344" class="ann">x  (B, T, 768)</text>
+
+  <!-- ln_1 -->
+  <line x1="320" y1="344" x2="320" y2="366" stroke="#333" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <rect x="220" y="366" width="200" height="40" rx="5" fill="#FFFFFF" stroke="#666"/>
+  <text x="320" y="391" class="boxlab" text-anchor="middle">LayerNorm (ln_1)</text>
+
+  <!-- Attention block (big) -->
+  <line x1="320" y1="406" x2="320" y2="430" stroke="#333" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <rect x="140" y="430" width="360" height="220" rx="8" fill="#D6E0F0" stroke="#3a5a8a" stroke-width="1.2"/>
+  <text x="320" y="452" class="boxlab" text-anchor="middle">Multi-Head Causal Self-Attention</text>
+
+  <!-- QKV split -->
+  <rect x="160" y="466" width="320" height="32" rx="4" fill="#FFFFFF" stroke="#3a5a8a"/>
+  <text x="320" y="486" class="shape" text-anchor="middle">c_attn:  Linear 768 → 2304   (Q | K | V)</text>
+
+  <rect x="160" y="506" width="320" height="30" rx="4" fill="#FFFFFF" stroke="#3a5a8a"/>
+  <text x="320" y="525" class="shape" text-anchor="middle">reshape → (B, 12 heads, T, 64)</text>
+
+  <rect x="160" y="544" width="320" height="30" rx="4" fill="#FFFFFF" stroke="#3a5a8a"/>
+  <text x="320" y="563" class="shape" text-anchor="middle">scores = Q·Kᵀ / √64    (B, 12, T, T)</text>
+
+  <rect x="160" y="582" width="320" height="30" rx="4" fill="#FFF6E0" stroke="#B07020"/>
+  <text x="320" y="601" class="shape" text-anchor="middle">+ causal mask  (upper Δ → −∞)   softmax</text>
+
+  <rect x="160" y="620" width="320" height="30" rx="4" fill="#FFFFFF" stroke="#3a5a8a"/>
+  <text x="320" y="639" class="shape" text-anchor="middle">attn·V → concat → c_proj  768 → 768</text>
+
+  <!-- attention out + skip -->
+  <line x1="320" y1="650" x2="320" y2="678" stroke="#333" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <!-- skip path 1 -->
+  <path d="M 320 345 L 80 345 L 80 685 L 305 685"
+        fill="none" stroke="#7a7a7a" stroke-width="1.3" stroke-dasharray="5 3"
+        marker-end="url(#arrow-skip)"/>
+  <text x="70" y="510" class="ann" text-anchor="middle" transform="rotate(-90 70 510)">residual (skip)</text>
+
+  <circle cx="320" cy="685" r="10" fill="#FFFFFF" stroke="#333" stroke-width="1.4"/>
+  <text x="320" y="689" text-anchor="middle" font-size="13" font-weight="700">+</text>
+
+  <line x1="320" y1="697" x2="320" y2="720" stroke="#333" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <rect x="220" y="720" width="200" height="40" rx="5" fill="#FFFFFF" stroke="#666"/>
+  <text x="320" y="745" class="boxlab" text-anchor="middle">LayerNorm (ln_2)</text>
+
+  <!-- MLP -->
+  <line x1="320" y1="760" x2="320" y2="784" stroke="#333" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <rect x="140" y="784" width="360" height="150" rx="8" fill="#FAE3D2" stroke="#B07020" stroke-width="1.2"/>
+  <text x="320" y="806" class="boxlab" text-anchor="middle">Position-wise MLP</text>
+  <rect x="160" y="820" width="320" height="30" rx="4" fill="#FFFFFF" stroke="#B07020"/>
+  <text x="320" y="839" class="shape" text-anchor="middle">c_fc:   Linear 768 → 3072</text>
+  <rect x="160" y="858" width="320" height="30" rx="4" fill="#FFFFFF" stroke="#B07020"/>
+  <text x="320" y="877" class="shape" text-anchor="middle">GELU</text>
+  <rect x="160" y="896" width="320" height="30" rx="4" fill="#FFFFFF" stroke="#B07020"/>
+  <text x="320" y="915" class="shape" text-anchor="middle">c_proj: Linear 3072 → 768</text>
+
+  <!-- mlp out + skip -->
+  <line x1="320" y1="934" x2="320" y2="960" stroke="#333" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <path d="M 320 707 L 560 707 L 560 967 L 335 967"
+        fill="none" stroke="#7a7a7a" stroke-width="1.3" stroke-dasharray="5 3"
+        marker-end="url(#arrow-skip)"/>
+  <text x="570" y="837" class="ann" text-anchor="middle" transform="rotate(90 570 837)">residual (skip)</text>
+
+  <circle cx="320" cy="967" r="10" fill="#FFFFFF" stroke="#333" stroke-width="1.4"/>
+  <text x="320" y="971" text-anchor="middle" font-size="13" font-weight="700">+</text>
+
+  <line x1="320" y1="978" x2="320" y2="1005" stroke="#333" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <rect x="220" y="1005" width="200" height="40" rx="5" fill="#D5EDDB" stroke="#3a7a50"/>
+  <text x="320" y="1030" class="boxlab" text-anchor="middle">block output  (B, T, 768)</text>
+
+  <!-- exit block -->
+  <line x1="320" y1="1080" x2="320" y2="1110" stroke="#333" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <text x="340" y="1100" class="headnote">× 12</text>
+
+  <!-- ln_f -->
+  <rect x="140" y="1110" width="360" height="52" rx="6" fill="#E6E6E6" stroke="#555" stroke-width="1.2"/>
+  <text x="320" y="1133" class="boxlab" text-anchor="middle">Final LayerNorm  (ln_f)</text>
+  <text x="320" y="1150" class="shape"  text-anchor="middle">(B, T, 768)</text>
+
+  <line x1="320" y1="1162" x2="320" y2="1190" stroke="#333" stroke-width="1.4" marker-end="url(#arrow)"/>
+
+  <!-- lm_head -->
+  <rect x="140" y="1190" width="360" height="64" rx="6" fill="#E6E6E6" stroke="#555" stroke-width="1.2"/>
+  <text x="320" y="1213" class="boxlab" text-anchor="middle">lm_head : Linear 768 → 50257</text>
+  <text x="320" y="1232" class="boxsub" text-anchor="middle">weight-tied with wte  (no new params)</text>
+  <text x="320" y="1248" class="shape"  text-anchor="middle">logits  (B, T, 50257)</text>
+
+  <line x1="320" y1="1254" x2="320" y2="1286" stroke="#333" stroke-width="1.4" marker-end="url(#arrow)"/>
+
+  <!-- Softmax / sampling -->
+  <rect x="140" y="1286" width="360" height="74" rx="6" fill="#FFFFFF" stroke="#888"/>
+  <text x="320" y="1308" class="boxlab" text-anchor="middle">Softmax ( logits[:, −1, :] / T )</text>
+  <text x="320" y="1326" class="boxsub" text-anchor="middle">temperature · top-k · top-p · argmax</text>
+  <text x="320" y="1347" class="shape"  text-anchor="middle">p ∈ Δ^{50257}    →  sample next_id</text>
+
+  <!-- loop back arrow -->
+  <path d="M 500 1323 Q 620 1323 620 800 Q 620 120 480 120"
+        fill="none" stroke="#C44E52" stroke-width="1.6" stroke-dasharray="4 4"
+        marker-end="url(#arrow)"/>
+  <text x="640" y="720" class="headnote" text-anchor="start">
+    autoregressive loop
+  </text>
+  <text x="640" y="738" class="ann" text-anchor="start">
+    append next_id, re-run
+  </text>
+
+  <!-- ============================================================ -->
+  <!-- RIGHT COLUMN: shapes + parameter budget + notes              -->
+  <!-- ============================================================ -->
+
+  <!-- Shape ladder -->
+  <rect x="720" y="90" width="450" height="410" rx="8" fill="#FFFFFF" stroke="#AAA"/>
+  <text x="945" y="116" class="section" text-anchor="middle">SHAPE LADDER</text>
+
+  <g class="mono" font-size="12" fill="#222">
+    <text x="740" y="148">token_ids</text>
+    <text x="1150" y="148" text-anchor="end">(B, T)</text>
+
+    <text x="740" y="172">after embedding + position</text>
+    <text x="1150" y="172" text-anchor="end">(B, T, 768)</text>
+
+    <text x="740" y="196">ln_1 (per-token, over 768)</text>
+    <text x="1150" y="196" text-anchor="end">(B, T, 768)</text>
+
+    <text x="740" y="220">c_attn  →  Q, K, V each</text>
+    <text x="1150" y="220" text-anchor="end">(B, T, 768)</text>
+
+    <text x="740" y="244">reshape to heads</text>
+    <text x="1150" y="244" text-anchor="end">(B, 12, T, 64)</text>
+
+    <text x="740" y="268">Q · Kᵀ / √64  (attn scores)</text>
+    <text x="1150" y="268" text-anchor="end">(B, 12, T, T)</text>
+
+    <text x="740" y="292">softmax(scores) · V</text>
+    <text x="1150" y="292" text-anchor="end">(B, 12, T, 64)</text>
+
+    <text x="740" y="316">concat heads + c_proj</text>
+    <text x="1150" y="316" text-anchor="end">(B, T, 768)</text>
+
+    <text x="740" y="340">residual add</text>
+    <text x="1150" y="340" text-anchor="end">(B, T, 768)</text>
+
+    <text x="740" y="364">MLP c_fc (expand)</text>
+    <text x="1150" y="364" text-anchor="end">(B, T, 3072)</text>
+
+    <text x="740" y="388">MLP c_proj (compress) + add</text>
+    <text x="1150" y="388" text-anchor="end">(B, T, 768)</text>
+
+    <text x="740" y="412">… 12× …  then ln_f</text>
+    <text x="1150" y="412" text-anchor="end">(B, T, 768)</text>
+
+    <text x="740" y="436">lm_head</text>
+    <text x="1150" y="436" text-anchor="end">(B, T, 50257)</text>
+
+    <text x="740" y="460" fill="#C44E52">slice last position, softmax/T</text>
+    <text x="1150" y="460" text-anchor="end" fill="#C44E52">(B, 50257)</text>
+  </g>
+  <text x="740" y="488" class="boxsub">
+    Residual stream keeps (B, T, 768) everywhere. Local widening happens
+    only inside attention and MLP.
+  </text>
+
+  <!-- Parameter budget -->
+  <rect x="720" y="520" width="450" height="280" rx="8" fill="#FFFFFF" stroke="#AAA"/>
+  <text x="945" y="546" class="section" text-anchor="middle">PARAMETER BUDGET</text>
+
+  <g class="mono" font-size="12" fill="#222">
+    <text x="740" y="574">wte  (50257 × 768)</text>
+    <text x="1150" y="574" text-anchor="end">≈ 38.6 M</text>
+
+    <text x="740" y="596">wpe  (1024 × 768)</text>
+    <text x="1150" y="596" text-anchor="end">≈  0.8 M</text>
+
+    <text x="740" y="622">per block — attn (QKV + O)</text>
+    <text x="1150" y="622" text-anchor="end">≈  2.4 M</text>
+
+    <text x="740" y="644">per block — MLP (c_fc + c_proj)</text>
+    <text x="1150" y="644" text-anchor="end">≈  4.7 M</text>
+
+    <text x="740" y="666">per block — LNs + biases</text>
+    <text x="1150" y="666" text-anchor="end">≈  0.01 M</text>
+
+    <text x="740" y="690">12 blocks</text>
+    <text x="1150" y="690" text-anchor="end">≈ 85.1 M</text>
+
+    <text x="740" y="714">ln_f</text>
+    <text x="1150" y="714" text-anchor="end">≈  0.002 M</text>
+
+    <text x="740" y="738">lm_head  (tied with wte)</text>
+    <text x="1150" y="738" text-anchor="end">0 extra</text>
+
+    <line x1="740" y1="750" x2="1150" y2="750" stroke="#888"/>
+
+    <text x="740" y="772" font-weight="700">Total</text>
+    <text x="1150" y="772" text-anchor="end" font-weight="700">≈ 124 M</text>
+  </g>
+
+  <!-- Key ideas -->
+  <rect x="720" y="820" width="450" height="380" rx="8" fill="#FFFFFF" stroke="#AAA"/>
+  <text x="945" y="846" class="section" text-anchor="middle">KEY INVARIANTS</text>
+
+  <g font-size="12" fill="#333">
+    <text x="740" y="874" font-weight="700">1. Pre-LN, not post-LN.</text>
+    <text x="740" y="892">LayerNorm sits before attention/MLP. The residual path</text>
+    <text x="740" y="908">is clean (unnormalized) all the way through.</text>
+
+    <text x="740" y="934" font-weight="700">2. QKV from one linear, not three.</text>
+    <text x="740" y="952">c_attn is 768 → 2304; the result is split into Q, K, V.</text>
+
+    <text x="740" y="978" font-weight="700">3. Causal mask is inside attention.</text>
+    <text x="740" y="996">Upper-triangular of scores set to −∞ before softmax.</text>
+    <text x="740" y="1012">This is the one line that makes GPT-2 a decoder.</text>
+
+    <text x="740" y="1038" font-weight="700">4. Residual stream is shape-invariant.</text>
+    <text x="740" y="1056">(B, T, 768) in every block — every block adds to it.</text>
+    <text x="740" y="1072">This is why the logit lens works at any depth.</text>
+
+    <text x="740" y="1098" font-weight="700">5. Context window = wpe rows.</text>
+    <text x="740" y="1116">T ≤ 1024 because wpe has 1024 position embeddings.</text>
+    <text x="740" y="1132">Not a property of attention — a property of wpe.</text>
+
+    <text x="740" y="1158" font-weight="700">6. lm_head ties weights with wte.</text>
+    <text x="740" y="1176">Unembedding is wte transposed; adds zero parameters.</text>
+  </g>
+
+  <!-- Legend -->
+  <rect x="720" y="1220" width="450" height="140" rx="8" fill="#FFFFFF" stroke="#AAA"/>
+  <text x="945" y="1246" class="section" text-anchor="middle">LEGEND</text>
+  <rect x="740" y="1260" width="22" height="16" fill="#E6DEF0" stroke="#5d4a7a"/>
+  <text x="770" y="1273" font-size="12">Embedding (wte + wpe)</text>
+  <rect x="740" y="1284" width="22" height="16" fill="#D6E0F0" stroke="#3a5a8a"/>
+  <text x="770" y="1297" font-size="12">Multi-head self-attention</text>
+  <rect x="740" y="1308" width="22" height="16" fill="#FAE3D2" stroke="#B07020"/>
+  <text x="770" y="1321" font-size="12">Feed-forward MLP</text>
+  <rect x="740" y="1332" width="22" height="16" fill="#D5EDDB" stroke="#3a7a50"/>
+  <text x="770" y="1345" font-size="12">Residual stream checkpoint</text>
+
+  <rect x="960" y="1260" width="22" height="16" fill="#E6E6E6" stroke="#555"/>
+  <text x="990" y="1273" font-size="12">Final LN / lm_head</text>
+  <line x1="960" y1="1292" x2="982" y2="1292" stroke="#7a7a7a" stroke-width="1.4" stroke-dasharray="5 3"/>
+  <text x="990" y="1297" font-size="12">Residual skip path</text>
+  <line x1="960" y1="1316" x2="982" y2="1316" stroke="#C44E52" stroke-width="1.6" stroke-dasharray="4 4"/>
+  <text x="990" y="1321" font-size="12">Autoregressive loop</text>
+  <rect x="960" y="1332" width="22" height="16" fill="#FFF6E0" stroke="#B07020"/>
+  <text x="990" y="1345" font-size="12">Causal mask step</text>
+
+  <!-- footer -->
+  <text x="600" y="1560" class="subtitle" text-anchor="middle">
+    Residual stream constant at (B, T, 768) · Local widening: MLP (B, T, 3072) · Attn heads 12 × 64
+  </text>
+</svg>

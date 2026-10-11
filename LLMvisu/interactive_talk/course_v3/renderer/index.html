@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How LLMs work</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+</head>
+<body>
+  <main id="deck">
+    <div id="slide" class="slide">
+      <h1 id="slide-title"></h1>
+      <div id="slide-body"></div>
+    </div>
+    <footer>
+      <div class="progress"><div id="progress-bar"></div></div>
+      <div class="meta">
+        <span id="slide-counter"></span>
+        <span class="separator">·</span>
+        <span id="beat-name"></span>
+        <span id="badges"></span>
+      </div>
+    </footer>
+    <aside id="legend" class="legend">
+      <span><kbd>←</kbd><kbd>→</kbd> step</span>
+      <span><kbd>↑</kbd><kbd>↓</kbd> chapter</span>
+      <span><kbd>h</kbd> help</span>
+    </aside>
+    <div id="help" class="help-overlay" hidden>
+      <div class="help-card">
+        <h2>Keyboard</h2>
+        <dl>
+          <dt>→ &nbsp; space</dt><dd>next slide</dd>
+          <dt>← &nbsp; p</dt><dd>previous slide</dd>
+          <dt>↓ &nbsp; n</dt><dd>next chapter</dd>
+          <dt>↑ &nbsp; b</dt><dd>previous chapter</dd>
+          <dt>home &nbsp; g</dt><dd>first slide</dd>
+          <dt>end</dt><dd>last slide</dd>
+          <dt>t</dt><dd>toggle technical-only filter</dd>
+          <dt>f</dt><dd>fullscreen</dd>
+          <dt>h &nbsp; ?</dt><dd>this help (esc to close)</dd>
+        </dl>
+      </div>
+    </div>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

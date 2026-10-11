@@ -1,0 +1,35 @@
+# 60-minute technical talk.
+# Technical face throughout, technical branches open, compute branch
+# included.
+format: talk_60min_technical
+audience: technical
+depth: deep
+include_technical: true
+budget_seconds: 3600
+
+tree:
+  - hook
+  - chatbot_interactions
+  - next_token_predictor
+  - autoregression
+  - ntp_summary
+  - mechanisms_overview
+  - tokenisation
+  - embedding
+  - embedding_geometry
+  - attention
+  - attention_disambig
+  - attention_qkv
+  - transformer_block
+  - transformer_stack_summary
+  - architecture_pipeline
+  - architecture_scale
+  - compute_overview
+  - compute_training
+  - compute_autodiff
+  - compute_inference
+  - compute_kv_cache
+  - training_objective
+  - training_emergence
+  - alignment_gap
+  - alignment_thesis

@@ -1,0 +1,15 @@
+# 5-minute pitch. Hits W1, W2, W4, W6 only.
+# Mechanism dive and training detail are compressed to one card each.
+format: pitch_5min_general
+audience: general
+depth: short
+include_technical: false
+budget_seconds: 300
+
+tree:
+  - hook
+  - next_token_predictor
+  - mechanisms_overview
+  - architecture_scale
+  - training_emergence
+  - alignment_thesis
