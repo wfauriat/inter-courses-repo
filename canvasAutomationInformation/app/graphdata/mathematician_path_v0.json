@@ -1,0 +1,348 @@
+{
+  "version": "0.1",
+  "nodes": [
+    {
+      "id": "the_formalization",
+      "position": { "x": 0, "y": 0 },
+      "data": {
+        "label": "the formalization",
+        "body": "You are formalizing. You take a phenomenon — a structure, a relation, a system — and you write it down. Definitions. Axioms. A category in which to work, a class of objects, a class of allowed morphisms. From that point on, what the apparatus can say is fixed by what you wrote down.\n\nThe choice was a choice. You could have worked in topological spaces or in locales. You could have axiomatized probability as a measure on a σ-algebra, or as a finitely additive set function on an event algebra, or as a coherent ordering on preferences. You could have taken the category of sets as primitive, or types, or toposes. Each option is internally coherent. Each opens different theorems as natural and closes others as awkward. None is the formalization the phenomenon comes with — the phenomenon doesn't come with one.\n\nThe theorems you prove are theorems about the apparatus. They are sharp, deductively secure, and silent about whether the apparatus was the right one for what you were after.\n\nThe question this path is about: what is the structural reason that the act of choosing the formalization sits outside any formalism's reach — and what does that imply for the practice of formal reasoning?"
+      }
+    },
+    {
+      "id": "finite_specification",
+      "position": { "x": 320, "y": 0 },
+      "data": {
+        "label": "finite specification",
+        "body": "When you write down a formalism, you specify finitely. A category has objects, morphisms, composition, identity — a finite listing of structure. A model has variables, relations, and axioms — finitely many. A formal system has a syntax, derivation rules, and a semantics — finitely specified.\n\nThis is not a defect. It is what makes the formalism a formalism — what makes deduction inside it possible, what makes proof-checking decidable, what allows mechanization. Finite specification is the price of formal closure.\n\nThe price is also a limit. What the specification omits doesn't show up in the formalism as undefined or unspecified; it doesn't show up at all. The variable not in the model, the morphism not in the category, the relation the axioms don't constrain — these are not negative facts the system can express. They are silences from the system's perspective.\n\nThe frame problem, in its most general form, is this silence. It is not a quirk of symbolic AI in the 1970s. It is a structural property of any reasoning system that filters a finite specification from an open domain — the symbolic, the learned, the formal, the heuristic, alike."
+      }
+    },
+    {
+      "id": "frame_is_invisible_from_inside",
+      "position": { "x": 640, "y": 0 },
+      "data": {
+        "label": "frame invisible from inside",
+        "body": "Why can't the system audit its own frame? Because the auditing would itself be a piece of reasoning, conducted within some specification. To audit a formal system F from inside F is to prove a theorem of F about F's adequacy — but adequacy is a relation between F and what's outside F, and what's outside F is exactly what F's specification doesn't carry.\n\nThis is the structural argument, and it does not depend on F being mistaken about something concrete. F can be internally consistent, deductively complete with respect to its semantics, categorical in the model-theoretic sense — none of that gives F the resources to assess whether its frame was the right one for what F was meant to formalize.\n\nMoving to a stronger system F' doesn't escape this; F' has its own frame and inherits the same property. Moving to a meta-system M doesn't escape it either; M is just a frame in which one studies F, and M itself has a frame that M cannot audit from inside.\n\nThe hierarchy doesn't terminate in a frame that sees all frames. Each level is a finite specification. Each is structurally blind to its own blind spots."
+      }
+    },
+    {
+      "id": "three_kinds_of_uncertainty",
+      "position": { "x": 320, "y": -260 },
+      "data": {
+        "label": "three kinds of uncertainty",
+        "body": "Uncertainty quantification, as a field, distinguishes two categories. Aleatory uncertainty is randomness modeled inside the formalism — the random variables, the noise process, what one chooses to treat as irreducible. Epistemic uncertainty is what one could in principle reduce — parameter uncertainty, model uncertainty, the residue of what better information would tighten.\n\nThese are real categories and they have rich formal apparatus — Bayesian posteriors, robust optimization, sensitivity analysis, model averaging.\n\nThere is a third category the formal apparatus does not reach: what the formalism did not include in the first place. This is sometimes called ontological uncertainty; it sits outside the specification by construction. The σ-algebra was constructed; the variables were chosen; the model class was selected. The variable that was not in the model is not a measure-zero event — it is not in the measure space at all.\n\nThe standard machinery cannot quantify this category from inside, because the machinery operates on the specified objects, and ontological uncertainty names exactly what the specification omitted. This is not a failure of UQ; it is a structural limit on what any formal apparatus can quantify about its own omissions."
+      }
+    },
+    {
+      "id": "deduction_does_not_escape",
+      "position": { "x": 0, "y": 260 },
+      "data": {
+        "label": "deduction doesn't escape",
+        "body": "There is a tempting move: induction has the frame problem because it generalizes from data, but deduction operates on certainties and produces necessary conclusions, so deduction escapes the problem.\n\nThis is the move worth refusing.\n\nDeduction is sound conditional on its premises and on the chosen logical apparatus. The premises are a frame. The logical apparatus is a frame. The conclusion is necessary inside that frame; it is silent about whether the frame was the right one.\n\nA worked illustration: a theorem says ZFC ⊢ φ. The theorem is necessary in the sense that, given ZFC's axioms and first-order logic, φ follows. The theorem is also silent on whether ZFC is the right foundation for the question being asked, whether the choice of first-order rather than higher-order logic mattered, whether the question φ formalizes was well-posed in the first place. These are not internal to the deductive system. They are about what the deductive system is a system of.\n\nDeduction does not escape the frame problem; it inherits it through its premises and its logical apparatus. The necessity in \"necessary conclusion\" attaches to the apparatus, not to the world the apparatus was supposed to be about."
+      }
+    },
+    {
+      "id": "probability_as_judgment",
+      "position": { "x": 640, "y": 260 },
+      "data": {
+        "label": "probability as judgment",
+        "body": "Probability, as a measure-theoretic object, is well-defined and beyond reproach. A probability space (Ω, F, P) is a mathematical object whose behavior is governed by axioms. The theorems are theorems.\n\nThe metaphysical claim that an arbitrary proposition has an exact probability, grounded somewhere in the world, is a separate claim. It is not entailed by the mathematics. It is the claim that gets imported when the formalism is deployed in domains where the reference class is constructed rather than given.\n\nA more careful reading: probability, deployed for reasoning, is a support tool for judgment under uncertainty. It distributes plausibility over possibilities given background knowledge. The mathematics is the apparatus by which this distribution is computed, propagated, and updated. The number does not exist independently of the conditioning structure that defines it.\n\nThe mathematician does not personally need to hold the metaphysical claim. The applied use of the formalism — by statisticians, economists, ML practitioners, decision-makers — routinely does, often without noticing. This is one of the places where the formal practice and the deployment of formal tools diverge, and where the structural problem reappears: the choice of probability semantics is a frame choice that no probability theorem decides."
+      }
+    },
+    {
+      "id": "bayes_relocates_the_problem",
+      "position": { "x": 960, "y": 0 },
+      "data": {
+        "label": "Bayes relocates the problem",
+        "body": "Bayesian decision theory is the most refined formal response to reasoning under uncertainty. It packages the structural problem cleanly: distribute belief over a state space, attach utilities to outcomes, take the action that maximizes expected utility. The theorems are clean, the coherence requirements are sharp, and the apparatus does real work in practice.\n\nThe structural problem reappears, intact, at the meta-level.\n\nThe state space is a frame: it lists the states the agent treats as possible. What is not in the state space has zero prior, and zero stays zero under updating. The utility function is a frame: it lists the outcomes the agent values and how it trades them off. What is not in the utility function is not a value of zero; it is silent. The likelihood model is a frame: it specifies how evidence relates to states. Evidence outside the model's expressive capacity is not anomalous evidence; it is invisible evidence.\n\nBayes is not the resolution of the frame problem; it is the form the frame problem takes when given its sharpest formal expression. The apparatus is right; it does not dissolve the structural problem; it relocates it — from \"how do I reason under uncertainty\" to \"how do I choose the state space, the utility, and the likelihood model.\"\n\nThis relocation is a real advance — the problem is sharper when stated this way, and decisions can be checked for coherence within an assumed structure. The relocation is also not an escape. The structure itself is a frame, and the choice of structure is not formally decidable from inside any structure."
+      }
+    },
+    {
+      "id": "completeness_is_not_adequacy",
+      "position": { "x": 1280, "y": 0 },
+      "data": {
+        "label": "completeness ≠ adequacy",
+        "body": "Completeness, in the formal sense, is a property within a system. A logic is complete if every semantic consequence is provable. A theory is categorical if all its models are isomorphic. A model is identifiable if its parameters are uniquely determined by the data-generating process. These are real, well-defined, and verifiable properties.\n\nAdequacy is a different relation. Adequacy is a property between a formal system and what the formal system is a formalization of. It is not internal to the system. It is not provable within the system. It is not even fully formalizable, because formalizing the adequacy relation requires choosing a formalization of the target domain, and that choice is the thing whose adequacy was in question.\n\nConfusing the two is the modal way formal practice misrepresents what it has earned. A complete proof inside an inadequate frame is a precise wrong answer. A categorical theory of the wrong objects is internally consistent and not about what it was meant to be about. An identifiable model whose specification omitted the variable that mattered is sharply identifiable and silent about the omission.\n\nThis is not an argument against rigor inside the frame. It is an argument against treating rigor inside the frame as a proxy for adequacy of the frame. The discipline of distinguishing the two is part of the rigor; eliding it is not."
+      }
+    },
+    {
+      "id": "meta_no_free_lunch",
+      "position": { "x": 1600, "y": 0 },
+      "data": {
+        "label": "meta no-free-lunch",
+        "body": "No formal procedure decides when a frame is adequate. The argument is structural.\n\nA procedure that decides frame adequacy would have to compare a candidate frame to what is outside it — to assess whether the frame's specification omitted something that mattered. To compare requires representing both sides of the comparison. Representing what is outside the frame requires a frame in which to do the representing. That meta-frame is itself a frame, with its own omissions, and the question recurses.\n\nThis is not a defect of any particular procedure. It is what any procedure for adequacy-assessment must inherit by being a procedure — by being a finite specification.\n\nThe consequence is not that frame adequacy is unreachable. It is reachable, contingently, in practice, when a frame turns out to have included what the world later turned out to need. The contingent nature of that success is the load-bearing observation. No procedure delivers it as a guarantee. The practice of formalizing-further does not dissolve the problem; it relocates it to the next meta-level, which is itself a frame.\n\nThis is the destination this path lands at. The other claims along the way — that finite specification carries a limit, that frames are invisible from inside, that deduction does not escape, that Bayes relocates the problem to its sharpest meta-level statement, that completeness is not adequacy — are different angles on the same structural fact. \"Better methodology\" is not the answer because the methodology is the choice being deferred. Formal reasoning can be pursued with full rigor while holding this distinction visible — between the rigor formal apparatus earns inside its frame and the adequacy it does not earn by being formal."
+      }
+    },
+    {
+      "id": "vaguely_right_precisely_wrong",
+      "position": { "x": 1600, "y": 260 },
+      "data": {
+        "label": "vaguely right / precisely wrong",
+        "body": "Keynes is supposed to have preferred being vaguely right to precisely wrong. The line is often misread as a defense of imprecision. It is not. It is a structural observation about the difference between precision inside a frame and precision about what the frame is a frame of.\n\nPrecise wrongness is a sharp answer inside an inadequate frame. A theorem proven cleanly about objects that turn out not to be the objects the question was about. A model identified perfectly whose specification omitted the variable that mattered. A probabilistic conclusion derived rigorously whose state space was constructed before the relevant states were known.\n\nVague rightness is an answer that propagates honestly what the frame doesn't reach. It carries less internal sharpness and more usable information about its own limits.\n\nFor formal practice, this is not a renunciation of rigor. It is the rigor of knowing which rigor was earned. The structural claim about frame adequacy bears on the practice in this specific way: it asks, at each step, whether the precision being claimed was a precision of the formal apparatus or a precision about what the apparatus was a formalism of.\n\nFor the mathematician whose formal work travels — to applied contexts, to deployment, to claims about the world — this distinction becomes the difference between contribution and misrepresentation. For purely formal work, it remains conceptual hygiene rather than practical pressure; the rigor inside the frame is the work, and the distinction is held in the background."
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_01",
+      "source": "the_formalization",
+      "target": "finite_specification",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why does formalization carry a limit?",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_02",
+      "source": "the_formalization",
+      "target": "deduction_does_not_escape",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Doesn't formal deduction escape this?",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_03",
+      "source": "the_formalization",
+      "target": "meta_no_free_lunch",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Can any procedure decide adequacy?",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_04",
+      "source": "finite_specification",
+      "target": "frame_is_invisible_from_inside",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why can't the system audit its own frame?",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_05",
+      "source": "finite_specification",
+      "target": "three_kinds_of_uncertainty",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What kinds of uncertainty are there?",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_06",
+      "source": "finite_specification",
+      "target": "the_formalization",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Back to the formalization",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_07",
+      "source": "frame_is_invisible_from_inside",
+      "target": "finite_specification",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "This is why specification carries a limit",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_08",
+      "source": "frame_is_invisible_from_inside",
+      "target": "bayes_relocates_the_problem",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What does the best formal response look like?",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_09",
+      "source": "frame_is_invisible_from_inside",
+      "target": "completeness_is_not_adequacy",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Can't completeness close the gap?",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_10",
+      "source": "frame_is_invisible_from_inside",
+      "target": "the_formalization",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What did the formalization not see?",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_11",
+      "source": "three_kinds_of_uncertainty",
+      "target": "completeness_is_not_adequacy",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "A concrete face of the structural limit",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_12",
+      "source": "three_kinds_of_uncertainty",
+      "target": "frame_is_invisible_from_inside",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "This is the structural reason",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_13",
+      "source": "three_kinds_of_uncertainty",
+      "target": "bayes_relocates_the_problem",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What the apparatus can and can't quantify",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_14",
+      "source": "deduction_does_not_escape",
+      "target": "the_formalization",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The premises and logic the formalism inherits",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_15",
+      "source": "deduction_does_not_escape",
+      "target": "finite_specification",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "This is why deduction inherits the limit",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_16",
+      "source": "deduction_does_not_escape",
+      "target": "frame_is_invisible_from_inside",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why the necessity attaches to the apparatus",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_17",
+      "source": "probability_as_judgment",
+      "target": "bayes_relocates_the_problem",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why the formalism doesn't ground exact probability",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_18",
+      "source": "probability_as_judgment",
+      "target": "finite_specification",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why the conditioning structure is the content",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_19",
+      "source": "probability_as_judgment",
+      "target": "completeness_is_not_adequacy",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What this means for what the theorem is about",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_20",
+      "source": "bayes_relocates_the_problem",
+      "target": "completeness_is_not_adequacy",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why coherence in a structure isn't adequacy of the structure",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_21",
+      "source": "bayes_relocates_the_problem",
+      "target": "probability_as_judgment",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What \"the probability\" actually is",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_22",
+      "source": "bayes_relocates_the_problem",
+      "target": "meta_no_free_lunch",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Where the structural problem reappears in its sharpest form",
+      "data": { "edgeType": "synthesizes" }
+    },
+    {
+      "id": "e_23",
+      "source": "completeness_is_not_adequacy",
+      "target": "frame_is_invisible_from_inside",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The structural reason adequacy isn't internal",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_24",
+      "source": "completeness_is_not_adequacy",
+      "target": "meta_no_free_lunch",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why no procedure closes the gap",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_25",
+      "source": "completeness_is_not_adequacy",
+      "target": "vaguely_right_precisely_wrong",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The practical face of the distinction",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_26",
+      "source": "meta_no_free_lunch",
+      "target": "completeness_is_not_adequacy",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why the distinction is structural, not pragmatic",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_27",
+      "source": "meta_no_free_lunch",
+      "target": "bayes_relocates_the_problem",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why even Bayes doesn't dissolve this",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_28",
+      "source": "meta_no_free_lunch",
+      "target": "the_formalization",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What this means for any formalization",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_29",
+      "source": "meta_no_free_lunch",
+      "target": "vaguely_right_precisely_wrong",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The disposition this implies for formal practice",
+      "data": { "edgeType": "supports" }
+    }
+  ]
+}

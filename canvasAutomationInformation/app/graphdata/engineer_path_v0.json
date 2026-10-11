@@ -1,0 +1,348 @@
+{
+  "version": "0.1",
+  "nodes": [
+    {
+      "id": "the_crossing",
+      "position": { "x": 0, "y": 0 },
+      "data": {
+        "label": "the crossing",
+        "body": "You're crossing the Atlantic in a small boat. Before you leave, you decide whether to take a satellite phone. Conditions look favorable. The forecast is good. The boat is well-maintained. A satellite phone costs money, weight, and one more thing to maintain. You can compute the probability of needing it: take historical incident rates for the route, adjust for season and boat class, propagate forecast uncertainty. You get a number.\n\nThe number is real, and it is also conditional on what you decided to include in the calculation.\n\nWhatever the number is, the crossing will either go fine or it won't. The probability is how you judge likelihood before you sail. The world will not deliver \"73% of a crossing.\" It will deliver a crossing.\n\nThe question this path is about: what is the methodological care that the gap between the number and the crossing actually warrants?"
+      }
+    },
+    {
+      "id": "predictions_are_inherently_imperfect",
+      "position": { "x": 320, "y": 0 },
+      "data": {
+        "label": "predictions are conditional",
+        "body": "When you computed the crossing's incident probability, you decided what to include. Historical rates over what window? Adjusted for which conditions? Which boat class is yours grouped with? Which kinds of incidents counted as \"needing\" the phone?\n\nEvery prediction works this way. You specify a finite set of conditions; the prediction is conditional on that specification. The number is precise within the specification and silent about what the specification omits.\n\nThis is not a problem you fix by adding more variables. Each addition is another specification choice. The set is always finite. What's outside it doesn't show up in the prediction — not as uncertainty, not as a wider interval. It is silent.\n\n\"Inherently imperfect\" doesn't mean \"imprecise within the model.\" It means \"precise within a frame the model cannot see past.\" The two are different failure modes and they call for different responses."
+      }
+    },
+    {
+      "id": "frame_is_invisible_from_inside",
+      "position": { "x": 640, "y": 0 },
+      "data": {
+        "label": "frame invisible from inside",
+        "body": "Why can't the model see what it omitted? Because the model was built by deciding what mattered, and the deciding happened before the modeling. The model's machinery — its variables, its likelihoods, its loss function — is the result of those decisions, not a tool for auditing them.\n\nA safety factor doesn't help here. Safety factors are calibrated against failure modes you anticipated. The frame failures that matter are the ones you didn't anticipate — the variable that wasn't in the analysis because it wasn't on the list, the interaction between subsystems that no single model covered, the assumption too obvious to write down.\n\nThe model can be internally consistent, mathematically sound, empirically validated against everything you measured. None of that tells you whether the frame was adequate. \"Adequate\" is a relation between the frame and what's outside it, and \"what's outside it\" is exactly what the frame doesn't carry.\n\nThis is not a quirk of bad models. It is a property of any reasoning system that filters a finite specification from an open world."
+      }
+    },
+    {
+      "id": "three_kinds_of_uncertainty",
+      "position": { "x": 320, "y": -260 },
+      "data": {
+        "label": "three kinds of uncertainty",
+        "body": "Standard uncertainty quantification gives you two categories. Aleatory uncertainty is what you've chosen to model as randomness — wave heights, component lifetimes, arrival times. Epistemic uncertainty is what you could in principle reduce with more information — better measurements, more data, finer modeling.\n\nThese are real categories and they're useful. They are also not the whole picture.\n\nThere is a third category that gets less attention: ontological uncertainty. What didn't make it into the model because no one thought to put it there. It is not a wider interval on an existing variable. It is the variable that isn't on the list.\n\nWhen a system fails in ways that surprise its designers, the failure mode is rarely \"aleatory variation was higher than expected\" and not always \"epistemic uncertainty was higher than expected.\" Often it's \"this wasn't in the model at all.\"\n\nThe standard UQ machinery doesn't speak to this category, and cannot, because the machinery operates inside a specified set of variables. The category names what the specification omitted, and the specification is what the machinery runs on."
+      }
+    },
+    {
+      "id": "probability_as_judgment",
+      "position": { "x": 0, "y": 260 },
+      "data": {
+        "label": "probability as judgment",
+        "body": "Go back to the crossing. You computed a probability of needing the phone. What is that number?\n\nOne reading: it's a frequency. Out of many similar crossings, that fraction would have incidents. This is meaningful when \"similar crossings\" is a well-defined reference class with stable conditions. For most actual decisions — your boat, your route, your season, your forecast — the reference class is something you constructed, not something you found.\n\nA more honest reading: the probability is how you distribute over alternative possibilities given what you know. Your background knowledge — historical rates, forecast, boat condition — informs the distribution. The number summarizes your judgment, made explicit and computable, conditional on that knowledge.\n\nThis matters because the second reading is what you're actually doing, even when the first reading is what you say you're doing. The mathematics is identical. The interpretation determines what you'd do when the reference class is contested, when the background knowledge is incomplete, when someone asks \"what is the probability of X\" for an X that has never happened before.\n\nTreating probability as judgment-given-knowledge keeps the conditioning visible. Treating it as frequency-in-nature hides the conditioning behind a claim about the world."
+      }
+    },
+    {
+      "id": "failure_at_interfaces",
+      "position": { "x": 640, "y": 260 },
+      "data": {
+        "label": "failure at interfaces",
+        "body": "Where do frame failures actually live? Three places, in practice.\n\nBetween models. You have a structural model, a load model, a fatigue model. Each is validated within its scope. The failure mode that gets you is the coupling — load patterns the structural model doesn't represent, fatigue regimes the load model doesn't anticipate. No single model is wrong. The interface is wrong.\n\nIn the variable that was excluded. The analysis runs on a selected set of variables. The selection happened before the analysis you can audit. The variable that wasn't selected doesn't appear as zero — it doesn't appear. Years later, when failure data accumulates, that variable turns out to have been the one.\n\nIn the assumption too obvious to state. Steady-state operation. Standard conditions. Components from qualified vendors. These are not modeled because they are the ground on which the modeling stands. They are also exactly what shifts in deployment contexts the analysis didn't anticipate.\n\nThese three are not exotic. They are the modal failure modes of complex engineered systems. They are also the failure modes that more analysis, within the same frame, does not catch."
+      }
+    },
+    {
+      "id": "automation_erodes_reflexivity",
+      "position": { "x": 960, "y": 0 },
+      "data": {
+        "label": "automation erodes reflexivity",
+        "body": "Most of what you do is now in part automated. Calculations that took weeks take hours. Analyses that needed a team can be run by one engineer. The throughput of confident outputs has gone up, dramatically.\n\nThe throughput of frame-interrogation has not gone up. It can't, structurally. Interrogating a frame means stepping back, asking what was assumed, considering what's outside the analysis. That work is slow. It resists automation, because automating it would require knowing in advance what to ask — which is the thing being looked for.\n\nThe ratio matters. When ten outputs need evaluation and you have time for five, you triage. When a thousand outputs need evaluation and you have time for five, the evaluation stops being meaningful. It becomes spot-checking, which is surveillance, not scrutiny.\n\nYour practice now operates under conditions where producing confident outputs is cheap and catching frame failures is expensive. That is a real shift in the working conditions of the discipline, and it is not neutral.\n\nThe capacity to do the work that catches frame failure has to be actively protected, because the working conditions will not protect it for you."
+      }
+    },
+    {
+      "id": "honest_communication",
+      "position": { "x": 1280, "y": 0 },
+      "data": {
+        "label": "honest communication",
+        "body": "When you hand a number to a decision-maker — the probability of failure, the projected cost, the expected performance — you are also handing them everything the number is conditional on. Whether you communicate that conditioning or not, they are receiving it.\n\nA number without its conditions is not a more efficient communication. It is a transfer. The receiver acts on the number as if it stood alone, the consequences land on them, and the conditions that should have shaped their action are invisible. You have not given them information. You have given them an output and kept the information.\n\nThis is the load the disposition actually bears. Frames are invisible from inside; you cannot eliminate the conditioning. What you can do — what is in your control — is make the conditioning legible to whoever bears the consequences. The conditions of the number, the assumptions of the analysis, the regime of validity, the failure modes you anticipate and the ones you cannot rule out.\n\n\"Decision-makers want a number, not a philosophy lecture\" is fair up to a point. The point at which it stops being fair is when the number drives a consequential outcome badly wrong and the receiver had no way to see it coming. At that point, the missing conditions are not a kindness withheld."
+      }
+    },
+    {
+      "id": "vaguely_right_precisely_wrong",
+      "position": { "x": 1600, "y": 0 },
+      "data": {
+        "label": "vaguely right / precisely wrong",
+        "body": "Keynes is supposed to have preferred being vaguely right to precisely wrong. The line is often misread as a defense of imprecision. It is not. It is a defense of a different kind of rigor.\n\nPrecise wrongness is what happens when an analysis produces a sharp number whose frame was inadequate. The number is internally consistent. The arithmetic is right. The frame omitted something that mattered. The result: high confidence in a wrong conclusion, with all the appearances of having been done correctly.\n\nVague rightness is what happens when an analysis produces a less sharp answer that's honest about its conditions, its omissions, and its regime of validity. The answer carries less false precision. It carries more usable information.\n\nThe discipline this calls for is not vagueness. It is the rigor of knowing where your precision was earned and where it was assumed. Of propagating that awareness through the chain rather than laundering it at every interface where it becomes inconvenient. Of designing for robustness to surprise, not just optimization for the anticipated case.\n\nFor some problems — well-understood, low-stakes, stable conditions — the cost of this is not warranted. For consequential decisions in complex or poorly-understood systems, it is the minimum the difficulty actually requires. The judgment of which is which is itself irreducible. No procedure decides it for you."
+      }
+    },
+    {
+      "id": "meta_no_free_lunch",
+      "position": { "x": 1600, "y": 260 },
+      "data": {
+        "label": "meta no-free-lunch",
+        "body": "(Stub — deferred in the source v0. Reachable from several spine cards but not required for path completion.)\n\nNo universal procedure decides when a frame is adequate, because adequacy is always relative to a context the procedure cannot fully anticipate. Any proposed methodology for dissolving the framing problem is itself a frame, and inherits the problem.\n\nThis is the structural reason \"better methodology\" doesn't close the gap — the methodology is the choice being deferred."
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_01",
+      "source": "the_crossing",
+      "target": "predictions_are_inherently_imperfect",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why is the number conditional?",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_02",
+      "source": "the_crossing",
+      "target": "probability_as_judgment",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What is \"the number,\" really?",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_03",
+      "source": "the_crossing",
+      "target": "vaguely_right_precisely_wrong",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Vague rightness vs precise wrongness",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_04",
+      "source": "predictions_are_inherently_imperfect",
+      "target": "frame_is_invisible_from_inside",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why can't the model see past the frame?",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_05",
+      "source": "predictions_are_inherently_imperfect",
+      "target": "three_kinds_of_uncertainty",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What kinds of uncertainty are there?",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_06",
+      "source": "predictions_are_inherently_imperfect",
+      "target": "the_crossing",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Back to the boat",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_07",
+      "source": "frame_is_invisible_from_inside",
+      "target": "predictions_are_inherently_imperfect",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "This is why predictions are conditional",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_08",
+      "source": "frame_is_invisible_from_inside",
+      "target": "failure_at_interfaces",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Where does this bite in practice?",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_09",
+      "source": "frame_is_invisible_from_inside",
+      "target": "meta_no_free_lunch",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Can't we solve this with better methodology?",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_10",
+      "source": "frame_is_invisible_from_inside",
+      "target": "the_crossing",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What did the crossing forecast not see?",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_11",
+      "source": "three_kinds_of_uncertainty",
+      "target": "failure_at_interfaces",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "A concrete failure mode",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_12",
+      "source": "three_kinds_of_uncertainty",
+      "target": "frame_is_invisible_from_inside",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "This is the structural reason",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_13",
+      "source": "three_kinds_of_uncertainty",
+      "target": "honest_communication",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What this means for what you report",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_14",
+      "source": "probability_as_judgment",
+      "target": "the_crossing",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The probability of needing the phone",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_15",
+      "source": "probability_as_judgment",
+      "target": "predictions_are_inherently_imperfect",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "This is why the number is conditional",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_16",
+      "source": "probability_as_judgment",
+      "target": "honest_communication",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What this means for how you report a number",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_17",
+      "source": "failure_at_interfaces",
+      "target": "frame_is_invisible_from_inside",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The structural reason",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_18",
+      "source": "failure_at_interfaces",
+      "target": "automation_erodes_reflexivity",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why automation makes this worse",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_19",
+      "source": "failure_at_interfaces",
+      "target": "honest_communication",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What you owe whoever bears the consequences",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_20",
+      "source": "automation_erodes_reflexivity",
+      "target": "failure_at_interfaces",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why this is the practice-implicating claim",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_21",
+      "source": "automation_erodes_reflexivity",
+      "target": "honest_communication",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What you owe downstream",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_22",
+      "source": "automation_erodes_reflexivity",
+      "target": "vaguely_right_precisely_wrong",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The disposition this calls for",
+      "data": { "edgeType": "synthesizes" }
+    },
+    {
+      "id": "e_23",
+      "source": "honest_communication",
+      "target": "automation_erodes_reflexivity",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "This is why protection has to be active",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_24",
+      "source": "honest_communication",
+      "target": "vaguely_right_precisely_wrong",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The disposition this realizes",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_25",
+      "source": "honest_communication",
+      "target": "three_kinds_of_uncertainty",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Including the category that isn't in the number",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_26",
+      "source": "vaguely_right_precisely_wrong",
+      "target": "honest_communication",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "One concrete realization",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_27",
+      "source": "vaguely_right_precisely_wrong",
+      "target": "automation_erodes_reflexivity",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The disposition under modern conditions",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_28",
+      "source": "vaguely_right_precisely_wrong",
+      "target": "the_crossing",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What this would look like for the crossing",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_29",
+      "source": "vaguely_right_precisely_wrong",
+      "target": "meta_no_free_lunch",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why no procedure decides this",
+      "data": { "edgeType": "supports" }
+    }
+  ]
+}

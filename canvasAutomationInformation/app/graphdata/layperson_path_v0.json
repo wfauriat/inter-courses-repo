@@ -1,0 +1,348 @@
+{
+  "version": "0.1",
+  "nodes": [
+    {
+      "id": "the_diagnosis",
+      "position": { "x": 0, "y": 0 },
+      "data": {
+        "label": "the diagnosis",
+        "body": "You go to the doctor. The test comes back. The number is real: 70% five-year survival. Or 12% chance of recurrence. Or a 1-in-300 chance of a side effect.\n\nYou have to do something with this number. Continue with treatment, change treatment, get a second opinion, stop worrying, start worrying. The number is supposed to help.\n\nWhatever happens to you, it will either happen or it won't. You won't have 70% of a five-year survival. You'll have one outcome. The number is how the doctor — or the system behind the doctor — summarizes likelihood before the outcome is known.\n\nWhere did the number come from? Studies of people like you, in some sense of \"like you.\" Definitions of what counts as \"recurrence\" or \"survival.\" Choices about which kinds of patients were grouped together. The number is conditional on all of that, even though you're hearing it as a single, plain number.\n\nThe question this path is about: what is the actual thing you should understand when an expert gives you a number — so you can act on it, without either trusting it more than it deserves or distrusting it more than is useful?"
+      }
+    },
+    {
+      "id": "the_number_is_conditional",
+      "position": { "x": 320, "y": 0 },
+      "data": {
+        "label": "the number is conditional",
+        "body": "That 70% — where did it come from? From studies. Studies of people. Who counted as \"people like you\"? Same age range? Same kind of cancer, broadly? Same treatment? Were people who dropped out of the study counted? Did \"survival\" mean alive, or alive-and-able-to-work, or alive-without-recurrence?\n\nYou don't have to know the answers. But the number is the answer to a specific question, and the question is not exactly \"what will happen to me.\" The question is: \"out of people grouped this way, in this study, this fraction had this outcome.\" The 70% is real. It is also conditional on every choice that defined \"people grouped this way\" and \"this outcome.\"\n\nAsking what those choices were is not failing to understand the number. It is what understanding the number actually looks like.\n\nWhen the answer to those questions is \"I'm not sure\" or \"that hasn't been looked at,\" the right reception is not to distrust the number. It is to receive it as a number whose conditions are partly unknown — useful, but not the whole picture.\n\nThe thing you'd be doing wrong is not asking. The thing the expert is doing wrong, if it happens, is making the number feel like it stands alone."
+      }
+    },
+    {
+      "id": "frame_is_invisible_from_inside",
+      "position": { "x": 640, "y": 0 },
+      "data": {
+        "label": "the frame is hard to see",
+        "body": "There is a general reason this happens. It is not a quirk of medical statistics; it shows up everywhere expert numbers do.\n\nWhoever produced the number had to decide what to look at. Which patients to study. Which outcomes to count. What counts as \"similar.\" These decisions are not visible inside the number — once the number is computed, you can't tell, just by looking at it, what was decided to make it.\n\nThis is the part that gets called the \"frame.\" The frame is the set of choices made before the study ran. The number is what came out of the study after those choices were made.\n\nThe frame is hard to see from inside the study. The number can be calculated correctly, the methods can be careful, the result can be exactly what the data say — and the frame can still have left something out. Adding more data doesn't fix this, because the new data also lives inside the frame.\n\nThis is true for the doctor's number, for a polling result, for a climate projection, for an economic forecast. Some frames are better than others. None of them sees what it doesn't include."
+      }
+    },
+    {
+      "id": "three_kinds_of_uncertainty",
+      "position": { "x": 320, "y": -260 },
+      "data": {
+        "label": "three kinds of \"I don't know\"",
+        "body": "There are different reasons someone says \"I don't know.\" Telling them apart is useful.\n\nFirst kind: \"I don't know which way it will go this time, but the long-run rate is X.\" This is the coin-flip kind. The expert knows the pattern; the individual case is genuinely variable. More data won't tighten this, because the variability is real.\n\nSecond kind: \"I don't know yet, but more information would help.\" This is the not-yet kind. The expert could be more confident with more data, more tests, more time. The uncertainty here is about the expert's current knowledge, not about the world.\n\nThird kind: \"I don't know whether the framing of this question is the right one.\" This is the harder kind. The expert is not sure their tools were built for your situation, or that the categories the question is asked in are the categories that apply. More data inside the same framing wouldn't fix this.\n\nMost discussion of uncertainty stays in the first two kinds. The third kind is the one most often missing — not because experts are hiding it, but because the apparatus they work in is set up to handle the first two and not the third. When a confident answer would have benefited from the third kind being voiced, the absence is what you'd want to notice."
+      }
+    },
+    {
+      "id": "russells_turkey",
+      "position": { "x": 0, "y": 260 },
+      "data": {
+        "label": "Russell's turkey",
+        "body": "A turkey at a farm. Every morning, the farmer comes out and feeds it. Day after day, the turkey's confidence that the farmer means well grows. The pattern is consistent. The evidence is overwhelming.\n\nOn the morning before Thanksgiving, the farmer comes out and the turkey is killed.\n\nThe parable is about prediction. The turkey had a model. The model fit every observation. The model also rested on a frame — \"the farmer's behavior up to now will continue\" — that the turkey could not check from inside its observations. The frame failed not because the turkey reasoned badly inside it, but because the frame was the wrong description of the situation, and \"the farmer's behavior\" included a beat the turkey's observations never reached.\n\nThis is not a critique of the turkey. It is a description of the situation any reasoner is in when their data lives inside a frame the data can't audit. The turkey is not careless or dumb; the structure of its problem is such that careful inference inside a bad frame produces high confidence and a wrong conclusion.\n\nThe lesson is not \"don't trust patterns.\" Patterns are most of what we have. The lesson is that confidence in a pattern is confidence inside a frame, and asking what the frame might be missing is part of the practice — for the turkey, for the doctor, for the climate scientist, and for you receiving any of their answers."
+      }
+    },
+    {
+      "id": "some_questions_have_no_answer",
+      "position": { "x": 640, "y": 260 },
+      "data": {
+        "label": "some questions don't fit a number",
+        "body": "Some questions are not the kind of question that has an answer in the form being asked.\n\n\"What is the probability my marriage will work?\" has no answer the way \"what is the probability this coin comes up heads\" has an answer. The reference class — marriages similar to yours in the relevant ways — is something someone constructs, not something that exists in the world to be measured. Different constructions give different numbers, none of which is wrong, none of which is the answer to the question you were asking.\n\n\"Is this the right career move for me?\" is not the kind of question that resolves into a number. It resolves into a judgment that depends on what you care about, which is information the question itself doesn't contain.\n\nThe move worth carrying: when a question gets a number-shaped answer, ask whether the question was a number-shaped question. Sometimes the answer is yes — the doctor's risk estimate for a well-studied condition, the engineer's failure probability for a well-characterized component. Sometimes the answer is no — and the number is doing rhetorical work the question didn't justify.\n\nThis isn't anti-quantitative. Numbers are wonderful when they fit. It is anti-mismatch: a question that needs judgment doesn't become a question that doesn't, just because someone produces a number for it. Knowing the difference is part of receiving expert advice well."
+      }
+    },
+    {
+      "id": "confidence_is_not_reliability",
+      "position": { "x": 960, "y": 0 },
+      "data": {
+        "label": "confidence ≠ reliability",
+        "body": "There is a difference between an answer that sounds confident and an answer that is reliable.\n\nA confident answer is delivered without hedging. A reliable answer is one whose conditions hold in your situation. These can come apart.\n\nA medical guideline that says \"recommend treatment X\" is confident. Whether it is reliable depends on whether the studies behind it included people in situations like yours, whether the side-effect profile they observed matches what you'd risk, whether your specific case fits the population the guideline was built from.\n\nThe more confidently a recommendation is stated, the less of its conditioning is in view — not because the expert is trying to hide it, but because confident statement is what makes the recommendation usable as advice. The work of checking conditions is the work the confident framing skips.\n\nThis matters especially when the recommendation comes from a system that produces many of them — an automated tool, a guideline document, a one-page summary. The throughput of confident outputs has gone up. The throughput of checking whether each one fits the case in front of you has not. The result is that the confidence ends up doing more work than the underlying reliability supports."
+      }
+    },
+    {
+      "id": "uncertainty_is_information",
+      "position": { "x": 1280, "y": 0 },
+      "data": {
+        "label": "uncertainty is information",
+        "body": "When a doctor says \"I'm not sure,\" that's often more informative than a confident answer would have been.\n\n\"I'm not sure\" can mean: the studies disagree, your case isn't typical of what's been studied, the answer depends on something we haven't measured yet. Each of these is real information about your situation. None of it is delivered by a confident number that papers over the same thing.\n\nThe instinct, when you hear \"I'm not sure,\" is to feel that the expert isn't doing their job. Sometimes that is right. More often, the expert is doing their job by being honest about the limits of what is knowable for your case. The signal that's harder to read — and the one that should make you more cautious — is the confident answer in a situation where, if you knew what the expert knew, you'd see why uncertainty was the honest description.\n\nThe rule of thumb worth carrying: be more skeptical of confident answers in poorly-understood domains than of uncertain answers in any domain. Calibrated uncertainty is rarer than overconfidence, and worth more."
+      }
+    },
+    {
+      "id": "the_question_to_ask",
+      "position": { "x": 1600, "y": 0 },
+      "data": {
+        "label": "the question to ask",
+        "body": "Pulling this together. The thing you can carry into encounters with expert claims is small and practical.\n\nWhen someone hands you a number, the number is conditional on what was studied, how the study was framed, and what the framing left out. Asking what the conditions are is not failing to understand. It is the actual content of intelligent reception.\n\nConfidence is delivered as a service to the receiver. Reliability is a separate property and has to be checked against your situation. The two come apart most reliably when the system producing the answer is producing many answers fast.\n\nUncertainty, when honestly expressed, is information. Its absence in a situation that warrants it is the thing to be skeptical of.\n\nSome questions don't have an answer in the form you're being given. Recognizing that is itself useful — it tells you what the expert can and cannot do for you, and what part of the decision is going to be yours regardless of what number you receive.\n\nNone of this requires you to second-guess experts. It requires you to receive what they say as expert output rather than as oracle output — conditioned, partial, and useful when its conditions match yours. The stance is closer to what the expert themselves should hold than to anything adversarial. It is what good experts wish their patients, clients, and readers brought to the conversation."
+      }
+    },
+    {
+      "id": "meta_no_free_lunch",
+      "position": { "x": 1600, "y": 260 },
+      "data": {
+        "label": "no checklist for this",
+        "body": "(Stub — deferred in the source v0. Reachable from several spine cards but not required for path completion.)\n\nThere is no general procedure for deciding when an expert's framing was the right one. Any procedure for checking is itself a framing, and inherits the same question one level up.\n\nThis is the structural reason \"we just need better methodology\" never quite finishes the work. The methodology is the choice being deferred. For everyday reception of expert claims, the consequence is small but real: there isn't a checklist that closes the gap. The stance — asking what's conditional, attending to expressed uncertainty, noticing when a question doesn't fit a number — is the work."
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_01",
+      "source": "the_diagnosis",
+      "target": "the_number_is_conditional",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why is the number conditional?",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_02",
+      "source": "the_diagnosis",
+      "target": "russells_turkey",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "A story that makes this concrete",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_03",
+      "source": "the_diagnosis",
+      "target": "the_question_to_ask",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What should you actually carry?",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_04",
+      "source": "the_number_is_conditional",
+      "target": "frame_is_invisible_from_inside",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why can't the number see past its conditions?",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_05",
+      "source": "the_number_is_conditional",
+      "target": "three_kinds_of_uncertainty",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What kinds of \"I don't know\" are there?",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_06",
+      "source": "the_number_is_conditional",
+      "target": "the_diagnosis",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Back to the diagnosis",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_07",
+      "source": "frame_is_invisible_from_inside",
+      "target": "the_number_is_conditional",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "This is why the number is conditional",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_08",
+      "source": "frame_is_invisible_from_inside",
+      "target": "some_questions_have_no_answer",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Where does this bite in practice?",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_09",
+      "source": "frame_is_invisible_from_inside",
+      "target": "meta_no_free_lunch",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Can't we just be more careful?",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_10",
+      "source": "frame_is_invisible_from_inside",
+      "target": "the_diagnosis",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What did the study not see?",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_11",
+      "source": "three_kinds_of_uncertainty",
+      "target": "some_questions_have_no_answer",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "A kind of question the apparatus can't reach",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_12",
+      "source": "three_kinds_of_uncertainty",
+      "target": "frame_is_invisible_from_inside",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why the third kind is the hardest",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_13",
+      "source": "three_kinds_of_uncertainty",
+      "target": "uncertainty_is_information",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What this means for what to listen for",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_14",
+      "source": "russells_turkey",
+      "target": "the_diagnosis",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What kind of confidence are you receiving?",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_15",
+      "source": "russells_turkey",
+      "target": "the_number_is_conditional",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why pattern-fit isn't frame-adequacy",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_16",
+      "source": "russells_turkey",
+      "target": "uncertainty_is_information",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why honest \"I don't know\" matters",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_17",
+      "source": "some_questions_have_no_answer",
+      "target": "confidence_is_not_reliability",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why number-shaped answers can mislead",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_18",
+      "source": "some_questions_have_no_answer",
+      "target": "the_question_to_ask",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What this means for what you'd ask",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_19",
+      "source": "some_questions_have_no_answer",
+      "target": "uncertainty_is_information",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why \"I don't know\" can be the right answer",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_20",
+      "source": "confidence_is_not_reliability",
+      "target": "frame_is_invisible_from_inside",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The structural reason confidence comes apart",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_21",
+      "source": "confidence_is_not_reliability",
+      "target": "uncertainty_is_information",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why the absence of uncertainty is the warning sign",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_22",
+      "source": "confidence_is_not_reliability",
+      "target": "the_question_to_ask",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What to actually ask",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_23",
+      "source": "uncertainty_is_information",
+      "target": "confidence_is_not_reliability",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "This is why confidence alone isn't enough",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_24",
+      "source": "uncertainty_is_information",
+      "target": "the_question_to_ask",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The stance this implies",
+      "data": { "edgeType": "synthesizes" }
+    },
+    {
+      "id": "e_25",
+      "source": "uncertainty_is_information",
+      "target": "three_kinds_of_uncertainty",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Including the kind that isn't usually voiced",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_26",
+      "source": "the_question_to_ask",
+      "target": "uncertainty_is_information",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "One concrete piece of the stance",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_27",
+      "source": "the_question_to_ask",
+      "target": "confidence_is_not_reliability",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The stance under modern conditions",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_28",
+      "source": "the_question_to_ask",
+      "target": "the_diagnosis",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What this would look like in the doctor's office",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_29",
+      "source": "the_question_to_ask",
+      "target": "meta_no_free_lunch",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why no checklist closes the gap",
+      "data": { "edgeType": "supports" }
+    }
+  ]
+}

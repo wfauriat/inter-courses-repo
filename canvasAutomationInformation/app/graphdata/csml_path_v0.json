@@ -1,0 +1,348 @@
+{
+  "version": "0.1",
+  "nodes": [
+    {
+      "id": "the_deployment",
+      "position": { "x": 0, "y": 0 },
+      "data": {
+        "label": "the deployment",
+        "body": "You ship a model. It passed your evals, hit your benchmarks, satisfied your held-out test set. In deployment it does something you didn't anticipate. The error mode wasn't in your validation set. The capability boundary you thought you'd mapped turns out to have been the boundary of what you measured, not the boundary of what the system does.\n\nYou can patch it: more data covering the failure mode, a guardrail at inference, a retraining pass. The next deployment, it does something else you didn't anticipate.\n\nWhatever the model is, in deployment it will either do the right thing or it won't. The benchmarks were how you judged likely behavior before shipping. The world will not deliver \"the system passed the eval.\" It will deliver behavior.\n\nThe question this path is about: what is the methodological care that the gap between the evaluation and the deployment actually warrants?"
+      }
+    },
+    {
+      "id": "system_inherits_a_frame",
+      "position": { "x": 320, "y": 0 },
+      "data": {
+        "label": "the system inherits a frame",
+        "body": "When you trained the model, you decided what mattered. The training distribution defined what counts as a case. The loss function defined what counts as success. The architecture defined what shapes of relationship the system could represent. The data curation pipeline decided what got into the training distribution before any learning happened.\n\nEvery learned system works this way. You specify a finite stack of conditions — distribution, loss, architecture, evaluation protocol — and the system's behavior is conditional on that specification. The system is competent within the specification and silent about what the specification omits.\n\nThis is not something \"learning from data\" routes around. Learning happens inside the frame the dataset and loss function define. The dataset is a frame; the loss is a frame; the architecture is a frame. A \"model-free\" description in this sense is one that hides the frame, not one that escapes it.\n\n\"Inherently uncertain\" doesn't mean \"the model is sometimes wrong inside its distribution.\" It means \"competent within a frame the model cannot see past.\" The two are different failure modes and they call for different responses."
+      }
+    },
+    {
+      "id": "frame_is_invisible_from_inside",
+      "position": { "x": 640, "y": 0 },
+      "data": {
+        "label": "frame invisible from inside",
+        "body": "Why can't the system see past what its training frame omitted? Because it was built by deciding what mattered, and the deciding happened before the learning. Its machinery — the training distribution, the loss, the architecture — is the result of those decisions, not a tool for auditing them.\n\nMore data doesn't help here. More data deepens competence within the existing frame; it does not bring what's outside the frame into view, because outside-the-frame doesn't show up in the data — not as noise, not as harder examples. It is silent.\n\nThe model can pass every benchmark, demonstrate emergent capability, generalize across the held-out set. None of that tells you whether the frame was adequate. \"Adequate\" is a relation between the frame and what's outside it, and what's outside it is exactly what the frame doesn't carry.\n\nThis is not a quirk of imperfect ML practice, nor an artifact of \"old AI.\" It is a property of any reasoning system that filters a finite specification from an open world. It applies to the symbolic and the learned equally; it survives more parameters, more data, and more compute."
+      }
+    },
+    {
+      "id": "three_kinds_of_uncertainty",
+      "position": { "x": 320, "y": -260 },
+      "data": {
+        "label": "three kinds of uncertainty",
+        "body": "Standard ML practice gives you two well-developed categories of uncertainty. Aleatory uncertainty is irreducible variation in the data — labeling noise, sensor noise, the variability you treat as inherent at your level of description. Epistemic uncertainty is what you could in principle reduce — parameter uncertainty, model-class uncertainty, things that more data or finer modeling would tighten.\n\nThese are real categories and they're served by familiar machinery — ensembles, Bayesian deep learning, calibration, conformal prediction.\n\nThere is a third category these don't reach: ontological uncertainty. What didn't make it into the training distribution because no one thought to put it there. It is not a wider predictive interval. It is the kind of input that isn't in the dataset, the failure mode that isn't in the eval, the deployment regime that wasn't in the validation protocol.\n\nWhen deployed models fail in ways that surprise their builders, the failure mode is rarely \"aleatory noise was higher than expected\" and not always \"we needed more data of the same kind.\" Often it's \"this wasn't in the training distribution at all.\"\n\nThe standard UQ machinery operates inside a specified distribution; the category names what the specification omitted. The machinery cannot quantify it from inside, and proceeding as if it did not exist is a structural underweighting the field routinely makes."
+      }
+    },
+    {
+      "id": "model_free_is_a_frame",
+      "position": { "x": 0, "y": 260 },
+      "data": {
+        "label": "\"model-free\" is a frame",
+        "body": "\"Model-free\" is a useful label for a class of methods that don't write down an explicit generative model of the data. It is a misleading label for the claim that such methods don't have implicit frames.\n\nA learned system has frames. The training distribution is a frame: it decides what kinds of cases the system will be competent at. The loss function is a frame: it decides what counts as a good answer. The architecture is a frame: it decides what shapes of relationship the system can represent. The dataset curation pipeline is a frame: it decides what got into the training distribution before any training happened. The evaluation protocol is a frame: it decides what \"works\" means in the system's lifecycle.\n\nNone of these get written down as a generative model. All of them act as one. The system inherits, from this stack of frames, an inductive bias every bit as consequential as an explicit prior in a Bayesian model — often more so, because the implicitness makes it harder to audit.\n\n\"Learning from data\" is rhetorical when it implies an absence of inductive bias. The inductive bias is in the data, the loss, the architecture, the curation, the eval. The practice talks as if learning the parameters dissolves the choice of frame. The parameters are the only thing that dissolves; the frame is what survives."
+      }
+    },
+    {
+      "id": "scale_does_not_dissolve_the_frame",
+      "position": { "x": 640, "y": 260 },
+      "data": {
+        "label": "scale doesn't dissolve the frame",
+        "body": "A natural response: \"scale handles this. More data, larger models, broader pretraining — capabilities that were unreachable five years ago are routine now. Whatever the frame problem was, scaling has been solving it.\"\n\nThis is partly true, and that is exactly why the response works as a defense.\n\nIt is also incomplete in a specific way. Scaling improves competence within the implicit frame defined by the training distribution, the loss, and the architecture. A larger model with more data sees more of what was in distribution; it does not see what was not. The variable that wasn't in the dataset because no one labeled it doesn't appear at scale; it appears at zero — and zero looks the same as \"absent from the world.\"\n\nThe kind of failure scaling addresses is the kind where the right answer was in distribution but the model lacked capacity to fit it. The kind of failure scaling doesn't address is the kind where the relevant variable isn't in the training distribution at all — where the deployment context has a structure the training context didn't contain. These are different failure modes and the response that handles one does not handle the other.\n\nScale obscures the frame more effectively than smaller models did, because the apparent competence is wider. The frame is still there. It has gotten harder to see because it is doing more work."
+      }
+    },
+    {
+      "id": "opacity_erodes_reflexivity",
+      "position": { "x": 960, "y": 0 },
+      "data": {
+        "label": "opacity erodes reflexivity",
+        "body": "Modern ML systems sit on an abstraction ladder: silicon, drivers, frameworks, pretrained weights, fine-tuning, deployment integration. Each layer is opaque to the layer above; each layer makes the practitioner faster and the system harder to inspect.\n\nThe throughput of confident outputs has gone up dramatically. A single engineer can deploy capabilities that would have required a research team a decade ago. The throughput of frame-interrogation has not gone up. It can't, structurally. Interrogating a frame means stepping back, asking what was assumed, considering what's outside the training distribution. That work is slow. It resists automation, because automating it would require knowing in advance what to ask — which is the thing being looked for.\n\nThe ratio matters. When ten outputs need evaluation and you have time for five, you triage. When a million outputs per second need evaluation and you have time for spot-checks, the evaluation stops being meaningful. It becomes monitoring, which is surveillance, not scrutiny.\n\nYour practice now operates under conditions where producing confident outputs is cheap and catching frame failures is expensive. The abstraction ladder makes the inner workings opaque; the production pace makes reflection scarce. Neither is a bug in the discipline; they are the working conditions of the discipline as it now operates.\n\nThe capacity to do the work that catches frame failure has to be actively protected, because the working conditions will not protect it for you."
+      }
+    },
+    {
+      "id": "honest_communication",
+      "position": { "x": 1280, "y": 0 },
+      "data": {
+        "label": "honest communication",
+        "body": "When you ship a system — a model, a benchmark result, a capability claim — you are also shipping everything the system is conditional on. The training distribution, the loss, the architecture, the eval protocol, the failure modes you tested for and the ones you did not. Whether you communicated those or not, the receiver is acting on them.\n\nA capability claim without its conditions is not a more efficient communication. It is a transfer. The downstream user — the engineer integrating the system, the decision-maker reading the benchmark, the public reading the press release — acts on the claim as if it stood alone. The consequences land downstream. The conditioning structure that should have shaped the use of the system is invisible.\n\nThe problem has two layers in modern ML. The first is technical: the model card, the eval suite, the documented regime of validity. These do real work; they also tend to understate ontological uncertainty — what wasn't in the eval — because the eval is what gets reported.\n\nThe second layer is the discourse the field generates around its systems. The drift from \"a complex tool operating within a frame\" to \"an intelligent agent whose capabilities might somehow exceed the limitations that apply to all reasoning\" is a perceptual error the field's external communication actively encourages. The technical practitioner often does not personally hold this view. The way the field's outputs travel — through benchmarks, demos, press cycles — does.\n\nThe load the disposition carries here is double. Make the conditions legible to whoever bears the consequences. Resist the field-level rhetoric that exempts your systems from limits that apply to all reasoning systems, because the exemption is not earned and the cost is paid by the people downstream of the discourse."
+      }
+    },
+    {
+      "id": "vaguely_right_precisely_wrong",
+      "position": { "x": 1600, "y": 0 },
+      "data": {
+        "label": "vaguely right / precisely wrong",
+        "body": "Keynes is supposed to have preferred being vaguely right to precisely wrong. The line is often misread as a defense of imprecision. It is not. It is a defense of a different kind of rigor.\n\nPrecise wrongness in modern ML is the system that produces sharp outputs whose frame was inadequate. The benchmarks pass. The calibration looks reasonable. The capability demonstration is impressive. The frame omitted something that mattered. The result: high confidence in a wrong conclusion, with all the apparatus of having been done correctly.\n\nVague rightness is the system shipped with honest naming of its training distribution, its regime of validity, its failure modes, and the place its competence stops being load-bearing. The output carries less false precision. It carries more usable information.\n\nThe discipline this calls for is not vagueness. It is the rigor of knowing where competence was earned and where it was assumed. Of resisting the move that treats benchmark performance as a proxy for the underlying capability the benchmark was meant to track. Of designing systems for robustness to what wasn't in the training distribution, not only optimization for what was. Of pushing back, at the field-discourse level, against the move that exempts modern ML from constraints that apply to all reasoning systems.\n\nFor some applications — narrow, well-understood, validated against the deployment context — the cost of this rigor is not warranted. For systems whose outputs travel to consequential decisions in complex and poorly-understood domains, it is the minimum the difficulty actually requires. The judgment of which is which is itself irreducible. No procedure, learned or otherwise, decides it for you."
+      }
+    },
+    {
+      "id": "meta_no_free_lunch",
+      "position": { "x": 1600, "y": 260 },
+      "data": {
+        "label": "meta no-free-lunch",
+        "body": "(Stub — deferred in the source v0. Reachable from several spine cards but not required for path completion.)\n\nNo universal procedure — learned or symbolic — decides when a frame is adequate, because adequacy is always relative to a deployment context the procedure cannot fully anticipate. Any proposed methodology for dissolving the framing gap — a richer eval suite, a more diverse training distribution, a meta-learned uncertainty estimate — is itself a frame, and inherits the problem.\n\nThis is the structural reason \"we just need scale\" or \"we just need better evals\" does not close the gap. The methodology is the choice being deferred."
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_01",
+      "source": "the_deployment",
+      "target": "system_inherits_a_frame",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why is the behavior conditional?",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_02",
+      "source": "the_deployment",
+      "target": "model_free_is_a_frame",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What did the system actually inherit?",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_03",
+      "source": "the_deployment",
+      "target": "vaguely_right_precisely_wrong",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Vague rightness vs precise wrongness",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_04",
+      "source": "system_inherits_a_frame",
+      "target": "frame_is_invisible_from_inside",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why can't the system see past its frame?",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_05",
+      "source": "system_inherits_a_frame",
+      "target": "three_kinds_of_uncertainty",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What kinds of uncertainty are there?",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_06",
+      "source": "system_inherits_a_frame",
+      "target": "the_deployment",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Back to the deployment",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_07",
+      "source": "frame_is_invisible_from_inside",
+      "target": "system_inherits_a_frame",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "This is why the behavior is conditional",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_08",
+      "source": "frame_is_invisible_from_inside",
+      "target": "scale_does_not_dissolve_the_frame",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Where does this bite in practice?",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_09",
+      "source": "frame_is_invisible_from_inside",
+      "target": "meta_no_free_lunch",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Can't we solve this with scale or better evals?",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_10",
+      "source": "frame_is_invisible_from_inside",
+      "target": "the_deployment",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What did the eval not see?",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_11",
+      "source": "three_kinds_of_uncertainty",
+      "target": "scale_does_not_dissolve_the_frame",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why scaling doesn't catch the third category",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_12",
+      "source": "three_kinds_of_uncertainty",
+      "target": "frame_is_invisible_from_inside",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "This is the structural reason",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_13",
+      "source": "three_kinds_of_uncertainty",
+      "target": "honest_communication",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What this means for what you ship",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_14",
+      "source": "model_free_is_a_frame",
+      "target": "the_deployment",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What the trained system inherited",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_15",
+      "source": "model_free_is_a_frame",
+      "target": "system_inherits_a_frame",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why \"learning from data\" doesn't escape the frame",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_16",
+      "source": "model_free_is_a_frame",
+      "target": "honest_communication",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What this means for how you document a system",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_17",
+      "source": "scale_does_not_dissolve_the_frame",
+      "target": "frame_is_invisible_from_inside",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The structural reason scale doesn't reach",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_18",
+      "source": "scale_does_not_dissolve_the_frame",
+      "target": "opacity_erodes_reflexivity",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why this gets worse, not better, at scale",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_19",
+      "source": "scale_does_not_dissolve_the_frame",
+      "target": "honest_communication",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What you owe whoever bears the consequences",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_20",
+      "source": "opacity_erodes_reflexivity",
+      "target": "scale_does_not_dissolve_the_frame",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why this is the practice-implicating claim",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_21",
+      "source": "opacity_erodes_reflexivity",
+      "target": "honest_communication",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What you owe downstream",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_22",
+      "source": "opacity_erodes_reflexivity",
+      "target": "vaguely_right_precisely_wrong",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The disposition this calls for",
+      "data": { "edgeType": "synthesizes" }
+    },
+    {
+      "id": "e_23",
+      "source": "honest_communication",
+      "target": "opacity_erodes_reflexivity",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "This is why protection has to be active",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_24",
+      "source": "honest_communication",
+      "target": "vaguely_right_precisely_wrong",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The disposition this realizes",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_25",
+      "source": "honest_communication",
+      "target": "three_kinds_of_uncertainty",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Including the category that isn't in the eval",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_26",
+      "source": "vaguely_right_precisely_wrong",
+      "target": "honest_communication",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "One concrete realization",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_27",
+      "source": "vaguely_right_precisely_wrong",
+      "target": "opacity_erodes_reflexivity",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The disposition under modern conditions",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_28",
+      "source": "vaguely_right_precisely_wrong",
+      "target": "the_deployment",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What this would look like for the deployment",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_29",
+      "source": "vaguely_right_precisely_wrong",
+      "target": "meta_no_free_lunch",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why no procedure decides this",
+      "data": { "edgeType": "supports" }
+    }
+  ]
+}

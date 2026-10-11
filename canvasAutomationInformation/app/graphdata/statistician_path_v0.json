@@ -1,0 +1,348 @@
+{
+  "version": "0.1",
+  "nodes": [
+    {
+      "id": "the_handoff",
+      "position": { "x": 0, "y": 0 },
+      "data": {
+        "label": "the handoff",
+        "body": "You design a study. You produce an estimate, an interval, a conclusion. Then you hand it off — to the modeling team that will use your prior, to the policy analyst who will cite your effect size, to the system that will deploy your classifier, to the report that will land on a decision-maker's desk.\n\nWhat you handed off is not only the number. It also includes the model class you assumed, the reference class you implicitly defined, the prior you elicited, the loss function you accepted, the regime of validity you didn't write down. Whether you communicated those or not, the receiver is acting on them.\n\nThe methods you used are sound within their conditions. The conditions are the part most likely to get lost in the chain — relaxed at each interface, until the deployment context bears no resemblance to the setting in which the methodology was earned.\n\nThe question this path is about: what is the methodological care that the gap between the analysis and its deployment actually requires?"
+      }
+    },
+    {
+      "id": "total_probability_framing",
+      "position": { "x": 320, "y": 0 },
+      "data": {
+        "label": "total probability as framing",
+        "body": "The law of total probability — Pr(Y) = Σ Pr(Y|X) Pr(X) — is more than a manipulation rule. It is the structure of prediction under uncertainty.\n\nIt says: what we can say about Y depends on what we'd say about Y given each possible X, weighted by how strongly each X is supported. The conditional distributions are the modeling work. The marginal weights on X carry the prior, the data, the assumed structure.\n\nUsed this way, prediction is not a point output of a model. It is a distribution over possibilities given the conditioning structure. Sensitivity to assumptions becomes legible; so does the cost of fixing X at a single value when X is uncertain.\n\nThe discipline's tools — Bayesian updating, hierarchical models, marginalization, model averaging — are operationalizations of this framing. The tools work. They work within the specified structure: the X you condition on, the parameter space you marginalize over, the model class you assume. The structure itself is the thing the tools do not interrogate."
+      }
+    },
+    {
+      "id": "frame_is_invisible_from_inside",
+      "position": { "x": 640, "y": 0 },
+      "data": {
+        "label": "frame invisible from inside",
+        "body": "Why doesn't the residue reduce? Why doesn't more analysis, within the same frame, catch what the frame omitted?\n\nBecause the analysis was built by deciding what mattered, and the deciding happened before the analysis. Its variables, its likelihoods, its loss function, the perturbations chosen for sensitivity analysis — these are the result of those decisions, not a tool for auditing them.\n\nThe analysis can be internally consistent, mathematically sound, empirically validated against everything you measured. None of that tells you whether the frame was adequate. \"Adequate\" is a relation between the frame and what's outside it, and what's outside it is exactly what the frame doesn't carry.\n\nThis is not a quirk of imperfect statistical practice. It is a property of any reasoning system that filters a finite specification from an open world. It applies to the carefully Bayesian and the casually frequentist equally; it survives more data, finer models, and better software."
+      }
+    },
+    {
+      "id": "three_kinds_of_uncertainty",
+      "position": { "x": 320, "y": -260 },
+      "data": {
+        "label": "three kinds of uncertainty",
+        "body": "Uncertainty quantification gives you two well-developed categories. Aleatory uncertainty is what you've chosen to model as randomness — measurement noise, sampling variation, the variability you treat as irreducible at your level of description. Epistemic uncertainty is what you could in principle reduce with more data or finer modeling — parameter uncertainty, model-class uncertainty, things that better information would tighten.\n\nThese are real categories and they're well-served by the standard machinery — posterior intervals, sensitivity analyses, model averaging.\n\nThere is a third category that the standard apparatus does not speak to: ontological uncertainty. What didn't make it into the model because no one thought to put it there. It is not a wider interval on an existing variable. It is the variable that isn't in the analysis.\n\nWhen deployed systems fail in ways that surprise their analysts, the failure mode is rarely \"aleatory variance was higher than estimated\" and not always \"we needed more data.\" Often it's \"this wasn't in the model at all.\"\n\nThe category names what the specification omitted. The standard UQ machinery operates inside a specified set of variables; the category sits outside that set by construction. The machinery cannot quantify it from inside, and proceeding as if it did not exist is a structural underweighting the discipline routinely makes."
+      }
+    },
+    {
+      "id": "probability_as_judgment",
+      "position": { "x": 0, "y": 260 },
+      "data": {
+        "label": "probability as judgment",
+        "body": "What is a probability, really? One reading: a frequency over a reference class. Out of many similar trials, that fraction would have the outcome. This is meaningful when \"similar trials\" is a well-defined reference class with stable conditions and indefinite repetition. For most actual statistical work — your sample, your population, your deployment context — the reference class is something you constructed, not something you found.\n\nA more honest reading: probability is how you distribute over alternative possibilities given what you know. Your background knowledge — historical rates, structural assumptions, model class, elicited priors — informs the distribution. The number summarizes judgment, made explicit and computable, conditional on that knowledge.\n\nThis is not a metaphysical preference. The mathematics is identical. The interpretation determines what you do when the reference class is contested, when the background knowledge is incomplete, when someone asks \"what is the probability of X\" for an X that has never happened before — which is most consequential statistical work.\n\nTreating probability as judgment-given-knowledge keeps the conditioning visible. Treating it as frequency-in-nature hides the conditioning behind a claim about the world. The discipline runs into trouble where the second reading is what's said and the first is what's actually being done."
+      }
+    },
+    {
+      "id": "bounded_robustness_is_not_framing",
+      "position": { "x": 640, "y": 260 },
+      "data": {
+        "label": "bounded robustness ≠ framing",
+        "body": "A natural response: \"we handle this. Sensitivity analysis, robustness checks, prior class analysis, model averaging. The discipline knows that conclusions are conditional on assumptions, and we have machinery for bounding how much they depend on those assumptions.\"\n\nThis is partly true, and that is exactly why the response works as a defense.\n\nIt is also incomplete in a specific way. Sensitivity analysis perturbs the parameter within an assumed model class. Robust Bayes considers a class of priors but within the assumed likelihood structure. Model averaging weights across a specified set of models. Each of these bounds the residue within a frame.\n\nWhat the frame omits — the structural assumption no one varied because no one questioned, the model class outside the considered set, the variable that isn't in any of the averaged models — is not in the bound. It cannot be, by construction. The robustness analysis took a position on which dimensions are worth varying, and that position is what the analysis is conditional on.\n\nBounded robustness and indeterminate framing are different objects. Confusing them — claiming that sensitivity-bounded conclusions are robust to framing failures — is the most common way the discipline overstates what its UQ machinery delivers. The machinery is real; its reach is not the whole problem."
+      }
+    },
+    {
+      "id": "deployment_relaxes_conditions",
+      "position": { "x": 960, "y": 0 },
+      "data": {
+        "label": "deployment relaxes conditions",
+        "body": "The conditions under which statistical conclusions are sound — the sampling design, the regime of validity, the stability of the data-generating process, the calibration context — are part of the analysis. They live in the methods section, in the qualifications, in the discussion of limitations.\n\nIn deployment, the conditions get systematically relaxed.\n\nA method validated for a particular kind of data is applied to data the validation didn't include. A model with a stated regime of validity is run outside it. A confidence interval is reported without the assumptions it rests on. An effect size travels to a population where the original sampling design no longer applies. These relaxations are rarely intentional; they are what happens at each handoff in a chain.\n\nThe institutional incentives accelerate this. Throughput of confident outputs is rewarded; the slow work of checking whether conditions still hold is not. Automation makes the throughput cheap. The discipline's good practices — caveat-stating, conditions-checking, frame-interrogating — are exactly the practices that erode first under these conditions.\n\nThe conclusion is not that the methodology is unsound. It is that soundness has working conditions, the working conditions are not preserved at the institutional interface, and the gap between method-as-used and method-as-validated is where the discipline's claims about reliability quietly fail."
+      }
+    },
+    {
+      "id": "honest_communication",
+      "position": { "x": 1280, "y": 0 },
+      "data": {
+        "label": "honest communication",
+        "body": "When you hand off an analysis, you are also handing off everything it is conditional on. The model class, the reference population, the prior, the regime of validity, the failure modes you anticipated and the ones you did not. Whether you communicated those or not, the receiver is acting on them.\n\nA point estimate without its conditions is not a more efficient communication. It is a transfer. The receiver acts on the number as if it stood alone; the consequences land downstream; the conditioning structure that should have shaped the use of the number is invisible. You have not given them information. You have given them an output and kept the information.\n\nThe standard report does some of this work — confidence intervals, sensitivity tables, caveats. The work it does not do is name what was outside the frame. That category — ontological uncertainty, model-class limitations, deployment contexts not covered by the calibration — is the part that most needs to travel and most reliably does not.\n\nThis is the load the disposition actually carries for the statistician. You cannot eliminate the conditioning. What is in your control is making it legible to whoever bears the consequences — including by naming, with honest specificity, the place the analysis stops being able to speak."
+      }
+    },
+    {
+      "id": "vaguely_right_precisely_wrong",
+      "position": { "x": 1600, "y": 0 },
+      "data": {
+        "label": "vaguely right / precisely wrong",
+        "body": "Keynes is supposed to have preferred being vaguely right to precisely wrong. The line is often misread as a defense of imprecision. It is not. It is a defense of a different kind of rigor.\n\nPrecise wrongness is the analysis that produces a sharp estimate whose frame was inadequate. The interval is calibrated; the diagnostics pass; the frame omitted something that mattered. The result: high confidence in a wrong conclusion, with all the apparatus of having been done correctly.\n\nVague rightness is the analysis that produces a less sharp answer that is honest about its conditions, its omissions, and its regime of validity. The conclusion carries less false precision. It carries more usable information.\n\nThe discipline this calls for is not vagueness. It is the rigor of knowing where precision was earned and where it was assumed. Of propagating that awareness through the chain rather than smoothing it at each interface where it becomes inconvenient. Of designing analyses that fail gracefully under conditions that exceed their frame, not just optimally inside it.\n\nFor some problems — well-understood, stable, calibrated against the deployment context — the cost of this rigor is not warranted. For analyses that travel to consequential decisions in complex or poorly-understood systems, it is the minimum the difficulty actually requires. The judgment of which is which is itself irreducible. No statistical procedure decides it for you."
+      }
+    },
+    {
+      "id": "meta_no_free_lunch",
+      "position": { "x": 1600, "y": 260 },
+      "data": {
+        "label": "meta no-free-lunch",
+        "body": "(Stub — deferred in the source v0. Reachable from several spine cards but not required for path completion.)\n\nNo universal statistical procedure decides when a frame is adequate, because adequacy is always relative to a deployment context the procedure cannot fully anticipate. Any proposed methodology for closing the framing gap — a more elaborate sensitivity scheme, a richer prior class, a meta-analysis across model families — is itself a frame, and inherits the problem.\n\nThis is the structural reason \"we just need better methodology\" does not close the gap. The methodology is the choice being deferred."
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_01",
+      "source": "the_handoff",
+      "target": "total_probability_framing",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why is the conclusion conditional?",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_02",
+      "source": "the_handoff",
+      "target": "probability_as_judgment",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What is \"the number\" you hand off?",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_03",
+      "source": "the_handoff",
+      "target": "vaguely_right_precisely_wrong",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Vague rightness vs precise wrongness",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_04",
+      "source": "total_probability_framing",
+      "target": "frame_is_invisible_from_inside",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why can't the framing audit itself?",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_05",
+      "source": "total_probability_framing",
+      "target": "three_kinds_of_uncertainty",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What kinds of uncertainty are there?",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_06",
+      "source": "total_probability_framing",
+      "target": "the_handoff",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Back to the chain",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_07",
+      "source": "frame_is_invisible_from_inside",
+      "target": "total_probability_framing",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "This is why the framing is conditional",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_08",
+      "source": "frame_is_invisible_from_inside",
+      "target": "bounded_robustness_is_not_framing",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Where the apparatus's reach ends",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_09",
+      "source": "frame_is_invisible_from_inside",
+      "target": "meta_no_free_lunch",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Can't we close it with better methodology?",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_10",
+      "source": "frame_is_invisible_from_inside",
+      "target": "the_handoff",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What the analysis didn't see",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_11",
+      "source": "three_kinds_of_uncertainty",
+      "target": "bounded_robustness_is_not_framing",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why robustness analysis doesn't catch the third category",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_12",
+      "source": "three_kinds_of_uncertainty",
+      "target": "frame_is_invisible_from_inside",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "This is the structural reason",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_13",
+      "source": "three_kinds_of_uncertainty",
+      "target": "honest_communication",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What this means for what you report",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_14",
+      "source": "probability_as_judgment",
+      "target": "the_handoff",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The number you're handing off",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_15",
+      "source": "probability_as_judgment",
+      "target": "total_probability_framing",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "This is why conditioning is the structure of prediction",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_16",
+      "source": "probability_as_judgment",
+      "target": "honest_communication",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What this means for how to report a result",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_17",
+      "source": "bounded_robustness_is_not_framing",
+      "target": "frame_is_invisible_from_inside",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The structural reason the residue doesn't reduce",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_18",
+      "source": "bounded_robustness_is_not_framing",
+      "target": "deployment_relaxes_conditions",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Where this gap actually bites",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_19",
+      "source": "bounded_robustness_is_not_framing",
+      "target": "honest_communication",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What you owe whoever bears the consequences",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_20",
+      "source": "deployment_relaxes_conditions",
+      "target": "bounded_robustness_is_not_framing",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why the methodology's reach matters in practice",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_21",
+      "source": "deployment_relaxes_conditions",
+      "target": "honest_communication",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What you owe downstream",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_22",
+      "source": "deployment_relaxes_conditions",
+      "target": "vaguely_right_precisely_wrong",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The disposition this calls for",
+      "data": { "edgeType": "synthesizes" }
+    },
+    {
+      "id": "e_23",
+      "source": "honest_communication",
+      "target": "deployment_relaxes_conditions",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "This is why protection has to be active",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_24",
+      "source": "honest_communication",
+      "target": "vaguely_right_precisely_wrong",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The disposition this realizes",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_25",
+      "source": "honest_communication",
+      "target": "three_kinds_of_uncertainty",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Including the category that isn't in the report",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_26",
+      "source": "vaguely_right_precisely_wrong",
+      "target": "honest_communication",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "One concrete realization",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_27",
+      "source": "vaguely_right_precisely_wrong",
+      "target": "deployment_relaxes_conditions",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "The disposition under modern conditions",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_28",
+      "source": "vaguely_right_precisely_wrong",
+      "target": "the_handoff",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "What this looks like for the handoff",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_29",
+      "source": "vaguely_right_precisely_wrong",
+      "target": "meta_no_free_lunch",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "Why no procedure decides this",
+      "data": { "edgeType": "supports" }
+    }
+  ]
+}

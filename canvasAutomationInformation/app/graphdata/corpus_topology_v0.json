@@ -1,0 +1,782 @@
+{
+  "version": "0.1",
+  "_note": "Rough, provisional projection of corpora_content.md into a single node-and-edge web covering the whole territory rather than one orientation-specific walk. Bodies are digest-level (1-3 sentences) rather than card-quality prose. Positions are a first sketch of clusters: disposition top-left, inference foundations along the upper spine, frame-problem core in the center, decision-making lower-spine, exploration and modern-context to the right, meta/landing far right. Expect this to be wrong in several places; the point is to see the shape.",
+  "nodes": [
+    {
+      "id": "humility_as_disposition",
+      "position": { "x": -300, "y": -200 },
+      "data": {
+        "label": "humility as disposition",
+        "body": "Epistemic humility is the disposition the corpus argues for. Structural incentives (academic, economic) reward confident expertise; psychology resists provisional belief on identity and on display. Scientific training, oriented toward discovering 'hidden truth,' is itself a poor inducement to humility. Naming the pressure is part of holding the disposition."
+      }
+    },
+    {
+      "id": "what_could_be_over_what_is",
+      "position": { "x": 0, "y": -200 },
+      "data": {
+        "label": "what could be over what is",
+        "body": "The corpus argues for orienting toward 'what could be' rather than 'what is.' Reasoning about possible variations, alternatives, and the limits of one's frame is the work; settling on a single answer is the temptation that has to be resisted."
+      }
+    },
+    {
+      "id": "intent_purpose",
+      "position": { "x": 300, "y": -400 },
+      "data": {
+        "label": "why think about reasoning limits",
+        "body": "Why bother with the limits of reasoning? Because how you process information shapes the actual outcomes of decisions. The point is not philosophical hygiene; it is making proper use of information where consequences land."
+      }
+    },
+    {
+      "id": "deduction_vs_induction",
+      "position": { "x": 0, "y": 0 },
+      "data": {
+        "label": "deduction vs induction",
+        "body": "Two modes for reaching conclusions. Deduction operates on certain rules with necessary conclusions; induction on sufficient similarity with generalized patterns. Different objects, different guarantees, and — importantly — the same structural limit applies to both."
+      }
+    },
+    {
+      "id": "statistics_as_practice",
+      "position": { "x": -300, "y": 0 },
+      "data": {
+        "label": "statistics as practice",
+        "body": "Statistics sits at the intersection of virtual tools and practical problems. Pure mathematics has no direct reach into the world; statistics is the layer where the apparatus meets a question someone is actually trying to answer."
+      }
+    },
+    {
+      "id": "probability_as_judgment",
+      "position": { "x": 300, "y": 0 },
+      "data": {
+        "label": "probability as judgment",
+        "body": "Probability is a support tool for judgment given background knowledge — distributing plausibility over possibilities — not a quantity grounded in nature. The mathematics is identical either way; the interpretation determines what you do when the reference class is constructed rather than found."
+      }
+    },
+    {
+      "id": "exact_probability_is_error",
+      "position": { "x": 300, "y": 200 },
+      "data": {
+        "label": "'exact probability' is a category error",
+        "body": "Treating an arbitrary proposition's probability as an exact number grounded in the world is a categorical error. Only frequency in a stable, repeatable context approaches groundedness, and most consequential cases are not that."
+      }
+    },
+    {
+      "id": "conditional_probability_framing",
+      "position": { "x": 600, "y": 0 },
+      "data": {
+        "label": "conditional probability as the relevant form",
+        "body": "Pr(Y|X) — what can we conclude given what we know — is the relevant form of the question, not Pr(Y) in the abstract. Reasoning under uncertainty is structured by the conditioning."
+      }
+    },
+    {
+      "id": "law_of_total_probability",
+      "position": { "x": 600, "y": -200 },
+      "data": {
+        "label": "law of total probability as framing",
+        "body": "Pr(Y) = Σ Pr(Y|X) Pr(X) is the structure of prediction under uncertainty: what we'd say about Y given each X, weighted by how strongly each X is supported. The conditional distributions are the modeling work; the marginal weights carry the assumptions."
+      }
+    },
+    {
+      "id": "subjectivity_of_conclusions",
+      "position": { "x": 600, "y": 200 },
+      "data": {
+        "label": "every conclusion is subjective",
+        "body": "Every conclusion about the world rests on background knowledge, choice of frame, and choice of conditioning. 'Subjective' here is not a defect; it is a description of where the inference is anchored."
+      }
+    },
+    {
+      "id": "frame_problem",
+      "position": { "x": 900, "y": 0 },
+      "data": {
+        "label": "the frame problem",
+        "body": "The frame problem is the question of what actually matters for a particular prediction — which Xs to include before any inference can run. To decide what does matter, one needs an idea of what could matter; the choice is upstream of the analysis it would inform."
+      }
+    },
+    {
+      "id": "indeterminacy_of_relevance",
+      "position": { "x": 900, "y": -200 },
+      "data": {
+        "label": "indeterminacy of relevance",
+        "body": "Determining what 'really' matters for a prediction is circular: the set of candidate variables is itself a product of framing. Adding more variables doesn't escape the circularity; it shifts the question one level up."
+      }
+    },
+    {
+      "id": "finite_specification",
+      "position": { "x": 1200, "y": 0 },
+      "data": {
+        "label": "finite specification",
+        "body": "Every prediction works on a finite specification of conditions. The specification is what makes inference possible and what generates uncertainty. What it omits does not appear as wider intervals; it does not appear at all."
+      }
+    },
+    {
+      "id": "frame_applies_to_both_modes",
+      "position": { "x": 1200, "y": 200 },
+      "data": {
+        "label": "frame applies to both modes",
+        "body": "The frame problem applies to both deduction and induction. Deduction's necessity is necessity-inside-the-frame; induction's pattern-fit is pattern-fit-inside-the-frame. Neither escapes the structural limit; exact prediction is precluded structurally, not contingently."
+      }
+    },
+    {
+      "id": "frame_invisible_from_inside",
+      "position": { "x": 1500, "y": 0 },
+      "data": {
+        "label": "frame invisible from inside",
+        "body": "A reasoning system reasons from within a frame, and the frame is the result of decisions made before the reasoning starts. The system is structurally blind to its own blind spots — auditing the frame requires resources the frame does not carry."
+      }
+    },
+    {
+      "id": "three_kinds_of_uncertainty",
+      "position": { "x": 1500, "y": -200 },
+      "data": {
+        "label": "three kinds of uncertainty",
+        "body": "Aleatory uncertainty is what is treated as irreducible variation within the model. Epistemic uncertainty is what better information could reduce. Ontological uncertainty is what the model did not include in the first place — the category routinely underweighted by formal practice."
+      }
+    },
+    {
+      "id": "russells_turkey",
+      "position": { "x": 1500, "y": -400 },
+      "data": {
+        "label": "Russell's turkey",
+        "body": "Daily evidence of the farmer's benevolence accumulates until Thanksgiving. The worked illustration: careful inference inside a bad frame produced high confidence and a wrong conclusion."
+      }
+    },
+    {
+      "id": "displaying_uncertainty",
+      "position": { "x": 1800, "y": -200 },
+      "data": {
+        "label": "displaying uncertainty",
+        "body": "Propagating uncertainty through a reasoning chain — rather than stripping it for efficiency at each interface — is often as informative as a point prediction, sometimes more. Stripping uncertainty in long chains is the natural tendency and the route to overconfidence."
+      }
+    },
+    {
+      "id": "world_responds_to_action",
+      "position": { "x": 300, "y": 400 },
+      "data": {
+        "label": "world responds to action, not picture",
+        "body": "The world responds to the action taken, not to the picture of the world that produced it. Anticipations matter to the agent; the world does not consult them."
+      }
+    },
+    {
+      "id": "decisions_on_expectations",
+      "position": { "x": 600, "y": 400 },
+      "data": {
+        "label": "decisions rest on expectations",
+        "body": "Every decision implicitly rests on expectations about outcomes, whether explicitly modeled or not. A rational agent does not select an alternative from which they expect lower utility than another available alternative."
+      }
+    },
+    {
+      "id": "expected_utility_distribution",
+      "position": { "x": 900, "y": 400 },
+      "data": {
+        "label": "expected utility is over a distribution",
+        "body": "Expected utility is computed against a distribution of possible outcomes; the realized outcome is a single observation. The mismatch between the distribution that informed the choice and the single observation that followed is where regret and calibration live."
+      }
+    },
+    {
+      "id": "crossing_example",
+      "position": { "x": 300, "y": 600 },
+      "data": {
+        "label": "the crossing (worked scenario)",
+        "body": "Crossing the Atlantic in a small boat — take a satellite phone or not. The probability of needing it is a judgment given background knowledge. The crossing itself will be fine or not; the world will not deliver '73% of a crossing.' How you act is inherently connected to what you thought before acting."
+      }
+    },
+    {
+      "id": "calibration_often_unavailable",
+      "position": { "x": 900, "y": 600 },
+      "data": {
+        "label": "calibration is often unavailable",
+        "body": "Comparing expected utility against actual outcomes — calibration, regret — is a luxury of situations with reliable repetition. For most consequential decisions, there is one shot, and calibration is not available even in principle."
+      }
+    },
+    {
+      "id": "no_right_balance",
+      "position": { "x": 1200, "y": 600 },
+      "data": {
+        "label": "no universal carefulness/initiative balance",
+        "body": "Whether to lean cautious or initiative-taking is a disposition that instantiates differently across problems. No general balance is the right one; the judgment is problem-dependent and irreducible."
+      }
+    },
+    {
+      "id": "agents_are_formal_systems",
+      "position": { "x": 1500, "y": 200 },
+      "data": {
+        "label": "agents are formal systems",
+        "body": "An agent — human or artificial — is a formal system inheriting an ontology and a set of allowed actions. Designing an artificial agent locks in what it can and cannot explore. The frame is a choice; the choice is not auditable from inside."
+      }
+    },
+    {
+      "id": "two_ways_to_discover_relevance",
+      "position": { "x": 1800, "y": 200 },
+      "data": {
+        "label": "two routes to relevance",
+        "body": "Relevance is discovered in two ways: someone tells you, or you bump into it through exploration of an environment. Both routes require leaving the current frame; neither dissolves the frame problem."
+      }
+    },
+    {
+      "id": "exploration_expands_ontology",
+      "position": { "x": 1800, "y": 0 },
+      "data": {
+        "label": "exploration can expand ontology",
+        "body": "Exploration is one mechanism by which an agent can peek behind the limits of its current frame and expand its ontology. There is no built-in guarantee of discovery — exploration may return nothing — but it is the route by which previously-unframed considerations become available."
+      }
+    },
+    {
+      "id": "exploration_doesnt_escape_finite_spec",
+      "position": { "x": 1800, "y": 400 },
+      "data": {
+        "label": "exploration doesn't escape finite specification",
+        "body": "Exploration is itself a finite-specification activity. Choices have to be made about where and what to explore; the same structural limits apply one level up. Exploration relocates the frame problem; it does not dissolve it."
+      }
+    },
+    {
+      "id": "exploration_practical_limits",
+      "position": { "x": 1800, "y": 600 },
+      "data": {
+        "label": "exploration has practical limits",
+        "body": "Exploration is not always available. Damage during exploration, risk, and irreversibility of consequences place practical bounds on it. The capability for relevance-discovery is itself context-dependent."
+      }
+    },
+    {
+      "id": "automation_opacity",
+      "position": { "x": 2100, "y": 0 },
+      "data": {
+        "label": "automation produces opacity",
+        "body": "Increased automation in information processing tends to decrease reflexivity on chosen treatments. Layered abstraction makes inner workings opaque; the practitioner becomes faster while the system becomes harder to inspect."
+      }
+    },
+    {
+      "id": "throughput_outpaces_evaluation",
+      "position": { "x": 2100, "y": 200 },
+      "data": {
+        "label": "throughput outpaces evaluation",
+        "body": "Automation raises the throughput of confident outputs faster than the resource available to evaluate them. Beyond a ratio, evaluation stops being meaningful and becomes spot-checking — surveillance, not scrutiny."
+      }
+    },
+    {
+      "id": "model_free_drift",
+      "position": { "x": 2100, "y": 400 },
+      "data": {
+        "label": "model-based to model-free drift",
+        "body": "With more compute, model-based practice (curated hypotheses, structured assumptions) gives way to model-free (induction from data with seemingly agnostic structure). The careful work of model selection and reflexive analysis is what gets supplanted, and extrapolation performance suffers."
+      }
+    },
+    {
+      "id": "data_driven_extrapolation_limit",
+      "position": { "x": 2400, "y": 400 },
+      "data": {
+        "label": "data-driven prediction extrapolates poorly",
+        "body": "Data-driven prediction is bounded by similarity between training context and deployment context. In high-dimensional spaces with large parametric models, the boundary is reached quickly and silently."
+      }
+    },
+    {
+      "id": "data_we_dont_have",
+      "position": { "x": 2400, "y": 200 },
+      "data": {
+        "label": "the data we don't have",
+        "body": "In uncertainty quantification, the load-bearing problem is often 'the data we don't have,' not the data we do. Data-driven methods can only do so much in this case — and the case is paradigmatic of decision under uncertainty, not exceptional."
+      }
+    },
+    {
+      "id": "meta_no_free_lunch",
+      "position": { "x": 2400, "y": 0 },
+      "data": {
+        "label": "meta no-free-lunch",
+        "body": "No formal procedure decides when a frame is adequate, because any such procedure is itself a frame and inherits the same problem one level up. 'Better methodology' does not close the gap because the methodology is the choice being deferred."
+      }
+    },
+    {
+      "id": "vaguely_right_precisely_wrong",
+      "position": { "x": 2700, "y": 0 },
+      "data": {
+        "label": "vaguely right / precisely wrong",
+        "body": "Keynes's line, read structurally. Precise wrongness is sharp output inside an inadequate frame; vague rightness is an honest answer about its conditions. The discipline called for is not vagueness but the rigor of knowing which rigor was earned."
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_01",
+      "source": "humility_as_disposition",
+      "target": "what_could_be_over_what_is",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "what disposition this asks for",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_02",
+      "source": "what_could_be_over_what_is",
+      "target": "intent_purpose",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "why does this matter in practice?",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_03",
+      "source": "intent_purpose",
+      "target": "deduction_vs_induction",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "what are the modes of conclusion-drawing?",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_04",
+      "source": "intent_purpose",
+      "target": "world_responds_to_action",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "why do conclusions matter at all?",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_05",
+      "source": "statistics_as_practice",
+      "target": "deduction_vs_induction",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "the layer that brings tools to problems",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_06",
+      "source": "deduction_vs_induction",
+      "target": "probability_as_judgment",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "what is probability, really?",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_07",
+      "source": "probability_as_judgment",
+      "target": "exact_probability_is_error",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "what this reading rules out",
+      "data": { "edgeType": "opposes" }
+    },
+    {
+      "id": "e_08",
+      "source": "probability_as_judgment",
+      "target": "conditional_probability_framing",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "what shape the question actually has",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_09",
+      "source": "conditional_probability_framing",
+      "target": "law_of_total_probability",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "the structure of prediction",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_10",
+      "source": "probability_as_judgment",
+      "target": "subjectivity_of_conclusions",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "what this implies about every conclusion",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_11",
+      "source": "conditional_probability_framing",
+      "target": "frame_problem",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "but which Xs?",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_12",
+      "source": "law_of_total_probability",
+      "target": "frame_problem",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "the marginal weights carry the framing",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_13",
+      "source": "frame_problem",
+      "target": "indeterminacy_of_relevance",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "the circularity at the core",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_14",
+      "source": "indeterminacy_of_relevance",
+      "target": "finite_specification",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "the practical face of the circularity",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_15",
+      "source": "frame_problem",
+      "target": "finite_specification",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "how the frame instantiates",
+      "data": { "edgeType": "synthesizes" }
+    },
+    {
+      "id": "e_16",
+      "source": "finite_specification",
+      "target": "frame_applies_to_both_modes",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "deduction doesn't escape this",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_17",
+      "source": "frame_applies_to_both_modes",
+      "target": "deduction_vs_induction",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "what the two modes inherit",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_18",
+      "source": "finite_specification",
+      "target": "three_kinds_of_uncertainty",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "what kinds of uncertainty result?",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_19",
+      "source": "finite_specification",
+      "target": "frame_invisible_from_inside",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "why specification carries a structural limit",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_20",
+      "source": "three_kinds_of_uncertainty",
+      "target": "russells_turkey",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "the worked illustration",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_21",
+      "source": "russells_turkey",
+      "target": "frame_invisible_from_inside",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "why the pattern-fit didn't help",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_22",
+      "source": "three_kinds_of_uncertainty",
+      "target": "displaying_uncertainty",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "what this implies for what you report",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_23",
+      "source": "frame_invisible_from_inside",
+      "target": "agents_are_formal_systems",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "what kind of system has this property",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_24",
+      "source": "agents_are_formal_systems",
+      "target": "two_ways_to_discover_relevance",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "how do agents discover what they didn't frame?",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_25",
+      "source": "two_ways_to_discover_relevance",
+      "target": "exploration_expands_ontology",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "the route that doesn't depend on being told",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_26",
+      "source": "exploration_expands_ontology",
+      "target": "exploration_doesnt_escape_finite_spec",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "but it isn't an escape from the frame problem",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_27",
+      "source": "exploration_doesnt_escape_finite_spec",
+      "target": "exploration_practical_limits",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "and not always practically available",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_28",
+      "source": "exploration_doesnt_escape_finite_spec",
+      "target": "finite_specification",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "the same limit, one level up",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_29",
+      "source": "world_responds_to_action",
+      "target": "decisions_on_expectations",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "yet decisions still rest on anticipations",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_30",
+      "source": "decisions_on_expectations",
+      "target": "expected_utility_distribution",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "what those anticipations are over",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_31",
+      "source": "expected_utility_distribution",
+      "target": "calibration_often_unavailable",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "comparing distribution to single outcome",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_32",
+      "source": "calibration_often_unavailable",
+      "target": "world_responds_to_action",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "why one shot is the modal case",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_33",
+      "source": "crossing_example",
+      "target": "decisions_on_expectations",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "the worked scenario",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_34",
+      "source": "crossing_example",
+      "target": "probability_as_judgment",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "what the number you'd compute really is",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_35",
+      "source": "crossing_example",
+      "target": "calibration_often_unavailable",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "you only cross once",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_36",
+      "source": "expected_utility_distribution",
+      "target": "no_right_balance",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "and the disposition this asks for",
+      "data": { "edgeType": "qualifies" }
+    },
+    {
+      "id": "e_37",
+      "source": "no_right_balance",
+      "target": "vaguely_right_precisely_wrong",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "the rigor this actually requires",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_38",
+      "source": "finite_specification",
+      "target": "automation_opacity",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "where this bites under modern conditions",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_39",
+      "source": "automation_opacity",
+      "target": "throughput_outpaces_evaluation",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "the resource-allocation face",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_40",
+      "source": "throughput_outpaces_evaluation",
+      "target": "model_free_drift",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "what gets supplanted under pressure",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_41",
+      "source": "model_free_drift",
+      "target": "data_driven_extrapolation_limit",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "and what fails as a result",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_42",
+      "source": "data_driven_extrapolation_limit",
+      "target": "data_we_dont_have",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "the paradigmatic case",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_43",
+      "source": "data_we_dont_have",
+      "target": "three_kinds_of_uncertainty",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "the category that names this",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_44",
+      "source": "automation_opacity",
+      "target": "frame_invisible_from_inside",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "the structural reason, sharper",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_45",
+      "source": "frame_invisible_from_inside",
+      "target": "meta_no_free_lunch",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "can't a meta-procedure close the gap?",
+      "data": { "edgeType": "synthesizes" }
+    },
+    {
+      "id": "e_46",
+      "source": "meta_no_free_lunch",
+      "target": "finite_specification",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "why each level inherits the limit",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_47",
+      "source": "meta_no_free_lunch",
+      "target": "vaguely_right_precisely_wrong",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "the disposition this leaves you with",
+      "data": { "edgeType": "synthesizes" }
+    },
+    {
+      "id": "e_48",
+      "source": "vaguely_right_precisely_wrong",
+      "target": "displaying_uncertainty",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "one concrete realization",
+      "data": { "edgeType": "instantiates" }
+    },
+    {
+      "id": "e_49",
+      "source": "vaguely_right_precisely_wrong",
+      "target": "humility_as_disposition",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "back to the disposition this earns",
+      "data": { "edgeType": "responds-to" }
+    },
+    {
+      "id": "e_50",
+      "source": "displaying_uncertainty",
+      "target": "three_kinds_of_uncertainty",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "including the third category",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_51",
+      "source": "subjectivity_of_conclusions",
+      "target": "probability_as_judgment",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "why the conditioning is the content",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_52",
+      "source": "agents_are_formal_systems",
+      "target": "frame_invisible_from_inside",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "structurally, not contingently",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_53",
+      "source": "model_free_drift",
+      "target": "automation_opacity",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "what makes the opacity worse",
+      "data": { "edgeType": "supports" }
+    },
+    {
+      "id": "e_54",
+      "source": "humility_as_disposition",
+      "target": "meta_no_free_lunch",
+      "sourceHandle": null,
+      "targetHandle": null,
+      "label": "structural reason humility isn't optional",
+      "data": { "edgeType": "synthesizes" }
+    }
+  ]
+}
